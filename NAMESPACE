@@ -1,1 +1,9 @@
-exportPattern("^[[:alpha:]]+")
+useDynLib(PARBONET)
+
+
+
+import("BoolNet")
+
+
+
+export(simulate_bn)

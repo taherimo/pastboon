@@ -1,9 +1,10 @@
 Package: PARBONET
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Simulation of Parameterized Stochastic Boolean Networks
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Imports: BoolNet
+Author: Mohammad Taheri-Ledari
+Maintainer: Mohammad Taheri-Ledari <mo.taheri.ledari@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
