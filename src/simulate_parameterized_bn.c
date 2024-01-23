@@ -363,9 +363,14 @@ double ** simulate_async(AsynchronousBooleanNetwork * net, unsigned int num_repe
     }
 
     for(k = 0; k < net->num_nodes; k++) {
-      if(net->initial_prob[k] > 0 & net->initial_prob[k] < 1) {
+      if (net->initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
+          current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
+        }
+      }
+      else if(net->initial_prob[k] > 0 & net->initial_prob[k] < 1) {
         //double r = doublerand_1();
-        if (doublerand_1() <= net->initial_prob[k]) {
+        if (doublerand_1() < net->initial_prob[k]) {
           //printf("%d ----- %f ----- %f ------ %f\n", k, net->initial_prob[k], r, unif_rand());
           current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
         }
@@ -458,9 +463,14 @@ double ** simulate_sync(SynchronousBooleanNetwork * net, unsigned int num_repeat
     }
 
     for(k = 0; k < net->num_nodes; k++) {
-      if(net->initial_prob[k] > 0 & net->initial_prob[k] < 1) {
+      if (net->initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
+          current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
+        }
+      }
+      else if(net->initial_prob[k] > 0 & net->initial_prob[k] < 1) {
         //double r = doublerand_1();
-        if (doublerand_1() <= net->initial_prob[k]) {
+        if (doublerand_1() < net->initial_prob[k]) {
           //printf("%d ----- %f ----- %f ------ %f\n", k, net->initial_prob[k], r, unif_rand());
           current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
         }
@@ -592,7 +602,9 @@ SEXP simulate_async_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.initial_prob = REAL(initial_prob);
+  network.initial_prob = NULL;
+  if (!isNull(initial_prob) && length(initial_prob) > 0)
+    network.initial_prob = REAL(initial_prob);
   network.update_prob = NULL;
   if (!isNull(update_prob) && length(update_prob) > 0)
     network.update_prob = REAL(update_prob);
@@ -721,7 +733,9 @@ SEXP simulate_sync_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.initial_prob = REAL(initial_prob);
+  network.initial_prob = NULL;
+  if (!isNull(initial_prob) && length(initial_prob) > 0)
+    network.initial_prob = REAL(initial_prob);
 
 
   unsigned int numNonFixed = 0, i;

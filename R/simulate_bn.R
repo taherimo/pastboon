@@ -1,7 +1,7 @@
 
-simulate_bn <- function(net, p00, p01, p10, p11, initial_prob,
+simulate_bn <- function(net, p00, p01, p10, p11,
                      steps, repeats, return_last_step=F,
-                     asynchronous=T, update_prob=NULL) {
+                     asynchronous=T, initial_prob=NULL, update_prob=NULL) {
 
   # the C code requires all interactions to be coded into one vector:
   # Assemble all input gene lists in one list <inputGenes>, and remember the split positions in <inputGenePositions>.
