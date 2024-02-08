@@ -27,7 +27,6 @@ typedef struct
   double * p10;
   double * p11;
   double * update_prob;
-  double * initial_prob;
 
 } AsynchronousBooleanNetwork;
 
@@ -52,7 +51,6 @@ typedef struct
   double * p01;
   double * p10;
   double * p11;
-  double * initial_prob;
 
 } SynchronousBooleanNetwork;
 
