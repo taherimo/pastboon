@@ -42,6 +42,11 @@ simulate_bn_return_states <- function(net, p00, p01, p10, p11,
                             outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
                             as.integer(initial_states_dec), update_prob, as.integer(steps))
 
+  } else {
+    reached_states <- .Call("simulate_sync_return_states_R", inputs, input_positions,
+                            outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+                            as.integer(initial_states_dec), as.integer(steps))
+
   }
 
 
