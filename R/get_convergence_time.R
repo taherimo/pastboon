@@ -1,40 +1,30 @@
 
-get_convergence_time <- function(net, p00, p01, p10, p11,
-                                 max_steps, threshold, repeats,
-                                 asynchronous=T, initial_prob=NULL, update_prob=NULL) {
+get_convergence_time <- function(node_activities, threshold, window_size=1) {
+  # the first row is consideres as time 0
 
+  # check dimensions of the matrix node_activities
 
-  inputs <- as.integer(unlist(lapply(net$interactions,function(interaction)interaction$input)))
-  input_positions <- as.integer(cumsum(c(0,sapply(net$interactions,function(interaction)length(interaction$input)))))
+  differences <- diff(node_activities, 1, along = 1)
 
-  outputs <- as.integer(unlist(lapply(net$interactions,function(interaction)interaction$func)))
-  output_positions <- as.integer(cumsum(c(0,sapply(net$interactions,function(interaction)length(interaction$func)))))
+  #first_row_below_threshold <- which(apply(matrix_data, 1, function(row) all(row < threshold)), arr.ind = TRUE)[1, 1]
 
-  if(asynchronous) {
+  rows_below_threshold <- apply(differences, 1, function(row) all(row < threshold))
 
-    convergence_time <- .Call("get_convergence_time_async_R", inputs, input_positions,
-                             outputs, output_positions,
-                             as.integer(net$fixed),
-                             p00, p01, p10, p11,
-                             initial_prob, update_prob,
-                             as.integer(repeats), threshold,
-                             as.integer(max_steps), PACKAGE = "PARBONET")
+  convergence_time <- find_consecutive_true(rows_below_threshold, window_size)
 
-
-  } else {
-
-    convergence_time <- .Call("get_convergence_time_sync_R", inputs, input_positions,
-                             outputs, output_positions,
-                             as.integer(net$fixed),
-                             p00, p01, p10, p11,
-                             initial_prob,
-                             as.integer(repeats),
-                             threshold, as.integer(max_steps),
-                             PACKAGE = "PARBONET")
-
+  if(is.na(convergence_time)) {
+    cat("No convergence time found! Try reducing threshold and/or window_size")
   }
 
+  return(convergence_time + 1)
 
-  return(convergence_time)
+}
 
+find_consecutive_true <- function(vec, n) {
+  for (i in 1:(length(vec) - n + 1)) {
+    if (all(vec[i:(i+n-1)])) {
+      return(i)
+    }
+  }
+  return(NA)  # Return NA if no consecutive TRUE values are found
 }

@@ -16,9 +16,9 @@ extern SEXP simulate_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEX
 
 extern SEXP simulate_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP simulate_async_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP simulate_async_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP simulate_sync_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP simulate_sync_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP get_convergence_time_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
@@ -35,8 +35,8 @@ static const R_CallMethodDef callMethods[] = {
   // { "your_R_function_name", (DL_FUNC) &your_C_function_name, number_of_arguments },
   {"simulate_async_R", (DL_FUNC) &simulate_async_R,  14},
   {"simulate_sync_R", (DL_FUNC) &simulate_sync_R,  13},
-  {"simulate_async_return_states_R", (DL_FUNC) &simulate_async_return_states_R, 12},
-  {"simulate_sync_return_states_R", (DL_FUNC) &simulate_sync_return_states_R, 11},
+  {"simulate_async_return_states_R", (DL_FUNC) &simulate_async_return_states_R, 13},
+  {"simulate_sync_return_states_R", (DL_FUNC) &simulate_sync_return_states_R, 12},
   {"get_convergence_time_async_R", (DL_FUNC) &get_convergence_time_async_R, 14},
   {"get_convergence_time_sync_R", (DL_FUNC) &get_convergence_time_sync_R, 13},
   { NULL, NULL, 0 }

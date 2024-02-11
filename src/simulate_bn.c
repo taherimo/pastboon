@@ -338,21 +338,31 @@ unsigned int ** simulate_async_return_states(AsynchronousBooleanNetwork * net, u
 
 {
 
+  unsigned int i = 0, j = 0;
+
+
   printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
 
   unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
   unsigned int ** reached_states = CALLOC(num_initial_states, sizeof(int*));
 
-  for (unsigned int i=0;i<num_initial_states;i++){
+  for (i=0;i<num_initial_states;i++){
     //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i*num_elements;
   }
 
 
+  if(initial_states==NULL) {
+    initial_states = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
+    for (i=0;i<num_initial_states;i++){
+      for(j=0;j<num_elements;j++) {
+        initial_states[i*num_elements + j] = uintrand();
+      }
+    }
+  }
 
   unsigned int current_state[num_elements];
 
-  unsigned int i = 0, j = 0;
 
   for (i = 0; i < num_initial_states; i++) {
 
@@ -642,6 +652,8 @@ unsigned int ** simulate_sync_return_states(SynchronousBooleanNetwork * net, uns
 
 {
 
+  unsigned int i = 0, j = 0;
+
   printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
 
   unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
@@ -653,10 +665,18 @@ unsigned int ** simulate_sync_return_states(SynchronousBooleanNetwork * net, uns
   }
 
 
+  if(initial_states==NULL) {
+    initial_states = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
+    for (i=0;i<num_initial_states;i++){
+      for(j=0;j<num_elements;j++) {
+        initial_states[i*num_elements + j] = uintrand();
+      }
+    }
+  }
+
+
 
   unsigned int current_state[num_elements];
-
-  unsigned int i = 0, j = 0;
 
   for (i = 0; i < num_initial_states; i++) {
 
@@ -1104,7 +1124,8 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
                       SEXP outputs, SEXP output_positions,
                       SEXP fixed_nodes, SEXP p00, SEXP p01,
                       SEXP p10, SEXP p11, SEXP initial_states,
-                      SEXP update_prob, SEXP steps) {
+                      SEXP num_initial_states, SEXP update_prob,
+                      SEXP steps) {
 
 
 
@@ -1126,9 +1147,30 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
     network.update_prob = REAL(update_prob);
 
 
-  //int * _initial_states = INTEGER(initial_states);
+  unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
-  unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
+
+  unsigned int * _initial_states = NULL;
+  if (!isNull(initial_states) && length(initial_states) > 0)
+    _initial_states = (unsigned int *) INTEGER(initial_states);
+
+
+
+
+  unsigned int _numElements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _numElements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+
+
+  //unsigned int _num_initial_states = length(initial_states) / _numElements;
+
+
+  //int * _initial_states = INTEGER(initial_states);
+  //unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
 
 
 
@@ -1143,12 +1185,6 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int _numElements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _numElements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
 
 
@@ -1156,7 +1192,6 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int _num_initial_states = length(initial_states) / _numElements;
 
 
   //srand(INTEGER(seed)[0]);
@@ -1203,7 +1238,7 @@ SEXP simulate_sync_return_states_R(SEXP inputs, SEXP input_positions,
                                     SEXP outputs, SEXP output_positions,
                                     SEXP fixed_nodes, SEXP p00, SEXP p01,
                                     SEXP p10, SEXP p11, SEXP initial_states,
-                                    SEXP steps) {
+                                    SEXP num_initial_states, SEXP steps) {
 
 
 
@@ -1221,9 +1256,26 @@ SEXP simulate_sync_return_states_R(SEXP inputs, SEXP input_positions,
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
 
-  //int * _initial_states = INTEGER(initial_states);
+  unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
-  unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
+  unsigned int * _initial_states = NULL;
+  if (!isNull(initial_states) && length(initial_states) > 0)
+    _initial_states = (unsigned int *) INTEGER(initial_states);
+
+
+  unsigned int _numElements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _numElements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+
+  //unsigned int _num_initial_states = length(initial_states) / _numElements;
+
+
+  //int * _initial_states = INTEGER(initial_states);
+  //unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
 
 
 
@@ -1238,20 +1290,8 @@ SEXP simulate_sync_return_states_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int _numElements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _numElements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-
-
   int _num_steps = *INTEGER(steps);
 
-
-
-  unsigned int _num_initial_states = length(initial_states) / _numElements;
 
 
   //srand(INTEGER(seed)[0]);

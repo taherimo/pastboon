@@ -1,27 +1,51 @@
 simulate_bn_return_states <- function(net, p00, p01, p10, p11,
-                                      steps, asynchronous=T, initial_states=NULL,
-                                      num_random_initial_states=1000, update_prob=NULL) {
+                                      steps, num_initial_states, initial_states=NULL,
+                                      update_prob=NULL,asynchronous=T) {
 
 
   # assert ncols(initial_states) == length(net$genes)
 
-  if(is.null(initial_states)) {
-    initial_states_bin <- sample(0:1, num_random_initial_states * length(bn$genes), rep = T)
-    if(num_random_initial_states>1) {
-      initial_states_bin <- matrix(initial_states_bin, nrow = num_random_initial_states, byrow = TRUE)
-      colnames(initial_states_bin) <- net$genes
-    } else {
-      names(initial_states_bin) <- net$genes
+  # if(is.null(initial_states)) {
+  #   initial_states_bin <- sample(0:1, num_random_initial_states * length(bn$genes), rep = T)
+  #   if(num_random_initial_states>1) {
+  #     initial_states_bin <- matrix(initial_states_bin, nrow = num_random_initial_states, byrow = TRUE)
+  #     colnames(initial_states_bin) <- net$genes
+  #   } else {
+  #     names(initial_states_bin) <- net$genes
+  #   }
+  # }
+
+  initial_states_dec <- NULL
+
+  if(!is.null(initial_states)) {
+
+    # assert ncols(initial_states) == length(net$genes)
+    # assert nrow(initial_states) == num_initial_states --> warning
+    # at least one of the args initial_states or num_initial_states should be passed
+
+    if(is.vector(initial_states)) {
+      if(num_initial_states!=1) {
+        cat("Warning!")
+        num_initial_states <- 1
+      }
+      initial_states_dec <- bin2dec(initial_states, length(net$genes))
     }
+    else {
+      initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
+      #print(t(apply(apply(initial_states, 1, bin2dec, len=length(net$genes)),2,dec2bin,len=length(net$genes))))
+
+      if(num_initial_states!=nrow(initial_states)) {
+        cat("Warning!")
+        num_initial_states <- nrow(initial_states)
+      }
+    }
+
+  } else if(num_initial_states <=0) {
+      cat("Error!") # guarantee that num_initial_states is positive integer
+      return(NA)
   }
 
-  if(is.vector(initial_states_bin)) {
-    initial_states_dec <- bin2dec(initial_states_bin, length(net$genes))
-  }
-  else {
-    initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
-    print(t(apply(apply(initial_states_bin, 1, bin2dec, len=length(net$genes)),2,dec2bin,len=length(net$genes))))
-  }
+
 
   # the C code requires all interactions to be coded into one vector:
   # Assemble all input gene lists in one list <inputGenes>, and remember the split positions in <inputGenePositions>.
@@ -40,27 +64,26 @@ simulate_bn_return_states <- function(net, p00, p01, p10, p11,
 
     reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
                             outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
-                            as.integer(initial_states_dec), update_prob, as.integer(steps))
+                            as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
 
   } else {
     reached_states <- .Call("simulate_sync_return_states_R", inputs, input_positions,
                             outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
-                            as.integer(initial_states_dec), as.integer(steps))
+                            as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
 
   }
 
 
-  print(reached_states)
+  #print(reached_states)
 
 
-  if(is.vector(initial_states_bin)) {
+  if(num_initial_states==1) {
 
     reached_states_bin <- dec2bin(reached_states,len=length(net$genes))
 
-  }
-  else {
+  } else {
 
-    reached_states <- matrix(reached_states, nrow = nrow(initial_states), byrow = TRUE)
+    reached_states <- matrix(reached_states, nrow = num_initial_states, byrow = TRUE)
 
     reached_states_bin <- apply(reached_states, 1, dec2bin, len=length(net$genes))
 
