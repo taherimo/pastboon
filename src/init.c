@@ -24,6 +24,15 @@ extern SEXP get_convergence_time_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEX
 
 extern SEXP get_convergence_time_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
+extern SEXP get_reached_states_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_reached_states_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_transition_matrix_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_transition_matrix_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+
 static const R_CMethodDef cMethods[] = {
   {"dec2binC", (DL_FUNC) &dec2binC, 3},
   {"bin2decC", (DL_FUNC) &bin2decC, 3},
@@ -39,6 +48,10 @@ static const R_CallMethodDef callMethods[] = {
   {"simulate_sync_return_states_R", (DL_FUNC) &simulate_sync_return_states_R, 12},
   {"get_convergence_time_async_R", (DL_FUNC) &get_convergence_time_async_R, 14},
   {"get_convergence_time_sync_R", (DL_FUNC) &get_convergence_time_sync_R, 13},
+  {"get_reached_states_async_R", (DL_FUNC) &get_reached_states_async_R, 13},
+  {"get_reached_states_sync_R", (DL_FUNC) &get_reached_states_sync_R, 12},
+  {"get_transition_matrix_async_R", (DL_FUNC) &get_transition_matrix_async_R, 14},
+  {"get_transition_matrix_sync_R", (DL_FUNC) &get_transition_matrix_sync_R, 13},
   { NULL, NULL, 0 }
 };
 

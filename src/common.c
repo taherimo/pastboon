@@ -13,9 +13,9 @@ AllocatedMemory * memoryMap = NULL;
  */
 
 void freeAllMemory()
-{  
+{
   AllocatedMemory * m, * tmp;
-  HASH_ITER(hh, memoryMap, m, tmp) 
+  HASH_ITER(hh, memoryMap, m, tmp)
   {
     HASH_DEL(memoryMap, m);
     free(m->ptr);
@@ -113,11 +113,11 @@ void insertFixedGenes(unsigned int * value, int* fixedGenes, unsigned int numGen
  * The function changes the state pointed to by <value> and has no return value.
  */
 void removeFixedGenes(unsigned int * value, int* fixedGenes, unsigned int numGenes)
-{	
+{
 	unsigned int tmp[numGenes];
 	memset(tmp,0,sizeof(unsigned int) * numGenes);
 	unsigned int i, j = 0;
-	
+
 	// build an array of Boolean values for the genes
 	for (i = 0; i < numGenes; ++i)
 	{
@@ -133,18 +133,30 @@ void removeFixedGenes(unsigned int * value, int* fixedGenes, unsigned int numGen
 }
 
 
-SEXP getListElement(SEXP list, char *str) 
+SEXP getListElement(SEXP list, char *str)
 {
   SEXP names = getAttrib(list, R_NamesSymbol);
-  
+
   unsigned int i;
-   
+
   for (i = 0; i < length(list); ++i)
   {
-    if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0 ) 
-    { 
-      return VECTOR_ELT(list, i); 
+    if (strcmp(CHAR(STRING_ELT(names, i)), str) == 0 )
+    {
+      return VECTOR_ELT(list, i);
     }
   }
   return R_NilValue;
-} 
+}
+
+
+// Function to check if all elements of two arrays are the same
+int areArraysEqual(unsigned int arr1[], unsigned int arr2[], unsigned int size) {
+  for (int i = 0; i < size; i++) {
+    if (arr1[i] != arr2[i]) {
+      return 0; // Arrays are not equal
+    }
+  }
+  return 1; // Arrays are equal
+}
+

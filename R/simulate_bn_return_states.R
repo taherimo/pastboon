@@ -23,6 +23,11 @@ simulate_bn_return_states <- function(net, p00, p01, p10, p11,
     # assert nrow(initial_states) == num_initial_states --> warning
     # at least one of the args initial_states or num_initial_states should be passed
 
+    if (any(initial_states != 0 & initial_states != 1)) {
+      cat("Error!") # there are values other than zero and one
+      return(NA)
+    }
+
     if(is.vector(initial_states)) {
       if(num_initial_states!=1) {
         cat("Warning!")

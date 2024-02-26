@@ -71,35 +71,35 @@ extern AllocatedMemory * memoryMap;
  * Custom function to allocate memory that stores
  * the pointers in the global map.
  */
-static inline void* CALLOC(size_t n, size_t sz) 
+static inline void* CALLOC(size_t n, size_t sz)
 {
-  void * ptr = calloc(n, sz); 
-  
+  void * ptr = calloc(n, sz);
+
   if (ptr == NULL)
     error("Out of memory!");
-    
-  AllocatedMemory * m = calloc(1, sizeof(AllocatedMemory));  
-  m->ptr = ptr; 
+
+  AllocatedMemory * m = calloc(1, sizeof(AllocatedMemory));
+  m->ptr = ptr;
   HASH_ADD_PTR(memoryMap, ptr, m);
   return ptr;
 }
 
-static inline void* REALLOC(void* ptr, size_t new_sz) 
+static inline void* REALLOC(void* ptr, size_t new_sz)
 {
   if (ptr == NULL)
     return CALLOC(new_sz, 1);
-    
-  void * newptr = realloc(ptr, new_sz); 
-  
+
+  void * newptr = realloc(ptr, new_sz);
+
   if (newptr == NULL)
     error("Out of memory!");
-  
+
   if (newptr != ptr)
-  { 
+  {
     AllocatedMemory * m;
-    HASH_FIND_PTR(memoryMap, &ptr, m); 
-    HASH_DEL(memoryMap, m); 
-    m->ptr = newptr; 
+    HASH_FIND_PTR(memoryMap, &ptr, m);
+    HASH_DEL(memoryMap, m);
+    m->ptr = newptr;
     HASH_ADD_PTR(memoryMap, ptr, m);
   }
   return newptr;
@@ -109,18 +109,18 @@ static inline void* REALLOC(void* ptr, size_t new_sz)
  * Custom function to free memory that was
  * allocated using CALLOC().
  */
-static inline void FREE(void * ptr) 
+static inline void FREE(void * ptr)
 {
-  AllocatedMemory * m; 
-  HASH_FIND_PTR(memoryMap, &ptr, m); 
-  HASH_DEL(memoryMap, m); 
-  free(m); 
+  AllocatedMemory * m;
+  HASH_FIND_PTR(memoryMap, &ptr, m);
+  HASH_DEL(memoryMap, m);
+  free(m);
   free(ptr);
 }
 
 /**
  * Add one to a binary number represented by an array of characters
- * with 0/1 elements. 
+ * with 0/1 elements.
  * <fixed> is a vector of fixed positions that are not touched or NULL.
  * Return true if there is a next state, or false in case of an overflow.
  */
@@ -128,18 +128,18 @@ static inline bool getNextState(unsigned char * state, int * fixed, unsigned int
 {
   if (numBits == 0)
     return false;
-    
+
   int i = numBits - 1;
-  
+
   while(true)
   {
     while (fixed != NULL && fixed[i] != -1)
-    {     
+    {
       --i;
     }
     if (i < 0)
       return false;
-      
+
     if (state[i] == 0)
     {
       state[i] = 1;
@@ -149,7 +149,7 @@ static inline bool getNextState(unsigned char * state, int * fixed, unsigned int
     {
       if (i == 0)
         return false;
-        
+
       state[i] = 0;
       --i;
     }
@@ -170,7 +170,7 @@ static inline bool getNextState(unsigned char * state, int * fixed, unsigned int
 typedef struct ALE
 {
   void * array;
-    
+
   struct ALE * next;
 } ArrayListElement;
 
@@ -241,5 +241,8 @@ extern void insertFixedGenes(unsigned int * value, int* fixedGenes, unsigned int
 extern void removeFixedGenes(unsigned int * value, int* fixedGenes, unsigned int numGenes);
 
 extern SEXP getListElement(SEXP list, char *str);
+
+extern int areArraysEqual(unsigned int arr1[], unsigned int arr2[], unsigned int size);
+
 
 #endif
