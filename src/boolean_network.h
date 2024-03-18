@@ -55,4 +55,24 @@ typedef struct
 } SynchronousBooleanNetwork;
 
 
+typedef struct
+{
+  unsigned char type;
+
+  unsigned int num_nodes;
+
+  int * fixed_nodes;
+  unsigned int * non_fixed_node_bits;
+
+  //int * node_types;
+
+  int * inputs;
+  int * input_positions;
+  int * outputs;
+  int * output_positions;
+  double * p;
+
+} BooleanNetworkWithPerturbations;
+
+
 #endif

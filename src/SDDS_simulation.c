@@ -115,7 +115,7 @@ static inline void applySingleFunction(unsigned int * currentState, unsigned int
 }
 
 
-static inline void asynchronousStateTransition(unsigned int * currentState, AsynchronousBooleanNetwork * net)
+static inline void state_transition_SDDS_asynchronous(unsigned int * currentState, AsynchronousBooleanNetwork * net)
 {
   unsigned int i;
 
@@ -146,7 +146,7 @@ static inline void asynchronousStateTransition(unsigned int * currentState, Asyn
 }
 
 
-void synchronousStateTransition(unsigned int * currentState, SynchronousBooleanNetwork * net, unsigned int elementsPerEntry)
+void state_transition_SDDS_synchronous(unsigned int * currentState, SynchronousBooleanNetwork * net, unsigned int elementsPerEntry)
 {
 
   unsigned int i = 0, k = 0;
@@ -255,7 +255,7 @@ int check_convergence(double *current_probabilities, double *next_probabilities,
 }
 
 
-double * simulate_async_return_node_activities_last_step(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -307,7 +307,7 @@ double * simulate_async_return_node_activities_last_step(AsynchronousBooleanNetw
     for (j = 1; j <= num_steps; j++)
     {
 
-      asynchronousStateTransition(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
     }
@@ -334,7 +334,7 @@ double * simulate_async_return_node_activities_last_step(AsynchronousBooleanNetw
 }
 
 
-unsigned int ** simulate_async_return_states(AsynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
 
 {
 
@@ -374,7 +374,7 @@ unsigned int ** simulate_async_return_states(AsynchronousBooleanNetwork * net, u
     for (j = 1; j <= num_steps; j++)
     {
 
-      asynchronousStateTransition(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -394,7 +394,7 @@ unsigned int ** simulate_async_return_states(AsynchronousBooleanNetwork * net, u
 }
 
 
-double ** simulate_async_return_node_activities(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+double ** get_node_activities_SDDS_async_traj(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -465,7 +465,7 @@ double ** simulate_async_return_node_activities(AsynchronousBooleanNetwork * net
     for (j = 1; j <= num_steps; j++)
     {
 
-      asynchronousStateTransition(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, net);
       //stateTransition(current_state,net,num_elements);
 
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
@@ -503,7 +503,7 @@ double ** simulate_async_return_node_activities(AsynchronousBooleanNetwork * net
 }
 
 
-double ** simulate_sync_return_node_activities(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_node_activities_SDDS_sync_traj(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
   double* traj_vals = CALLOC(net->num_nodes * (num_steps+1), sizeof(double));
   double** traj = CALLOC(net->num_nodes, sizeof(double*));
 
@@ -566,7 +566,7 @@ double ** simulate_sync_return_node_activities(SynchronousBooleanNetwork * net, 
     for (j = 1; j <= num_steps; j++)
     {
 
-      synchronousStateTransition(current_state, net, num_elements);
+      state_transition_SDDS_synchronous(current_state, net, num_elements);
       //stateTransition(current_state,net,num_elements);
 
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
@@ -603,7 +603,7 @@ double ** simulate_sync_return_node_activities(SynchronousBooleanNetwork * net, 
 }
 
 
-double * simulate_sync_return_node_activities_last_step(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double * get_node_activities_SDDS_sync_last_step(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* traj = CALLOC(net->num_nodes, sizeof(double));
 
@@ -634,7 +634,7 @@ double * simulate_sync_return_node_activities_last_step(SynchronousBooleanNetwor
 
     for (j = 1; j <= num_steps; j++)
     {
-      synchronousStateTransition(current_state, net, num_elements);
+      state_transition_SDDS_synchronous(current_state, net, num_elements);
     }
 
     for(k = 0; k < net->num_nodes; k++) {
@@ -649,7 +649,7 @@ double * simulate_sync_return_node_activities_last_step(SynchronousBooleanNetwor
 }
 
 
-unsigned int ** simulate_sync_return_states(SynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_sync_batch(SynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
 
 {
 
@@ -689,7 +689,7 @@ unsigned int ** simulate_sync_return_states(SynchronousBooleanNetwork * net, uns
     for (j = 1; j <= num_steps; j++)
     {
 
-      synchronousStateTransition(current_state, net, num_elements);
+      state_transition_SDDS_synchronous(current_state, net, num_elements);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -769,7 +769,7 @@ unsigned int get_convergence_time_async(AsynchronousBooleanNetwork * net, double
       }
 
 
-      asynchronousStateTransition(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -853,7 +853,7 @@ unsigned int get_convergence_time_sync(SynchronousBooleanNetwork * net, double *
 
       }
 
-      synchronousStateTransition(current_state, net, num_elements);
+      state_transition_SDDS_synchronous(current_state, net, num_elements);
 
 
       for(k = 0; k < net->num_nodes; k++) {
@@ -913,7 +913,7 @@ unsigned int ** get_reached_states_async(AsynchronousBooleanNetwork * net, unsig
     for (j = 1; j <= num_steps; j++)
     {
 
-      asynchronousStateTransition(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -970,7 +970,7 @@ unsigned int ** get_reached_states_sync(SynchronousBooleanNetwork * net, unsigne
     for (j = 1; j <= num_steps; j++)
     {
 
-      synchronousStateTransition(current_state, net, num_elements);
+      state_transition_SDDS_synchronous(current_state, net, num_elements);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -1024,7 +1024,7 @@ double ** get_transition_matrix_async(AsynchronousBooleanNetwork * net, unsigned
       for (k = 1; k <= num_steps; k++)
       {
 
-        asynchronousStateTransition(current_state, net);
+        state_transition_SDDS_asynchronous(current_state, net);
         //stateTransition(current_state,net,num_elements);
         //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -1081,7 +1081,7 @@ double ** get_transition_matrix_sync(SynchronousBooleanNetwork * net, unsigned i
       for (k = 1; k <= num_steps; k++)
       {
 
-        synchronousStateTransition(current_state, net, num_elements);
+        state_transition_SDDS_synchronous(current_state, net, num_elements);
         //stateTransition(current_state,net,num_elements);
         //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -1107,7 +1107,7 @@ double ** get_transition_matrix_sync(SynchronousBooleanNetwork * net, unsigned i
 }
 
 
-SEXP get_reached_states_async_R(SEXP inputs, SEXP input_positions,
+SEXP get_reached_states_SDDS_async_single_R(SEXP inputs, SEXP input_positions,
                                     SEXP outputs, SEXP output_positions,
                                     SEXP fixed_nodes, SEXP p00, SEXP p01,
                                     SEXP p10, SEXP p11, SEXP update_prob,
@@ -1200,7 +1200,7 @@ SEXP get_reached_states_async_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP get_reached_states_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
                                 SEXP outputs, SEXP output_positions,
                                 SEXP fixed_nodes, SEXP p00, SEXP p01,
                                 SEXP p10, SEXP p11, SEXP initial_state,
@@ -1482,7 +1482,7 @@ SEXP get_transition_matrix_sync_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP simulate_async_R(SEXP inputs, SEXP input_positions,
+SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
                 SEXP outputs, SEXP output_positions,
                 SEXP fixed_nodes, SEXP p00, SEXP p01,
                 SEXP p10, SEXP p11, SEXP initial_prob,
@@ -1559,7 +1559,7 @@ SEXP simulate_async_R(SEXP inputs, SEXP input_positions,
 
   if(_last_step) {
 
-    double * traj = simulate_async_return_node_activities_last_step(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double * traj = get_node_activities_SDDS_async_last_step(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
@@ -1570,7 +1570,7 @@ SEXP simulate_async_R(SEXP inputs, SEXP input_positions,
   }
   else {
 
-    double ** traj = simulate_async_return_node_activities(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double ** traj = get_node_activities_SDDS_async_traj(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
     //unsigned long long * reachedStates = simulate_singleInt(&network, (long long *)_startStates, (long long)_numStartStates, _steps);
 
     //printf("%.6f %d\n", traj[0][0], _numElements);
@@ -1621,7 +1621,7 @@ SEXP simulate_async_R(SEXP inputs, SEXP input_positions,
 
 
 
-SEXP simulate_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                       SEXP outputs, SEXP output_positions,
                       SEXP fixed_nodes, SEXP p00, SEXP p01,
                       SEXP p10, SEXP p11, SEXP initial_prob,
@@ -1684,7 +1684,7 @@ SEXP simulate_sync_R(SEXP inputs, SEXP input_positions,
 
   if(_last_step) {
 
-    double * traj = simulate_sync_return_node_activities_last_step(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double * traj = get_node_activities_SDDS_sync_last_step(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
@@ -1695,7 +1695,7 @@ SEXP simulate_sync_R(SEXP inputs, SEXP input_positions,
   }
   else {
 
-    double ** traj = simulate_sync_return_node_activities(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double ** traj = get_node_activities_SDDS_sync_traj(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
     //unsigned long long * reachedStates = simulate_singleInt(&network, (long long *)_startStates, (long long)_numStartStates, _steps);
 
 
@@ -1727,7 +1727,7 @@ SEXP simulate_sync_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
+SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
                       SEXP outputs, SEXP output_positions,
                       SEXP fixed_nodes, SEXP p00, SEXP p01,
                       SEXP p10, SEXP p11, SEXP initial_states,
@@ -1810,7 +1810,7 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int ** reached_states = simulate_async_return_states(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_async_batch(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
 
 
   for(unsigned int j = 0; j < _numElements; j++) {
@@ -1841,7 +1841,7 @@ SEXP simulate_async_return_states_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP simulate_sync_return_states_R(SEXP inputs, SEXP input_positions,
+SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
                                     SEXP outputs, SEXP output_positions,
                                     SEXP fixed_nodes, SEXP p00, SEXP p01,
                                     SEXP p10, SEXP p11, SEXP initial_states,
@@ -1910,7 +1910,7 @@ SEXP simulate_sync_return_states_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int ** reached_states = simulate_sync_return_states(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_sync_batch(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
 
 
   for(unsigned int j = 0; j < _numElements; j++) {

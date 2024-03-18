@@ -12,25 +12,28 @@ extern void bin2decC(void *, void *, void *);
 
 /* .Call calls */
 
-extern SEXP simulate_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_node_activities_SDDS_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP simulate_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_node_activities_SDDS_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP simulate_async_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_reached_states_SDDS_async_batch_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP simulate_sync_return_states_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_reached_states_SDDS_sync_batch_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP get_convergence_time_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP get_convergence_time_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP get_reached_states_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_reached_states_SDDS_async_single_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
-extern SEXP get_reached_states_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+extern SEXP get_reached_states_SDDS_sync_single_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP get_transition_matrix_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 extern SEXP get_transition_matrix_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+
+extern SEXP get_node_activities_BNp_sync_R();
 
 
 static const R_CMethodDef cMethods[] = {
@@ -42,14 +45,14 @@ static const R_CMethodDef cMethods[] = {
 
 static const R_CallMethodDef callMethods[] = {
   // { "your_R_function_name", (DL_FUNC) &your_C_function_name, number_of_arguments },
-  {"simulate_async_R", (DL_FUNC) &simulate_async_R,  14},
-  {"simulate_sync_R", (DL_FUNC) &simulate_sync_R,  13},
-  {"simulate_async_return_states_R", (DL_FUNC) &simulate_async_return_states_R, 13},
-  {"simulate_sync_return_states_R", (DL_FUNC) &simulate_sync_return_states_R, 12},
+  {"get_node_activities_SDDS_async_R", (DL_FUNC) &get_node_activities_SDDS_async_R,  14},
+  {"get_node_activities_SDDS_sync_R", (DL_FUNC) &get_node_activities_SDDS_sync_R,  13},
+  {"get_reached_states_SDDS_async_batch_R", (DL_FUNC) &get_reached_states_SDDS_async_batch_R, 13},
+  {"get_reached_states_SDDS_sync_batch_R", (DL_FUNC) &get_reached_states_SDDS_sync_batch_R, 12},
   {"get_convergence_time_async_R", (DL_FUNC) &get_convergence_time_async_R, 14},
   {"get_convergence_time_sync_R", (DL_FUNC) &get_convergence_time_sync_R, 13},
-  {"get_reached_states_async_R", (DL_FUNC) &get_reached_states_async_R, 13},
-  {"get_reached_states_sync_R", (DL_FUNC) &get_reached_states_sync_R, 12},
+  {"get_reached_states_SDDS_async_single_R", (DL_FUNC) &get_reached_states_SDDS_async_single_R, 13},
+  {"get_reached_states_SDDS_sync_single_R", (DL_FUNC) &get_reached_states_SDDS_sync_single_R, 12},
   {"get_transition_matrix_async_R", (DL_FUNC) &get_transition_matrix_async_R, 14},
   {"get_transition_matrix_sync_R", (DL_FUNC) &get_transition_matrix_sync_R, 13},
   { NULL, NULL, 0 }

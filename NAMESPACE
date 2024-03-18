@@ -6,8 +6,8 @@ import("BoolNet")
 
 
 
-export(simulate_bn_return_activities)
-export(simulate_bn_return_states)
+export(get_node_activities)
+export(get_reached_states_single)
 export(get_convergence_time)
-export(get_reached_states)
+export(get_reached_states_batch)
 export(get_transition_matrix)

@@ -1,4 +1,4 @@
-simulate_bn_return_states <- function(net, p00, p01, p10, p11,
+get_reached_states_batch <- function(net, p00, p01, p10, p11,
                                       steps, num_initial_states, initial_states=NULL,
                                       update_prob=NULL,asynchronous=T) {
 
@@ -61,22 +61,53 @@ simulate_bn_return_states <- function(net, p00, p01, p10, p11,
   outputs <- as.integer(unlist(lapply(net$interactions,function(interaction)interaction$func)))
   output_positions <- as.integer(cumsum(c(0,sapply(net$interactions,function(interaction)length(interaction$func)))))
 
-  if(asynchronous) {
+  if(num_initial_states==1) {
 
-    #reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
-    #      outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
-    #      as.integer(initial_states), update_prob, as.integer(steps))
+    if(asynchronous) {
 
-    reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
-                            outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
-                            as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
+
+      reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p00, p01, p10, p11,
+                              update_prob, as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+    } else {
+
+
+      reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p00, p01, p10, p11,
+                              as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+
+    }
 
   } else {
-    reached_states <- .Call("simulate_sync_return_states_R", inputs, input_positions,
-                            outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
-                            as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
+
+    if(asynchronous) {
+
+      #reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
+      #      outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+      #      as.integer(initial_states), update_prob, as.integer(steps))
+
+      reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
+                              outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+                              as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
+
+    } else {
+      reached_states <- .Call("simulate_sync_return_states_R", inputs, input_positions,
+                              outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+                              as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
+
+    }
+
 
   }
+
 
 
   #print(reached_states)

@@ -1,4 +1,4 @@
-get_reached_states <- function(net, p00, p01, p10, p11,
+get_reached_states_single <- function(net, p00, p01, p10, p11,
                                repeats, steps=1, initial_state=NULL,
                                update_prob=NULL,asynchronous=T) {
 
@@ -37,7 +37,7 @@ get_reached_states <- function(net, p00, p01, p10, p11,
 
   if(asynchronous) {
 
-    reached_states <- .Call("get_reached_states_async_R", inputs, input_positions,
+    reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
                              outputs, output_positions,
                              as.integer(net$fixed),
                              p00, p01, p10, p11,
@@ -48,7 +48,7 @@ get_reached_states <- function(net, p00, p01, p10, p11,
 
   } else {
 
-    reached_states <- .Call("get_reached_states_sync_R", inputs, input_positions,
+    reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
                             outputs, output_positions,
                             as.integer(net$fixed),
                             p00, p01, p10, p11,
