@@ -33,7 +33,7 @@ extern SEXP get_transition_matrix_async_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SE
 extern SEXP get_transition_matrix_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 
-extern SEXP get_node_activities_BNp_sync_R();
+extern SEXP get_node_activities_BNp_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 
 static const R_CMethodDef cMethods[] = {
@@ -55,6 +55,7 @@ static const R_CallMethodDef callMethods[] = {
   {"get_reached_states_SDDS_sync_single_R", (DL_FUNC) &get_reached_states_SDDS_sync_single_R, 12},
   {"get_transition_matrix_async_R", (DL_FUNC) &get_transition_matrix_async_R, 14},
   {"get_transition_matrix_sync_R", (DL_FUNC) &get_transition_matrix_sync_R, 13},
+  {"get_node_activities_BNp_sync_R", (DL_FUNC) &get_node_activities_BNp_sync_R, 10},
   { NULL, NULL, 0 }
 };
 

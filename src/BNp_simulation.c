@@ -533,7 +533,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP get_node_activities_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
                      SEXP outputs, SEXP output_positions,
                      SEXP fixed_nodes, SEXP p, SEXP initial_prob,
                      SEXP steps, SEXP repeats, SEXP last_step) {

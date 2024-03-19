@@ -58,10 +58,8 @@ get_node_activities <- function(net, method=c("SDDS","BNp"), params,
 
       node_activities <- .Call("get_node_activities_BNp_sync_R", inputs, input_positions,
                                outputs, output_positions,
-                               as.integer(net$fixed),
-                               p00, p01, p10, p11,
-                               initial_prob, update_prob,
-                               as.integer(steps), as.integer(repeats),
+                               as.integer(net$fixed), params,
+                               initial_prob, as.integer(steps), as.integer(repeats),
                                as.integer(return_last_step), PACKAGE = "PARBONET")
     }
 
