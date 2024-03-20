@@ -1600,7 +1600,7 @@ SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positi
 
 SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP inputs, SEXP input_positions,
                                                   SEXP outputs, SEXP output_positions,
-                                                  SEXP fixed_nodes, SEXP p, SEXP p11,
+                                                  SEXP fixed_nodes, SEXP p,
                                                   SEXP states, SEXP num_states, SEXP steps,
                                                   SEXP repeats) {
 
