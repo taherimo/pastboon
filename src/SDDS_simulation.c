@@ -7,7 +7,7 @@
 #include "random.h"
 
 
-static inline void applySingleFunction(unsigned int * currentState, unsigned int geneIdx, AsynchronousBooleanNetwork * net)
+static inline void apply_single_function_SDDS(unsigned int * currentState, unsigned int geneIdx, AsynchronousBooleanNetwork * net)
 {
   unsigned int k = 0;
 
@@ -127,7 +127,7 @@ static inline void state_transition_SDDS_asynchronous(unsigned int * currentStat
     r = intrand(net->num_nodes);
 
     // make a transition with the chosen gene
-    applySingleFunction(currentState,r,net);
+    apply_single_function_SDDS(currentState,r,net);
   }
   else
   {
@@ -141,7 +141,7 @@ static inline void state_transition_SDDS_asynchronous(unsigned int * currentStat
         break;
     }
     // make a transition with the chosen gene
-    applySingleFunction(currentState,i,net);
+    apply_single_function_SDDS(currentState,i,net);
   }
 }
 
