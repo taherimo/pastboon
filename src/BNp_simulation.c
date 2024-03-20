@@ -774,6 +774,123 @@ unsigned int ** get_reached_states_BNp_async_single(BooleanNetworkWithPerturbati
 
 }
 
+double ** get_cumulative_transition_matrix_BNp_async(BooleanNetworkWithPerturbations * net, double* update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+
+  double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double** trans_mat = CALLOC(num_states, sizeof(double*));
+
+  unsigned int i , j, k, l = 0;
+  unsigned int ** reached_states;
+
+  //double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  for (i=0;i<num_states;i++){
+    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
+    trans_mat[i] = trans_mat_vals + i*num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i=0;i<num_states;i++){
+
+
+    //reached_states = get_reached_states_async(net,current_state,num_repeats,num_steps, num_elements);
+
+    for (j=0;j<num_repeats;j++){
+
+      for(k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+        //current_state[j] = states[i * num_elements + j];
+        //printf("states[%u]=%u\n",i,states[i][j]);
+      }
+
+      for (k = 1; k <= num_steps; k++)
+      {
+
+        state_transition_BNp_asynchronous(current_state, update_prob, net);
+        //stateTransition(current_state,net,num_elements);
+        //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
+
+        for(l=0; l<num_states;l++) {
+
+          //if(areArraysEqual(reached_states[j], states[k], num_elements)) {
+          if(areArraysEqual(current_state, states[l], num_elements)) {
+            trans_mat[i][l] += c;
+            //printf("%u --- %u\n", j,k);
+            break;
+          }
+        }
+
+      }
+
+    }
+  }
+
+  return(trans_mat);
+
+}
+
+double ** get_cumulative_transition_matrix_BNp_sync(BooleanNetworkWithPerturbations * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+
+  double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double** trans_mat = CALLOC(num_states, sizeof(double*));
+
+  unsigned int i , j, k, l = 0;
+  unsigned int ** reached_states;
+
+  //double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  for (i=0;i<num_states;i++){
+    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
+    trans_mat[i] = trans_mat_vals + i*num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i=0;i<num_states;i++){
+
+
+    //reached_states = get_reached_states_async(net,current_state,num_repeats,num_steps, num_elements);
+
+    for (j=0;j<num_repeats;j++){
+
+      for(k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+        //current_state[j] = states[i * num_elements + j];
+        //printf("states[%u]=%u\n",i,states[i][j]);
+      }
+
+      for (k = 1; k <= num_steps; k++)
+      {
+
+        state_transition_BNp_synchronous(current_state, net, num_elements);
+        //stateTransition(current_state,net,num_elements);
+        //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
+
+
+        for(l=0; l<num_states;l++) {
+
+          //if(areArraysEqual(reached_states[j], states[k], num_elements)) {
+          if(areArraysEqual(current_state, states[l], num_elements)) {
+            trans_mat[i][l] += c;
+            //printf("%u --- %u\n", j,k);
+            break;
+          }
+        }
+
+      }
+
+
+    }
+  }
+
+  return(trans_mat);
+
+}
+
+
 
 SEXP get_reached_states_BNp_sync_single_R(SEXP inputs, SEXP input_positions,
                                SEXP outputs, SEXP output_positions,
@@ -1387,4 +1504,190 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
 
 }
 
+SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positions,
+                                                   SEXP outputs, SEXP output_positions,
+                                                   SEXP fixed_nodes, SEXP p00, SEXP p01,
+                                                   SEXP p10, SEXP p11, SEXP update_prob,
+                                                   SEXP states, SEXP num_states,
+                                                   SEXP steps, SEXP repeats) {
+
+  BooleanNetworkWithPerturbations network;
+  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p = REAL(p);
+
+  double * _update_prob = NULL;
+  if (!isNull(update_prob) && length(update_prob) > 0)
+    _update_prob = REAL(update_prob);
+
+  unsigned int numNonFixed = 0, i;
+  for (i = 0; i < network.num_nodes; i++)
+  {
+    if (network.fixed_nodes[i] == -1)
+    {
+      network.non_fixed_node_bits[i] = numNonFixed++;
+    }
+  }
+
+  unsigned int j = 0;
+
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+
+  unsigned int * _states = (unsigned int *) INTEGER(states);
+
+  unsigned int _num_states = (unsigned int) *INTEGER(num_states);
+
+
+  unsigned int _num_steps = (unsigned int) *INTEGER(steps);
+  unsigned int _num_repeats = (unsigned int) *INTEGER(repeats);
+
+  unsigned int * _states_2d_vals = CALLOC(_num_states * _num_elements, sizeof(double));
+  unsigned int ** _states_2d = CALLOC(_num_states, sizeof(unsigned int *));
+
+  for (i=0;i<_num_states;i++){
+    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
+    _states_2d[i] = _states_2d_vals + i*_num_elements;
+  }
+
+  for(i = 0; i < _num_states; i++) {
+    for(j = 0; j < _num_elements; j++) {
+      _states_2d[i][j] = _states[i*_num_elements + j];
+    }
+  }
+
+
+
+  GetRNGstate();  // Activate R's random number generator
+
+
+
+  double ** transition_matrix = get_cumulative_transition_matrix_BNp_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+
+
+  SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
+
+  for (unsigned int i = 0; i < _num_states; ++i) {
+    memcpy(&REAL(result)[i * _num_states], transition_matrix[i], _num_states * sizeof(double));
+  }
+
+  PutRNGstate();  // Deactivate R's random number generator
+
+
+  UNPROTECT(1);
+
+  FREE(network.non_fixed_node_bits);
+  // FREE(_states);
+  // FREE(_states_2d);
+  // FREE(_states_2d_vals);
+
+  return result;
+
+
+}
+
+
+SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP inputs, SEXP input_positions,
+                                                  SEXP outputs, SEXP output_positions,
+                                                  SEXP fixed_nodes, SEXP p00, SEXP p01,
+                                                  SEXP p10, SEXP p11, SEXP states,
+                                                  SEXP num_states, SEXP steps,
+                                                  SEXP repeats) {
+
+  BooleanNetworkWithPerturbations network;
+  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p = REAL(p);
+
+
+
+  unsigned int numNonFixed = 0, i;
+  for (i = 0; i < network.num_nodes; i++)
+  {
+    if (network.fixed_nodes[i] == -1)
+    {
+      network.non_fixed_node_bits[i] = numNonFixed++;
+    }
+  }
+
+  unsigned int j = 0;
+
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+
+  unsigned int * _states = (unsigned int *) INTEGER(states);
+
+  unsigned int _num_states = (unsigned int) *INTEGER(num_states);
+
+
+  unsigned int _num_steps = (unsigned int) *INTEGER(steps);
+  unsigned int _num_repeats = (unsigned int) *INTEGER(repeats);
+
+  unsigned int * _states_2d_vals = CALLOC(_num_states * _num_elements, sizeof(double));
+  unsigned int ** _states_2d = CALLOC(_num_states, sizeof(unsigned int *));
+
+  for (i=0;i<_num_states;i++){
+    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
+    _states_2d[i] = _states_2d_vals + i*_num_elements;
+  }
+
+  for(i = 0; i < _num_states; i++) {
+    for(j = 0; j < _num_elements; j++) {
+      _states_2d[i][j] = _states[i*_num_elements + j];
+    }
+  }
+
+
+
+  GetRNGstate();  // Activate R's random number generator
+
+
+
+  double ** transition_matrix = get_cumulative_transition_matrix_BNp_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+
+
+  SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
+
+  for (unsigned int i = 0; i < _num_states; ++i) {
+    memcpy(&REAL(result)[i * _num_states], transition_matrix[i], _num_states * sizeof(double));
+  }
+
+  PutRNGstate();  // Deactivate R's random number generator
+
+
+  UNPROTECT(1);
+
+  FREE(network.non_fixed_node_bits);
+  // FREE(_states);
+  // FREE(_states_2d);
+  // FREE(_states_2d_vals);
+
+  return result;
+
+
+}
 

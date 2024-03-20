@@ -990,7 +990,7 @@ unsigned int ** get_reached_states_sync(SynchronousBooleanNetwork * net, unsigne
 }
 
 
-double ** get_transition_matrix_async(AsynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_cumulative_transition_matrix_SDDS_async(AsynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -1047,7 +1047,7 @@ double ** get_transition_matrix_async(AsynchronousBooleanNetwork * net, unsigned
 
 }
 
-double ** get_transition_matrix_sync(SynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_cumulative_transition_matrix_SDDS_sync(SynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -1290,7 +1290,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-SEXP get_transition_matrix_async_R(SEXP inputs, SEXP input_positions,
+SEXP get_cumulative_transition_matrix_SDDS_async_R(SEXP inputs, SEXP input_positions,
                                    SEXP outputs, SEXP output_positions,
                                    SEXP fixed_nodes, SEXP p00, SEXP p01,
                                    SEXP p10, SEXP p11, SEXP update_prob,
@@ -1362,7 +1362,7 @@ SEXP get_transition_matrix_async_R(SEXP inputs, SEXP input_positions,
 
 
 
-  double ** transition_matrix = get_transition_matrix_async(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_cumulative_transition_matrix_SDDS_async(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
@@ -1387,7 +1387,7 @@ SEXP get_transition_matrix_async_R(SEXP inputs, SEXP input_positions,
 }
 
 
-SEXP get_transition_matrix_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_cumulative_transition_matrix_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                                    SEXP outputs, SEXP output_positions,
                                    SEXP fixed_nodes, SEXP p00, SEXP p01,
                                    SEXP p10, SEXP p11, SEXP states,
@@ -1457,7 +1457,7 @@ SEXP get_transition_matrix_sync_R(SEXP inputs, SEXP input_positions,
 
 
 
-  double ** transition_matrix = get_transition_matrix_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_cumulative_transition_matrix_SDDS_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
