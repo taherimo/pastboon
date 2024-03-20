@@ -41,6 +41,15 @@ extern SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP, SEXP, SEXP, SEXP,
 
 extern SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
+extern SEXP get_reached_states_BNp_async_single_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_reached_states_BNp_async_batch_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_reached_states_BNp_sync_single_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+extern SEXP get_reached_states_BNp_sync_batch_R(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+
+
 static const R_CMethodDef cMethods[] = {
   {"dec2binC", (DL_FUNC) &dec2binC, 3},
   {"bin2decC", (DL_FUNC) &bin2decC, 3},
@@ -64,6 +73,10 @@ static const R_CallMethodDef callMethods[] = {
   {"get_node_activities_BNp_sync_R", (DL_FUNC) &get_node_activities_BNp_sync_R, 10},
   {"get_cumulative_transition_matrix_BNp_async_R", (DL_FUNC) &get_cumulative_transition_matrix_BNp_async_R, 14},
   {"get_cumulative_transition_matrix_BNp_sync_R", (DL_FUNC) &get_cumulative_transition_matrix_BNp_sync_R, 13},
+  {"get_reached_states_BNp_async_single_R", (DL_FUNC) &get_reached_states_BNp_async_single_R, 10},
+  {"get_reached_states_BNp_async_batch_R", (DL_FUNC) &get_reached_states_BNp_async_batch_R, 10},
+  {"get_reached_states_BNp_sync_single_R", (DL_FUNC) &get_reached_states_BNp_sync_single_R, 9},
+  {"get_reached_states_BNp_sync_batch_R", (DL_FUNC) &get_reached_states_BNp_sync_batch_R, 9},
   { NULL, NULL, 0 }
 };
 
