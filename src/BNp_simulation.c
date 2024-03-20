@@ -1506,8 +1506,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
 
 SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positions,
                                                    SEXP outputs, SEXP output_positions,
-                                                   SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                                   SEXP p10, SEXP p11, SEXP update_prob,
+                                                   SEXP fixed_nodes, SEXP p, SEXP update_prob,
                                                    SEXP states, SEXP num_states,
                                                    SEXP steps, SEXP repeats) {
 
@@ -1601,9 +1600,8 @@ SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positi
 
 SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP inputs, SEXP input_positions,
                                                   SEXP outputs, SEXP output_positions,
-                                                  SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                                  SEXP p10, SEXP p11, SEXP states,
-                                                  SEXP num_states, SEXP steps,
+                                                  SEXP fixed_nodes, SEXP p, SEXP p11,
+                                                  SEXP states, SEXP num_states, SEXP steps,
                                                   SEXP repeats) {
 
   BooleanNetworkWithPerturbations network;
