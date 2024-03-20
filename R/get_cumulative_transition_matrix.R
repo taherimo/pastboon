@@ -1,4 +1,4 @@
-get_transition_matrix <- function(net, p00, p01, p10, p11, states,
+get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp"), params, states,
                                   time_step=1, repeats=1000,
                                   asynchronous=T, update_prob=NULL)
 {
@@ -29,9 +29,17 @@ get_transition_matrix <- function(net, p00, p01, p10, p11, states,
   }
 
 
+  switch(match.arg(method), SDDS={
+
+    p00 <- params$p00
+    p01 <- params$p01
+    p10 <- params$p10
+    p11 <- params$p11
+
+
   if(asynchronous) {
 
-    transition_matrix <- .Call("get_transition_matrix_async_R", inputs, input_positions,
+    transition_matrix <- .Call("get_cumulative_transition_matrix_SDDS_async_R", inputs, input_positions,
                              outputs, output_positions,
                              as.integer(net$fixed),
                              p00, p01, p10, p11,
@@ -50,7 +58,7 @@ get_transition_matrix <- function(net, p00, p01, p10, p11, states,
 
   } else {
 
-    transition_matrix <- .Call("get_transition_matrix_sync_R", inputs, input_positions,
+    transition_matrix <- .Call("get_cumulative_transition_matrix_SDDS_sync_R", inputs, input_positions,
                                outputs, output_positions,
                                as.integer(net$fixed),
                                p00, p01, p10, p11,
@@ -62,6 +70,46 @@ get_transition_matrix <- function(net, p00, p01, p10, p11, states,
 
 
   }
+
+  },
+  BNp={
+
+    if(asynchronous) {
+
+      transition_matrix <- .Call("get_cumulative_transition_matrix_BNp_async_R", inputs, input_positions,
+                                 outputs, output_positions,
+                                 as.integer(net$fixed),
+                                 params,
+                                 update_prob, states_dec, num_states,
+                                 as.integer(time_step), as.integer(repeats),
+                                 PACKAGE = "PARBONET")
+
+
+      # SEXP inputs, SEXP input_positions,
+      # SEXP outputs, SEXP output_positions,
+      # SEXP fixed_nodes, SEXP p00, SEXP p01,
+      # SEXP p10, SEXP p11, SEXP update_prob,
+      # SEXP states, SEXP num_states,
+      # SEXP steps, SEXP repeats
+
+
+    } else {
+
+      transition_matrix <- .Call("get_cumulative_transition_matrix_BNp_sync_R", inputs, input_positions,
+                                 outputs, output_positions,
+                                 as.integer(net$fixed),
+                                 params,
+                                 states_dec, num_states,
+                                 as.integer(time_step), as.integer(repeats),
+                                 PACKAGE = "PARBONET")
+
+
+    }
+
+
+  },
+  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  )
 
   # print(num_states)
   #

@@ -7,7 +7,7 @@ import("BoolNet")
 
 
 export(get_node_activities)
-export(get_reached_states_single)
 export(get_convergence_time)
+export(get_reached_states_single)
 export(get_reached_states_batch)
-export(get_transition_matrix)
+export(get_cumulative_transition_matrix)

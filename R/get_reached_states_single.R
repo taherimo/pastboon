@@ -1,4 +1,4 @@
-get_reached_states_single <- function(net, p00, p01, p10, p11,
+get_reached_states_single <- function(net, method=c("SDDS","BNp"), params,
                                repeats, steps=1, initial_state=NULL,
                                update_prob=NULL,asynchronous=T) {
 
@@ -34,32 +34,74 @@ get_reached_states_single <- function(net, p00, p01, p10, p11,
 
   initial_state_dec <- bin2dec(initial_state, length(net$genes))
 
+  switch(match.arg(method), SDDS={
 
-  if(asynchronous) {
+    p00 <- params$p00
+    p01 <- params$p01
+    p10 <- params$p10
+    p11 <- params$p11
 
-    reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
-                             outputs, output_positions,
-                             as.integer(net$fixed),
-                             p00, p01, p10, p11,
-                             update_prob, as.integer(initial_state_dec),
-                             as.integer(repeats), as.integer(steps),
-                             PACKAGE = "PARBONET")
+    if(asynchronous) {
 
-
-  } else {
-
-    reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
-                            outputs, output_positions,
-                            as.integer(net$fixed),
-                            p00, p01, p10, p11,
-                            as.integer(initial_state_dec),
-                            as.integer(repeats), as.integer(steps),
-                            PACKAGE = "PARBONET")
+      reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p00, p01, p10, p11,
+                              update_prob, as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
 
 
+    } else {
+
+      reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p00, p01, p10, p11,
+                              as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
 
 
-  }
+
+
+    }
+
+
+  },
+  BNp={
+
+    if(asynchronous) {
+
+      reached_states <- .Call("get_reached_states_BNp_async_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              params, update_prob, as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+
+
+    } else {
+
+      reached_states <- .Call("get_reached_states_BNp_sync_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              params, as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+
+
+
+
+    }
+
+
+
+  },
+  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  )
+
+
 
 
   if(repeats==1) {
