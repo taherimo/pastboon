@@ -1,4 +1,4 @@
-get_reached_states_batch <- function(net, method=c("SDDS","BNp"), params,
+get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
                                       steps, num_initial_states, initial_states=NULL,
                                       update_prob=NULL,asynchronous=T) {
 
@@ -166,7 +166,60 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp"), params,
     }
 
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  PEW={
+
+    p_on <- params$p_on
+    p_off <- params$p_off
+
+
+    if(num_initial_states==1) {
+
+      if(asynchronous) {
+
+
+        reached_states <- .Call("get_reached_states_PEW_async_single_R", inputs, input_positions,
+                                outputs, output_positions,
+                                as.integer(net$fixed),
+                                p_on, p_off, update_prob,
+                                as.integer(initial_state_dec),
+                                as.integer(repeats), as.integer(steps),
+                                PACKAGE = "PARBONET")
+      } else {
+
+
+        reached_states <- .Call("get_reached_states_PEW_sync_single_R", inputs, input_positions,
+                                outputs, output_positions,
+                                as.integer(net$fixed),
+                                p_on, p_off, as.integer(initial_state_dec),
+                                as.integer(repeats), as.integer(steps),
+                                PACKAGE = "PARBONET")
+
+      }
+
+    } else {
+
+      if(asynchronous) {
+
+        #reached_states <- .Call("simulate_async_return_states_R", inputs, input_positions,
+        #      outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+        #      as.integer(initial_states), update_prob, as.integer(steps))
+
+        reached_states <- .Call("get_reached_states_PEW_async_batch_R", inputs, input_positions,
+                                outputs, output_positions, as.integer(net$fixed), p_on, p_off,
+                                as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
+
+      } else {
+        reached_states <- .Call("get_reached_states_PEW_sync_batch_R", inputs, input_positions,
+                                outputs, output_positions, as.integer(net$fixed), p_on, p_off,
+                                as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
+
+      }
+
+
+    }
+  },
+  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
+
   )
 
 

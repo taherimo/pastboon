@@ -1,4 +1,4 @@
-get_reached_states_single <- function(net, method=c("SDDS","BNp"), params,
+get_reached_states_single <- function(net, method=c("SDDS","BNp","PEW"), params,
                                repeats, steps=1, initial_state=NULL,
                                update_prob=NULL,asynchronous=T) {
 
@@ -98,7 +98,39 @@ get_reached_states_single <- function(net, method=c("SDDS","BNp"), params,
 
 
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  PEW={
+
+    p_on <- params$p_on
+    p_off <- params$p_off
+
+    if(asynchronous) {
+
+      reached_states <- .Call("get_reached_states_PEW_async_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p_on, p_off, update_prob,
+                              as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+
+
+    } else {
+
+      reached_states <- .Call("get_reached_states_PEW_sync_single_R", inputs, input_positions,
+                              outputs, output_positions,
+                              as.integer(net$fixed),
+                              p_on, p_off, as.integer(initial_state_dec),
+                              as.integer(repeats), as.integer(steps),
+                              PACKAGE = "PARBONET")
+
+
+
+
+    }
+
+  }
+  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
+
   )
 
 

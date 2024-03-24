@@ -1,5 +1,5 @@
 
-get_node_activities <- function(net, method=c("SDDS","BNp"), params,
+get_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                      steps, repeats=1000, return_last_step=F,
                      asynchronous=T, initial_prob=NULL, update_prob=NULL) {
 
@@ -70,7 +70,37 @@ get_node_activities <- function(net, method=c("SDDS","BNp"), params,
     }
 
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  PEW={
+
+    p_on <- params$p_on
+    p_off <- params$p_off
+
+    if(asynchronous) {
+
+      node_activities <- .Call("get_node_activities_PEW_async_R", inputs, input_positions,
+                               outputs, output_positions,
+                               as.integer(net$fixed),
+                               p_on, p_off, initial_prob, update_prob,
+                               as.integer(steps), as.integer(repeats),
+                               as.integer(return_last_step), PACKAGE = "PARBONET")
+
+
+    } else {
+
+
+
+      node_activities <- .Call("get_node_activities_PEW_sync_R", inputs, input_positions,
+                               outputs, output_positions,
+                               as.integer(net$fixed),
+                               p_on, p_off, initial_prob,
+                               as.integer(steps),
+                               as.integer(repeats),
+                               as.integer(return_last_step), PACKAGE = "PARBONET")
+
+    }
+
+  },
+  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
   )
 
 

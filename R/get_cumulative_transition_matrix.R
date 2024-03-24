@@ -1,4 +1,4 @@
-get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp"), params, states,
+get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), params, states,
                                   time_step=1, repeats=1000,
                                   asynchronous=T, update_prob=NULL)
 {
@@ -108,7 +108,45 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp"), params
 
 
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\"")
+  PEW={
+
+    p_on <- params$p_on
+    p_off <- params$p_off
+
+
+    if(asynchronous) {
+
+      transition_matrix <- .Call("get_cumulative_transition_matrix_PEW_async_R", inputs, input_positions,
+                                 outputs, output_positions,
+                                 as.integer(net$fixed),
+                                 p_on, p_off, update_prob, states_dec, num_states,
+                                 as.integer(time_step), as.integer(repeats),
+                                 PACKAGE = "PARBONET")
+
+
+      # SEXP inputs, SEXP input_positions,
+      # SEXP outputs, SEXP output_positions,
+      # SEXP fixed_nodes, SEXP p00, SEXP p01,
+      # SEXP p10, SEXP p11, SEXP update_prob,
+      # SEXP states, SEXP num_states,
+      # SEXP steps, SEXP repeats
+
+
+    } else {
+
+      transition_matrix <- .Call("get_cumulative_transition_matrix_PEW_sync_R", inputs, input_positions,
+                                 outputs, output_positions,
+                                 as.integer(net$fixed),
+                                 p_on, p_off, states_dec, num_states,
+                                 as.integer(time_step), as.integer(repeats),
+                                 PACKAGE = "PARBONET")
+
+
+
+
+    }
+  },
+  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
   )
 
   # print(num_states)
