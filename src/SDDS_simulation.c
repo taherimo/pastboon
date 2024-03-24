@@ -244,15 +244,6 @@ void state_transition_SDDS_synchronous(unsigned int * currentState, SynchronousB
 }
 
 
-int check_convergence(double *current_probabilities, double *next_probabilities, unsigned int num_elements, double threshold) {
-  for (int i = 0; i < num_elements; i++) {
-    //printf("--- %f\n", fabs(*(next_probabilities + i) - *(current_probabilities + i)));
-    if (fabs(*(next_probabilities + i) - *(current_probabilities + i)) >= threshold) {
-      return 0; // Not converged
-    }
-  }
-  return 1; // Converged
-}
 
 
 double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
@@ -709,174 +700,12 @@ unsigned int ** get_reached_states_SDDS_sync_batch(SynchronousBooleanNetwork * n
 }
 
 
-unsigned int get_convergence_time_async(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, double threshold, unsigned int max_steps, unsigned int num_elements)
 
-{
 
-  // https://stackoverflow.com/questions/13761988/what-happens-to-memory-allocated-by-c-functions-in-r-language
 
-  // double * traj = CALLOC((num_steps + 1) * net->num_nodes, sizeof(double));
 
-  double* node_act_curr = CALLOC(net->num_nodes, sizeof(double));
-  double* node_act_prev = CALLOC(net->num_nodes, sizeof(double));
 
-  double c = 1.0 / num_repeats;
-
-  unsigned int current_state[num_elements];
-
-
-
-  unsigned int i = 0, j = 0, k = 0;
-
-  unsigned int time_step = 0;
-
-  if (initial_prob != NULL) {
-    memcpy(node_act_prev, initial_prob, net->num_nodes * sizeof(double));
-  }
-  else {
-    for (int i = 0; i < net->num_nodes; i++) {
-      node_act_prev[i] = 0.5;
-    }
-  }
-
-
-  memset(node_act_curr, threshold + 1000, net->num_nodes * sizeof(double));
-
-
-  while (!check_convergence(node_act_prev,node_act_curr, net->num_nodes, threshold)) {
-
-    memcpy(node_act_prev, node_act_curr, net->num_nodes * sizeof(double));
-
-    memset(node_act_curr, 0, net->num_nodes * sizeof(double));
-
-
-    for (i = 0; i < num_repeats; i++) {
-
-      for(j = 0; j < num_elements; j++) {
-        current_state[j] = 0;
-      }
-
-      for(k = 0; k < net->num_nodes; k++) {
-        if(node_act_prev[k] > 0 & node_act_prev[k] < 1) {
-          if (doublerand_1() <= node_act_prev[k]) {
-            current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
-          }
-        }
-        else { // initial state probability is 0 or 1
-          current_state[k / BITS_PER_BLOCK_32] |= (((unsigned int)node_act_prev[k]) << (k % BITS_PER_BLOCK_32));
-        }
-
-      }
-
-
-      state_transition_SDDS_asynchronous(current_state, net);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
-
-      for(k = 0; k < net->num_nodes; k++) {
-
-        if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-
-          node_act_curr[k] += c;
-
-        }
-
-      }
-
-    }
-
-
-    time_step += 1;
-
-    if(time_step >= max_steps)
-      break;
-
-
-  }
-
-
-  return time_step;
-
-}
-
-
-unsigned int get_convergence_time_sync(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, double threshold, unsigned int max_steps, unsigned int num_elements) {
-
-  double* node_act_curr = CALLOC(net->num_nodes, sizeof(double));
-  double* node_act_prev = CALLOC(net->num_nodes, sizeof(double));
-
-  double c = 1.0 / num_repeats;
-
-  unsigned int current_state[num_elements];
-
-  unsigned int i = 0, j = 0, k = 0;
-
-  unsigned int time_step = 0;
-
-
-
-  if (initial_prob != NULL) {
-    memcpy(node_act_prev, initial_prob, net->num_nodes * sizeof(double));
-  }
-  else {
-    for (int i = 0; i < net->num_nodes; i++) {
-      node_act_prev[i] = 0.5;
-    }
-  }
-
-
-  memset(node_act_curr, threshold + 1000, net->num_nodes * sizeof(double));
-
-
-  while (!check_convergence(node_act_prev,node_act_curr, net->num_nodes, threshold)) {
-
-    memcpy(node_act_prev, node_act_curr, net->num_nodes * sizeof(double));
-
-    memset(node_act_curr, 0, net->num_nodes * sizeof(double));
-
-    for (i = 0; i < num_repeats; i++) {
-
-      for(j = 0; j < num_elements; j++) {
-        current_state[j] = 0;
-      }
-
-      for(k = 0; k < net->num_nodes; k++) {
-        if(node_act_prev[k] > 0 & node_act_prev[k] < 1) {
-          if (doublerand_1() <= node_act_prev[k]) {
-            current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
-          }
-        }
-        else { // initial state probability is 0 or 1
-          current_state[k / BITS_PER_BLOCK_32] |= (((unsigned int)node_act_prev[k]) << (k % BITS_PER_BLOCK_32));
-        }
-
-      }
-
-      state_transition_SDDS_synchronous(current_state, net, num_elements);
-
-
-      for(k = 0; k < net->num_nodes; k++) {
-        if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-          node_act_curr[k] += c;
-        }
-      }
-
-    }
-
-    time_step += 1;
-
-    if(time_step >= max_steps)
-      break;
-
-  }
-
-
-  return time_step;
-}
-
-
-unsigned int ** get_reached_states_async(AsynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_async_single(AsynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -933,7 +762,7 @@ unsigned int ** get_reached_states_async(AsynchronousBooleanNetwork * net, unsig
 }
 
 
-unsigned int ** get_reached_states_sync(SynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -1169,7 +998,7 @@ SEXP get_reached_states_SDDS_async_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int ** reached_states = get_reached_states_async(&network, _initial_state, _num_repeats, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_async_single(&network, _initial_state, _num_repeats, _num_steps, _numElements);
 
 
   for(unsigned int j = 0; j < _numElements; j++) {
@@ -1258,7 +1087,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int ** reached_states = get_reached_states_sync(&network, _initial_state, _num_repeats, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_sync_single(&network, _initial_state, _num_repeats, _num_steps, _numElements);
 
 
   for(unsigned int j = 0; j < _numElements; j++) {
@@ -1939,158 +1768,6 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
 
 
 }
-
-
-
-SEXP get_convergence_time_async_R(SEXP inputs, SEXP input_positions,
-                                   SEXP outputs, SEXP output_positions,
-                                   SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                   SEXP p10, SEXP p11, SEXP initial_prob,
-                                   SEXP update_prob, SEXP num_repeats,
-                                   SEXP threshold, SEXP max_steps) {
-
-
-  AsynchronousBooleanNetwork network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
-  network.num_nodes = length(fixed_nodes);
-  network.inputs = INTEGER(inputs);
-  network.input_positions = INTEGER(input_positions);
-  network.outputs = INTEGER(outputs);
-  network.output_positions = INTEGER(output_positions);
-  network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
-  network.p00 = REAL(p00);
-  network.p01 = REAL(p01);
-  network.p10 = REAL(p10);
-  network.p11 = REAL(p11);
-  network.update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
-    network.update_prob = REAL(update_prob);
-
-  double * _initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
-    _initial_prob = REAL(initial_prob);
-
-
-
-  unsigned int numNonFixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++)
-  {
-    if (network.fixed_nodes[i] == -1)
-    {
-      network.non_fixed_node_bits[i] = numNonFixed++;
-    }
-  }
-
-
-  unsigned int _num_elements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-
-  unsigned int _max_steps = *INTEGER(max_steps);
-  unsigned int _num_repeats = *INTEGER(num_repeats);
-  double _threshold = *REAL(threshold);
-
-  GetRNGstate();
-
-  SEXP result = PROTECT(allocVector(INTSXP, 1));
-  //SEXP result;
-  //PROTECT(result = NEW_INTEGER(1));
-
-  unsigned int convergence_time = get_convergence_time_async(&network, _initial_prob, _num_repeats, _threshold, _max_steps, _num_elements);
-
-  INTEGER(result)[0] = convergence_time;
-
-
-
-  PutRNGstate();
-
-
-  UNPROTECT(1);
-
-  FREE(network.non_fixed_node_bits);
-
-  return result;
-
-
-}
-
-
-SEXP get_convergence_time_sync_R(SEXP inputs, SEXP input_positions,
-                                  SEXP outputs, SEXP output_positions,
-                                  SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                  SEXP p10, SEXP p11, SEXP initial_prob,
-                                  SEXP num_repeats, SEXP threshold,
-                                  SEXP max_steps) {
-
-
-  SynchronousBooleanNetwork network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
-  network.num_nodes = length(fixed_nodes);
-  network.inputs = INTEGER(inputs);
-  network.input_positions = INTEGER(input_positions);
-  network.outputs = INTEGER(outputs);
-  network.output_positions = INTEGER(output_positions);
-  network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
-  network.p00 = REAL(p00);
-  network.p01 = REAL(p01);
-  network.p10 = REAL(p10);
-  network.p11 = REAL(p11);
-
-  double * _initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
-    _initial_prob = REAL(initial_prob);
-
-
-
-  unsigned int numNonFixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++)
-  {
-    if (network.fixed_nodes[i] == -1)
-    {
-      network.non_fixed_node_bits[i] = numNonFixed++;
-    }
-  }
-
-
-  unsigned int _num_elements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-
-  unsigned int _max_steps = *INTEGER(max_steps);
-  unsigned int _num_repeats = *INTEGER(num_repeats);
-  double _threshold = *REAL(threshold);
-
-  GetRNGstate();
-
-  SEXP result = PROTECT(allocVector(INTSXP, 1));
-
-  unsigned int convergence_time = get_convergence_time_sync(&network, _initial_prob, _num_repeats, _threshold, _max_steps, _num_elements);
-
-  INTEGER(result)[0] = convergence_time;
-
-
-  PutRNGstate();
-
-
-  UNPROTECT(1);
-
-  FREE(network.non_fixed_node_bits);
-
-  return result;
-
-
-}
-
 
 
 
