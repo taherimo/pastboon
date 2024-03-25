@@ -128,7 +128,7 @@ get_reached_states_single <- function(net, method=c("SDDS","BNp","PEW"), params,
 
     }
 
-  }
+  },
   stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
 
   )

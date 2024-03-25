@@ -30,13 +30,13 @@ static inline void apply_single_function_PEW(unsigned int * currentState, unsign
         gene = net->inputs[k] - 1;
         bit = (GET_BIT(currentState[gene / BITS_PER_BLOCK_32], gene % BITS_PER_BLOCK_32));
 
-        if(bit==1) {
-          if(doublerand_1() < net->p_off[gene])
-            bit = 0;
+        if(bit==0) {
+          if(doublerand_1() > net->p_off[gene])
+            bit = 1;
         }
         else {
-          if(doublerand_1() < net->p_on[gene])
-            bit = 1;
+          if(doublerand_1() > net->p_on[gene])
+            bit = 0;
         }
 
         inputdec |= bit	<< (net->input_positions[geneIdx+1] - k - 1);
@@ -150,13 +150,13 @@ void state_transition_PEW_synchronous(unsigned int * currentState, Probabilistic
           bit = (GET_BIT(currentState[net->non_fixed_node_bits[gene] / BITS_PER_BLOCK_32],
                          net->non_fixed_node_bits[gene] % BITS_PER_BLOCK_32));
 
-          if(bit==1) {
-            if(doublerand_1() < net->p_off[gene])
-              bit = 0;
+          if(bit==0) {
+            if(doublerand_1() > net->p_off[gene])
+              bit = 1;
           }
           else {
-            if(doublerand_1() < net->p_on[gene])
-              bit = 1;
+            if(doublerand_1() > net->p_on[gene])
+              bit = 0;
           }
 
           inputdec |= bit	<< (net->input_positions[i] - k - 1);
