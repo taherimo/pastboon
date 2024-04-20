@@ -73,5 +73,50 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 }
 
 \examples{
+# load the example network
+data(lac_operon)
+
+# SDDS Method
+
+# define the parameter for the SDDS method
+params <- list(p00=rep(0.95, length(bn$genes)),
+               p01=rep(0.95, length(bn$genes)),
+               p10=rep(0.95, length(bn$genes)),
+               p11=rep(0.95, length(bn$genes)))
+
+# get node activities after simulation using the SDDS method and asynchronous update
+traj <- get_node_activities(bn, method="SDDS", params = params, asynchronous = F, steps = 100, repeats = 10000)
+
+
+# plot node activities
+matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
+# BNp Method
+
+# define the parameters for the BNp method
+params <- rep(0.05, length(net1$genes))
+
+# get node activities after simulation using the BNp method and asynchronous update
+traj <- get_node_activities(net1, method = "BNp", params = params, steps=50, repeats = 5000)
+
+# plot node activities
+matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
+# PEW Method
+
+# extract edges from the network
+edges <- get_edges(bn)
+
+# define the parameters for the PEW method
+p_on <- runif(nrow(edges))
+p_off <- runif(nrow(edges))
+params <- list(p_on=p_on, p_off=p_off)
+
+# get node activities after simulation using the PEW method and asynchronous update
+traj <- get_node_activities(bn, method="PEW", params = params, asynchronous = T, steps = 100, repeats = 10000)
+
+# plot node activities
+matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
 
 }
