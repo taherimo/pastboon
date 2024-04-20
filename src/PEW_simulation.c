@@ -31,11 +31,11 @@ static inline void apply_single_function_PEW(unsigned int * currentState, unsign
         bit = (GET_BIT(currentState[gene / BITS_PER_BLOCK_32], gene % BITS_PER_BLOCK_32));
 
         if(bit==0) {
-          if(doublerand_1() > net->p_off[gene][geneIdx])
+          if(doublerand_1() > net->p_off[gene])
             bit = 1;
         }
         else {
-          if(doublerand_1() > net->p_on[gene][geneIdx])
+          if(doublerand_1() > net->p_on[gene])
             bit = 0;
         }
 
@@ -151,11 +151,11 @@ void state_transition_PEW_synchronous(unsigned int * currentState, Probabilistic
                          net->non_fixed_node_bits[gene] % BITS_PER_BLOCK_32));
 
           if(bit==0) {
-            if(doublerand_1() > net->p_off[gene][i-1]) // net->p_off[gene]
+            if(doublerand_1() > net->p_off[gene]) // net->p_off[gene]
               bit = 1;
           }
           else {
-            if(doublerand_1() > net->p_on[gene][i-1])
+            if(doublerand_1() > net->p_on[gene])
               bit = 0;
           }
 
@@ -1377,7 +1377,7 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
   network.p_on = REAL(p_on);
   network.p_off = REAL(p_off);
 
-    double * _initial_prob = NULL;
+  double * _initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
     _initial_prob = REAL(initial_prob);
 
@@ -1399,18 +1399,6 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
   else
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-
-  double* _p_on = REAL(p_on);
-  network.p_on = CALLOC(network.num_nodes, sizeof(double*));
-  for (unsigned int i=0;i<network.num_nodes;i++){
-    network.p_on[i] = _p_on + i*network.num_nodes;
-  }
-
-  double* _p_off = REAL(p_off);
-  network.p_off = CALLOC(network.num_nodes, sizeof(double*));
-  for (unsigned int i=0;i<network.num_nodes;i++){
-    network.p_off[i] = _p_off + i*network.num_nodes;
-  }
 
   //unsigned int* _startStates = (unsigned int*) INTEGER(startStates);
   //unsigned long long * _startStates = (unsigned long long *) INTEGER(startStates);
@@ -1606,7 +1594,7 @@ SEXP get_reached_states_PEW_sync_batch_R(SEXP inputs, SEXP input_positions,
   network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p_on = REAL(p_on);
   network.p_off = REAL(p_off);
-\
+
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
   unsigned int * _initial_states = NULL;

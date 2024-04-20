@@ -91,8 +91,8 @@ typedef struct
   int * outputs;
   int * output_positions;
 
-  double ** p_on;
-  double ** p_off;
+  double * p_on;
+  double * p_off;
 
 
 

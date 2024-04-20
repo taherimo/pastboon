@@ -75,6 +75,13 @@ get_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
     p_on <- params$p_on
     p_off <- params$p_off
 
+    if(length(p_on) != length(inputs))
+      stop("The length of \"p_on\" should be equal to the number of edges!")
+
+    if(length(p_off) != length(inputs))
+      stop("The length of \"p_off\" should be equal to the number of edges!")
+
+
     if(asynchronous) {
 
       node_activities <- .Call("get_node_activities_PEW_async_R", inputs, input_positions,
