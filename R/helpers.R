@@ -25,7 +25,7 @@ dec2bin <- function(dec,len)
 get_edges <- function(network) {
 
   inputs <- sapply(network$interactions, FUN = function(x) {x$input})
-  edges <- cbind(unlist(inputs),rep(1:length(bn$genes),sapply(inputs, length)))
+  edges <- cbind(unlist(inputs),rep(1:length(network$genes),sapply(inputs, length)))
   rownames(edges) <- 1:nrow(edges)
   colnames(edges) <- c("source", "detination")
 

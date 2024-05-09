@@ -74,38 +74,60 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 
 \examples{
 # load the example network
-data(lac_operon)
+data(lac_operon_net)
 
 # SDDS Method
 
 # define the parameter for the SDDS method
-params <- list(p00=rep(0.95, length(bn$genes)),
-               p01=rep(0.95, length(bn$genes)),
-               p10=rep(0.95, length(bn$genes)),
-               p11=rep(0.95, length(bn$genes)))
+params <- list(p00=rep(0.95, length(lac_operon_net$genes)),
+               p01=rep(0.95, length(lac_operon_net$genes)),
+               p10=rep(0.95, length(lac_operon_net$genes)),
+               p11=rep(0.95, length(lac_operon_net$genes)))
 
 # get node activities after simulation using the SDDS method and asynchronous update
-traj <- get_node_activities(bn, method="SDDS", params = params, asynchronous = F, steps = 100, repeats = 10000)
+traj <- get_node_activities(lac_operon_net, method="SDDS", params = params, steps = 100, repeats = 10000)
 
 
 # plot node activities
+
+layout(matrix(c(1,2),nrow=1), width=c(4,1))
+
+par(mar=c(5,4,4,0)) #No margin on the right side
+
 matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
+par(mar=c(5,0,4,2)) #No margin on the left side
+
+plot(c(0,1),type="n", axes=F, xlab="", ylab="")
+
+legend("center", colnames(traj),col=seq_len(length(lac_operon_net$genes)),cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
 
 # BNp Method
 
 # define the parameters for the BNp method
-params <- rep(0.05, length(net1$genes))
+params <- rep(0.05, length(lac_operon_net$genes))
 
 # get node activities after simulation using the BNp method and asynchronous update
-traj <- get_node_activities(net1, method = "BNp", params = params, steps=50, repeats = 5000)
+traj <- get_node_activities(lac_operon_net, method = "BNp", params = params, steps=50, repeats = 5000)
 
 # plot node activities
+
+layout(matrix(c(1,2),nrow=1), width=c(4,1))
+
+par(mar=c(5,4,4,0)) #No margin on the right side
+
 matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
+par(mar=c(5,0,4,2)) #No margin on the left side
+
+plot(c(0,1),type="n", axes=F, xlab="", ylab="")
+
+legend("center", colnames(traj),col=seq_len(length(lac_operon_net$genes)),cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
 
 # PEW Method
 
 # extract edges from the network
-edges <- get_edges(bn)
+edges <- get_edges(lac_operon_net)
 
 # define the parameters for the PEW method
 p_on <- runif(nrow(edges))
@@ -113,10 +135,21 @@ p_off <- runif(nrow(edges))
 params <- list(p_on=p_on, p_off=p_off)
 
 # get node activities after simulation using the PEW method and asynchronous update
-traj <- get_node_activities(bn, method="PEW", params = params, asynchronous = T, steps = 100, repeats = 10000)
+traj <- get_node_activities(lac_operon_net, method="PEW", params = params, asynchronous = T, steps = 100, repeats = 10000)
 
 # plot node activities
+
+layout(matrix(c(1,2),nrow=1), width=c(4,1))
+
+par(mar=c(5,4,4,0)) #No margin on the right side
+
 matplot(1:nrow(traj), traj*100, type = "l", frame = T, lwd = 2, lty = 1, xlab="Time step", ylab="Node activity (%)")
+
+par(mar=c(5,0,4,2)) #No margin on the left side
+
+plot(c(0,1),type="n", axes=F, xlab="", ylab="")
+
+legend("center", colnames(traj),col=seq_len(length(lac_operon_net$genes)),cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
 
 
 }
