@@ -21,9 +21,9 @@ Adapting a Boolean networks to different contexts finds many applications in dif
 One way to manipulate dynamical behaviour of the Boolean networks is to incorporate stochasticity-related parameters in the Boolean networks and trying to make the dynamical behaviour of the system as close as possible to our desired behavior by setting the parameter values. In the current version of this package, three methods of Boolean network parameterization are implemnted which include:
 
 \itemize{
-\item{SDDS}
-\item{BNp}
-\item{PEW}
+\item{SDDS (proposed by Murrugarra et al.)}
+\item{BNp (proposed by Golinelli and Derrida)}
+\item{PEW (proposed by Deritei et al.)}
 
 }
 
@@ -46,11 +46,5 @@ Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fin
 \cr
 Golinelli, O., & Derrida, B. (1989). Barrier heights in the Kauffman model. "Journal De Physique", 50(13), 1587-1601. [DOI:10.1051/jphys:0198900500130158700](https://doi.org/10.1051/jphys:0198900500130158700)
 
-Further references are listed in the corresponding reference sections
-}
-
-
-\examples{
-
-
+Further references are listed in the corresponding reference sections.
 }
