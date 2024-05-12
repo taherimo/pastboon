@@ -1,9 +1,46 @@
 get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
-                                      steps, num_initial_states, initial_states=NULL,
+                                      steps, repeats=1, num_initial_states, initial_states=NULL,
                                       update_prob=NULL,asynchronous=T) {
 
+  if(!is.positive.integer(reoeats)) {
+   stop("The value of the argument repeats is not integer.")
+  }
+
+  if(!is.positive.integer(steps)) {
+    stop("The value of the argument steps is not integer.")
+  }
 
   # assert ncols(initial_states) == length(net$genes)
+  if(!is.null(initial_states)) {
+    if(!all(initial_states == 0 | initial_states == 1)) {
+      stop("Non-binary value(s) in initial_states.")
+    }
+    if(is.vector(initial_states)) {
+      if(length(initial_states)!=length(net$genes)) {
+        stop("The number of variables in initial_states doesn't match the number of network nodes.")
+      }
+    } else {
+      if(ncol(initial_states)!=length(net$genes)) {
+        stop("The number of variables in initial_states doesn't match the number of network nodes.")
+      }
+      if(nrow(initial_states)>1) {
+        if(repeats>1) {
+          stop("in the case of repeats>1, a single initial state or no initial state can be given")
+        }
+      }
+
+    }
+  }
+
+  if(!is.null(update_prob)) {
+    if(is.vector(update_prob)) {
+      if(length(update_prob)!=length(net$genes)) {
+        stop("The length of update_prob should be a equal to the number of network nodes.")
+      }
+    } else {
+      stop("The argument update_prob should be a vector.")
+    }
+  }
 
   # if(is.null(initial_states)) {
   #   initial_states_bin <- sample(0:1, num_random_initial_states * length(bn$genes), rep = T)
