@@ -98,12 +98,29 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
   outputs <- as.integer(unlist(lapply(net$interactions,function(interaction)interaction$func)))
   output_positions <- as.integer(cumsum(c(0,sapply(net$interactions,function(interaction)length(interaction$func)))))
 
+
+  if (!is.list(params) || is.null(names(params))) {
+    stop("The params argument must be a named list.")
+  }
+
   switch(match.arg(method), SDDS={
 
-    p00 <- params$p00
-    p01 <- params$p01
-    p10 <- params$p10
-    p11 <- params$p11
+
+    if (!all(c("p00", "p01", "p10", "p11") %in% names(params))) {
+      stop("Input list must contain vectors named 'p00', 'p01', 'p10', and 'p11'.")
+    }
+
+    if(length(params$p00) != length(net$genes) |
+       length(params$p01) != length(net$genes) |
+       length(params$p10) != length(net$genes) |
+       length(params$p11) != length(net$genes)) {
+      stop("Length of p00, p01, p10, and p11 must be equal to the number of network nodes.")
+    }
+
+    if(!is.nonNA.numeric(params$p00) | !is.nonNA.numeric(params$p01) | !is.nonNA.numeric(params$p10) | !is.nonNA.numeric(params$p11)) {
+      stop("The vectors p00, p01, p10, and p11 must be numeric without NA values.")
+    }
+
 
     if(num_initial_states==1) {
 
@@ -113,7 +130,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
-                                p00, p01, p10, p11,
+                                params$p00, params$p01, params$p10, params$p11,
                                 update_prob, as.integer(initial_state_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
@@ -123,7 +140,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
-                                p00, p01, p10, p11,
+                                params$p00, params$p01, params$p10, params$p11,
                                 as.integer(initial_state_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
@@ -139,12 +156,12 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         #      as.integer(initial_states), update_prob, as.integer(steps))
 
         reached_states <- .Call("get_reached_states_SDDS_async_batch_R", inputs, input_positions,
-                                outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+                                outputs, output_positions, as.integer(net$fixed), params$p00, params$p01, params$p10, params$p11,
                                 as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
 
       } else {
         reached_states <- .Call("get_reached_states_SDDS_sync_batch_R", inputs, input_positions,
-                                outputs, output_positions, as.integer(net$fixed), p00, p01, p10, p11,
+                                outputs, output_positions, as.integer(net$fixed), params$p00, params$p01, params$p10, params$p11,
                                 as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
 
       }
@@ -154,6 +171,15 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
 
   },
   BNp={
+
+    if(length(params) != length(net$genes)) {
+      stop("Length of params must be equal to the number of network nodes.")
+    }
+
+    if(!is.nonNA.numeric(params)) {
+      stop("The vector params must be numeric without NA values.")
+    }
+
 
     if(num_initial_states==1) {
 
@@ -205,8 +231,19 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
   },
   PEW={
 
-    p_on <- params$p_on
-    p_off <- params$p_off
+
+    if (!all(c("p_on", "p_off") %in% names(params))) {
+      stop("Input list must contain vectors named 'p_on' and 'p_off'.")
+    }
+
+    if(length(params$p_on) != length(net$genes) |
+       length(params$p_off) != length(net$genes)) {
+      stop("Length of p_on and p_off must be equal to the number of network nodes.")
+    }
+
+    if(!is.nonNA.numeric(params$p_on) | !is.nonNA.numeric(params$p_off)) {
+      stop("The vectors p_on and p_off must be numeric without NA values.")
+    }
 
 
     if(num_initial_states==1) {
@@ -217,7 +254,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         reached_states <- .Call("get_reached_states_PEW_async_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
-                                p_on, p_off, update_prob,
+                                params$p_on, params$p_off, update_prob,
                                 as.integer(initial_state_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
@@ -227,7 +264,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         reached_states <- .Call("get_reached_states_PEW_sync_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
-                                p_on, p_off, as.integer(initial_state_dec),
+                                params$p_on, params$p_off, as.integer(initial_state_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
 
@@ -242,12 +279,12 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         #      as.integer(initial_states), update_prob, as.integer(steps))
 
         reached_states <- .Call("get_reached_states_PEW_async_batch_R", inputs, input_positions,
-                                outputs, output_positions, as.integer(net$fixed), p_on, p_off,
+                                outputs, output_positions, as.integer(net$fixed), params$p_on, params$p_off,
                                 as.integer(initial_states_dec), as.integer(num_initial_states), update_prob, as.integer(steps))
 
       } else {
         reached_states <- .Call("get_reached_states_PEW_sync_batch_R", inputs, input_positions,
-                                outputs, output_positions, as.integer(net$fixed), p_on, p_off,
+                                outputs, output_positions, as.integer(net$fixed), params$p_on, params$p_off,
                                 as.integer(initial_states_dec), as.integer(num_initial_states), as.integer(steps))
 
       }

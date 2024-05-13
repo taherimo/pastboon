@@ -48,3 +48,10 @@ is.positive.integer <- function(x) {
 
 }
 
+
+is.nonNA.numeric <- function(vector) {
+  if (!is.numeric(vector)) {
+    return(FALSE)
+  }
+  return(all(!is.na(vector)))
+}
