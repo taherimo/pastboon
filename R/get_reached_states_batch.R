@@ -1,5 +1,5 @@
 get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
-                                      steps, repeats=1, num_initial_states, initial_states=NULL,
+                                      steps, repeats=1, initial_states=NULL,
                                       update_prob=NULL,asynchronous=T) {
 
   if(!is.positive.integer(reoeats)) {
