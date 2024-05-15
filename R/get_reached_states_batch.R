@@ -10,6 +10,8 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
     stop("The value of the argument steps is not integer.")
   }
 
+  initial_states_dec <- NULL
+
   # assert ncols(initial_states) == length(net$genes)
   if(!is.null(initial_states)) {
     if(!all(initial_states == 0 | initial_states == 1)) {
@@ -19,6 +21,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
       if(length(initial_states)!=length(net$genes)) {
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
       }
+      initial_states_dec <- bin2dec(initial_states, length(net$genes))
     } else {
       if(ncol(initial_states)!=length(net$genes)) {
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
@@ -27,6 +30,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         if(repeats>1) {
           stop("in the case of repeats>1, a single initial state or no initial state can be given")
         }
+        initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
       }
 
     }
@@ -52,40 +56,40 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
   #   }
   # }
 
-  initial_states_dec <- NULL
-
-  if(!is.null(initial_states)) {
-
-    # assert ncols(initial_states) == length(net$genes)
-    # assert nrow(initial_states) == num_initial_states --> warning
-    # at least one of the args initial_states or num_initial_states should be passed
-
-    if (any(initial_states != 0 & initial_states != 1)) {
-      cat("Error!") # there are values other than zero and one
-      return(NA)
-    }
-
-    if(is.vector(initial_states)) {
-      if(num_initial_states!=1) {
-        cat("Warning!")
-        num_initial_states <- 1
-      }
-      initial_states_dec <- bin2dec(initial_states, length(net$genes))
-    }
-    else {
-      initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
-      #print(t(apply(apply(initial_states, 1, bin2dec, len=length(net$genes)),2,dec2bin,len=length(net$genes))))
-
-      if(num_initial_states!=nrow(initial_states)) {
-        cat("Warning!")
-        num_initial_states <- nrow(initial_states)
-      }
-    }
-
-  } else if(num_initial_states <=0) {
-      cat("Error!") # guarantee that num_initial_states is positive integer
-      return(NA)
-  }
+  # initial_states_dec <- NULL
+  #
+  # if(!is.null(initial_states)) {
+  #
+  #   # assert ncols(initial_states) == length(net$genes)
+  #   # assert nrow(initial_states) == num_initial_states --> warning
+  #   # at least one of the args initial_states or num_initial_states should be passed
+  #
+  #   if (any(initial_states != 0 & initial_states != 1)) {
+  #     cat("Error!") # there are values other than zero and one
+  #     return(NA)
+  #   }
+  #
+  #   if(is.vector(initial_states)) {
+  #     if(num_initial_states!=1) {
+  #       cat("Warning!")
+  #       num_initial_states <- 1
+  #     }
+  #     initial_states_dec <- bin2dec(initial_states, length(net$genes))
+  #   }
+  #   else {
+  #     initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
+  #     #print(t(apply(apply(initial_states, 1, bin2dec, len=length(net$genes)),2,dec2bin,len=length(net$genes))))
+  #
+  #     if(num_initial_states!=nrow(initial_states)) {
+  #       cat("Warning!")
+  #       num_initial_states <- nrow(initial_states)
+  #     }
+  #   }
+  #
+  # } else if(num_initial_states <=0) {
+  #     cat("Error!") # guarantee that num_initial_states is positive integer
+  #     return(NA)
+  # }
 
 
 
