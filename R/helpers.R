@@ -36,7 +36,7 @@ get_edges <- function(network) {
 
 is.positive.integer <- function(x) {
 
-  if (!is.integer(x) || !is.numeric(x)) {
+  if (x != as.integer(x) || !is.numeric(x)) {
     return(FALSE)
   }
 

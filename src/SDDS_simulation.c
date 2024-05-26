@@ -724,6 +724,7 @@ unsigned int ** get_reached_states_SDDS_async_single(AsynchronousBooleanNetwork 
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -780,6 +781,7 @@ unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * 
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -793,7 +795,7 @@ unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * 
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_state[j];
-      printf("initial_states[%u]=%u\n",j,initial_state[j]);
+      //printf("initial_states[%u]=%u\n",j,initial_state[j]);
     }
 
     for (j = 1; j <= num_steps; j++)
@@ -807,7 +809,7 @@ unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * 
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -1065,6 +1067,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   unsigned int * _initial_state = NULL;
   if (!isNull(initial_state) && length(initial_state) > 0)
     _initial_state = (unsigned int *) INTEGER(initial_state);
+
 
 
   unsigned int _numElements;

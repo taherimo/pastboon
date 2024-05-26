@@ -1,14 +1,16 @@
-get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
-                                      steps, repeats=1, initial_states=NULL,
+get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
+                                      steps, repeats, initial_states=NULL,
                                       update_prob=NULL,asynchronous=T) {
 
-  if(!is.positive.integer(reoeats)) {
-   stop("The value of the argument repeats is not integer.")
-  }
 
   if(!is.positive.integer(steps)) {
-    stop("The value of the argument steps is not integer.")
+    stop("The value of the argument \"steps\" is not integer.")
   }
+
+  if(!is.positive.integer(repeats)) {
+   stop("The value of the argument \"repeats\" is not integer.")
+  }
+
 
   initial_states_dec <- NULL
 
@@ -22,11 +24,13 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
       }
       initial_states_dec <- bin2dec(initial_states, length(net$genes))
+      num_initial_states <- 1
     } else {
       if(ncol(initial_states)!=length(net$genes)) {
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
       }
-      if(nrow(initial_states)>1) {
+      num_initial_states <- nrow(initial_states)
+      if(num_initial_states>1) {
         if(repeats>1) {
           stop("in the case of repeats>1, a single initial state or no initial state can be given")
         }
@@ -34,6 +38,8 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
       }
 
     }
+  } else {
+    num_initial_states <- repeats
   }
 
   if(!is.null(update_prob)) {
@@ -130,14 +136,17 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
 
       if(asynchronous) {
 
+        print(initial_states_dec)
+
 
         reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
                                 params$p00, params$p01, params$p10, params$p11,
-                                update_prob, as.integer(initial_state_dec),
+                                update_prob, as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
+
       } else {
 
 
@@ -145,7 +154,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
                                 params$p00, params$p01, params$p10, params$p11,
-                                as.integer(initial_state_dec),
+                                as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
 
@@ -194,7 +203,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
                                 params,
-                                update_prob, as.integer(initial_state_dec),
+                                update_prob, as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
       } else {
@@ -204,7 +213,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
                                 params,
-                                as.integer(initial_state_dec),
+                                as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
 
@@ -259,7 +268,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
                                 params$p_on, params$p_off, update_prob,
-                                as.integer(initial_state_dec),
+                                as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
       } else {
@@ -268,7 +277,7 @@ get_reached_states_batch <- function(net, method=c("SDDS","BNp","PEW"), params,
         reached_states <- .Call("get_reached_states_PEW_sync_single_R", inputs, input_positions,
                                 outputs, output_positions,
                                 as.integer(net$fixed),
-                                params$p_on, params$p_off, as.integer(initial_state_dec),
+                                params$p_on, params$p_off, as.integer(initial_states_dec),
                                 as.integer(repeats), as.integer(steps),
                                 PACKAGE = "PARBONET")
 
