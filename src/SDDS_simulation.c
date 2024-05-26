@@ -325,64 +325,6 @@ double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * n
 }
 
 
-unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
-
-{
-
-  unsigned int i = 0, j = 0;
-
-
-  printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
-
-  unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
-  unsigned int ** reached_states = CALLOC(num_initial_states, sizeof(int*));
-
-  for (i=0;i<num_initial_states;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
-    reached_states[i] = reached_states_vals + i*num_elements;
-  }
-
-
-  if(initial_states==NULL) {
-    initial_states = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
-    for (i=0;i<num_initial_states;i++){
-      for(j=0;j<num_elements;j++) {
-        initial_states[i*num_elements + j] = uintrand();
-      }
-    }
-  }
-
-  unsigned int current_state[num_elements];
-
-
-  for (i = 0; i < num_initial_states; i++) {
-
-    for(j = 0; j < num_elements; j++) {
-      current_state[j] = initial_states[i * num_elements + j];
-      printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
-    }
-
-    for (j = 1; j <= num_steps; j++)
-    {
-
-      state_transition_SDDS_asynchronous(current_state, net);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
-    }
-
-    for(j = 0; j < num_elements; j++) {
-      reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
-    }
-
-  }
-
-
-  return(reached_states);
-
-
-}
 
 
 double ** get_node_activities_SDDS_async_traj(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
@@ -638,6 +580,66 @@ double * get_node_activities_SDDS_sync_last_step(SynchronousBooleanNetwork * net
 
   return traj;
 }
+
+unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
+
+{
+
+  unsigned int i = 0, j = 0;
+
+
+  printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
+
+  unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
+  unsigned int ** reached_states = CALLOC(num_initial_states, sizeof(int*));
+
+  for (i=0;i<num_initial_states;i++){
+    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
+    reached_states[i] = reached_states_vals + i*num_elements;
+  }
+
+
+  if(initial_states==NULL) {
+    initial_states = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
+    for (i=0;i<num_initial_states;i++){
+      for(j=0;j<num_elements;j++) {
+        initial_states[i*num_elements + j] = uintrand();
+      }
+    }
+  }
+
+  unsigned int current_state[num_elements];
+
+
+  for (i = 0; i < num_initial_states; i++) {
+
+    for(j = 0; j < num_elements; j++) {
+      current_state[j] = initial_states[i * num_elements + j];
+      printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
+    }
+
+    for (j = 1; j <= num_steps; j++)
+    {
+
+      state_transition_SDDS_asynchronous(current_state, net);
+      //stateTransition(current_state,net,num_elements);
+      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
+
+    }
+
+    for(j = 0; j < num_elements; j++) {
+      reached_states[i][j] = current_state[j];
+      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+    }
+
+  }
+
+
+  return(reached_states);
+
+
+}
+
 
 
 unsigned int ** get_reached_states_SDDS_sync_batch(SynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)

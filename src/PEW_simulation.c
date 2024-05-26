@@ -561,7 +561,7 @@ unsigned int ** get_reached_states_PEW_async_batch(ProbabilisticEdgeWeight * net
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_states[i * num_elements + j];
-      printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
+      //printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
     }
 
     for (j = 1; j <= num_steps; j++)
@@ -575,7 +575,7 @@ unsigned int ** get_reached_states_PEW_async_batch(ProbabilisticEdgeWeight * net
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -605,6 +605,7 @@ unsigned int ** get_reached_states_PEW_async_single(ProbabilisticEdgeWeight * ne
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -720,6 +721,7 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -733,7 +735,7 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_state[j];
-      printf("initial_states[%u]=%u\n",j,initial_state[j]);
+      //printf("initial_states[%u]=%u\n",j,initial_state[j]);
     }
 
     for (j = 1; j <= num_steps; j++)
@@ -747,7 +749,7 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }

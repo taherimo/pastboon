@@ -109,11 +109,13 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
   output_positions <- as.integer(cumsum(c(0,sapply(net$interactions,function(interaction)length(interaction$func)))))
 
 
-  if (!is.list(params) || is.null(names(params))) {
-    stop("The params argument must be a named list.")
-  }
+
 
   switch(match.arg(method), SDDS={
+
+    if (!is.list(params) || is.null(names(params))) {
+      stop("The params argument must be a named list.")
+    }
 
 
     if (!all(c("p00", "p01", "p10", "p11") %in% names(params))) {
@@ -245,13 +247,18 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
   PEW={
 
 
+    if (!is.list(params) || is.null(names(params))) {
+      stop("The params argument must be a named list.")
+    }
+
+
     if (!all(c("p_on", "p_off") %in% names(params))) {
       stop("Input list must contain vectors named 'p_on' and 'p_off'.")
     }
 
-    if(length(params$p_on) != length(net$genes) |
-       length(params$p_off) != length(net$genes)) {
-      stop("Length of p_on and p_off must be equal to the number of network nodes.")
+    if(length(params$p_on) != nrow(get_edges(net)) |
+       length(params$p_off) != nrow(get_edges(net))) {
+      stop("Length of p_on and p_off must be equal to the number of network edges.")
     }
 
     if(!is.nonNA.numeric(params$p_on) | !is.nonNA.numeric(params$p_off)) {

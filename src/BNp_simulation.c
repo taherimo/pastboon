@@ -637,7 +637,7 @@ unsigned int ** get_reached_states_BNp_async_batch(BooleanNetworkWithPerturbatio
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_states[i * num_elements + j];
-      printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
+      //printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
     }
 
     for (j = 1; j <= num_steps; j++)
@@ -651,7 +651,7 @@ unsigned int ** get_reached_states_BNp_async_batch(BooleanNetworkWithPerturbatio
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -680,6 +680,7 @@ unsigned int ** get_reached_states_BNp_sync_single(BooleanNetworkWithPerturbatio
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -693,7 +694,7 @@ unsigned int ** get_reached_states_BNp_sync_single(BooleanNetworkWithPerturbatio
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_state[j];
-      printf("initial_states[%u]=%u\n",j,initial_state[j]);
+      //printf("initial_states[%u]=%u\n",j,initial_state[j]);
     }
 
     for (j = 1; j <= num_steps; j++)
@@ -707,7 +708,7 @@ unsigned int ** get_reached_states_BNp_sync_single(BooleanNetworkWithPerturbatio
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
+      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -736,6 +737,7 @@ unsigned int ** get_reached_states_BNp_async_single(BooleanNetworkWithPerturbati
 
 
   if(initial_state==NULL) {
+    initial_state = CALLOC(num_elements, sizeof(unsigned int));
     for(i=0;i<num_elements;i++) {
       initial_state[i] = uintrand();
     }
@@ -1047,9 +1049,9 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
   unsigned int ** reached_states =get_reached_states_BNp_sync_batch(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
 
 
-  for(unsigned int j = 0; j < _numElements; j++) {
-    printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  }
+  // for(unsigned int j = 0; j < _numElements; j++) {
+  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
+  // }
 
 
   SEXP result = PROTECT(allocVector(INTSXP, _num_initial_states * _numElements));
@@ -1375,9 +1377,9 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
   unsigned int ** reached_states = get_reached_states_BNp_async_single(&network, _update_prob, _initial_state, _num_repeats, _num_steps, _numElements);
 
 
-  for(unsigned int j = 0; j < _numElements; j++) {
-    printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  }
+  // for(unsigned int j = 0; j < _numElements; j++) {
+  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
+  // }
 
 
   SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _numElements));
