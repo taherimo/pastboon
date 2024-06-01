@@ -6,7 +6,7 @@
 Simulation of Parameterized Stochastic Boolean Networks
 }
 \description{
-Functions for efficient simulation of parameterized stochastic Boolean networks.
+Functions for simulation of parameterized stochastic Boolean networks.
 }
 \details{
 \tabular{ll}{

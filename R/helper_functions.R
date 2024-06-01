@@ -22,17 +22,6 @@ dec2bin <- function(dec,len)
   bin = .C("dec2binC",as.integer(bin),as.integer(dec),as.integer(len),NAOK=TRUE)[[1]]
 }
 
-get_edges <- function(network) {
-
-  inputs <- sapply(network$interactions, FUN = function(x) {x$input})
-  edges <- cbind(unlist(inputs),rep(1:length(network$genes),sapply(inputs, length)))
-  rownames(edges) <- 1:nrow(edges)
-  colnames(edges) <- c("source", "detination")
-
-  return(edges)
-
-}
-
 
 is.positive.integer <- function(x) {
 
@@ -55,3 +44,27 @@ is.nonNA.numeric <- function(vector) {
   }
   return(all(!is.na(vector)))
 }
+
+is.all_non_negative_float <- function(x) {
+  is.numeric(x) && all(!is.na(x)) && all(x >= 0)
+}
+
+is.logical_value <- function(x) {
+  is.logical(x) && length(x) == 1
+}
+
+
+
+is.scalar <- function(x) {
+  is.atomic(x) && length(x) == 1
+}
+
+
+
+trim <- function(string)
+{
+  string <- gsub("^[ \t]+", "", string)
+  string <- gsub("[ \t]+$", "", string)
+  return(string)
+}
+

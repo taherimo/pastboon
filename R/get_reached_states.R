@@ -4,7 +4,7 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
 
 
   if(!is.positive.integer(steps)) {
-    stop("The value of the argument \"steps\" is not integer.")
+    stop("The value of the argument \"steps\" is not positive integer.")
   }
 
   if(!is.positive.integer(repeats)) {
@@ -43,12 +43,18 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
   }
 
   if(!is.null(update_prob)) {
-    if(is.vector(update_prob)) {
-      if(length(update_prob)!=length(net$genes)) {
-        stop("The length of update_prob should be a equal to the number of network nodes.")
+    if (!is.all_non_negative_float(update_prob)) {
+      if(is.vector(update_prob)) {
+        if(length(update_prob)!=length(net$genes)) {
+          stop("The length of update_prob should be a equal to the number of network nodes.")
+        } else if (sum(update_prob) != 1) {
+          stop("The sum of the update_prob values should be 1.")
+        }
+      } else {
+        stop("The argument update_prob should be a vector.")
       }
     } else {
-      stop("The argument update_prob should be a vector.")
+      stop("All update prob values should be non-negative and non-NA.")
     }
   }
 
@@ -97,6 +103,8 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
   #     return(NA)
   # }
 
+  if (!is.logical_value(asynchronous))
+    stop("The value of the asybchronous argument should be logical (TRUE or FALSE).")
 
 
   # the C code requires all interactions to be coded into one vector:

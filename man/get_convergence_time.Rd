@@ -11,7 +11,7 @@ get_convergence_time(node_activities,
                      threshold,
                      window_size=1)
 }
-}
+
 \arguments{
   \item{node_activiries}{
 A table that describes node activities in different time-steps where its rows and columns correspond to the time-steps and the nodes, respectively (the output of \code{\link{loadNetwork}}).

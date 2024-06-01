@@ -1,4 +1,5 @@
-get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), params, states,
+
+get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, states,
                                   time_step=1, repeats=1000,
                                   asynchronous=T, update_prob=NULL)
 {
@@ -39,7 +40,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
   if(asynchronous) {
 
-    transition_matrix <- .Call("get_cumulative_transition_matrix_SDDS_async_R", inputs, input_positions,
+    pairwise_transitions <- .Call("get_pairwise_transitions_SDDS_async_R", inputs, input_positions,
                              outputs, output_positions,
                              as.integer(net$fixed),
                              p00, p01, p10, p11,
@@ -58,7 +59,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
   } else {
 
-    transition_matrix <- .Call("get_cumulative_transition_matrix_SDDS_sync_R", inputs, input_positions,
+    pairwise_transitions <- .Call("get_pairwise_transitions_SDDS_sync_R", inputs, input_positions,
                                outputs, output_positions,
                                as.integer(net$fixed),
                                p00, p01, p10, p11,
@@ -76,7 +77,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
     if(asynchronous) {
 
-      transition_matrix <- .Call("get_cumulative_transition_matrix_BNp_async_R", inputs, input_positions,
+      pairwise_transitions <- .Call("get_pairwise_transitions_BNp_async_R", inputs, input_positions,
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  params,
@@ -95,7 +96,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
     } else {
 
-      transition_matrix <- .Call("get_cumulative_transition_matrix_BNp_sync_R", inputs, input_positions,
+      pairwise_transitions <- .Call("get_pairwise_transitions_BNp_sync_R", inputs, input_positions,
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  params,
@@ -116,7 +117,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
     if(asynchronous) {
 
-      transition_matrix <- .Call("get_cumulative_transition_matrix_PEW_async_R", inputs, input_positions,
+      pairwise_transitions <- .Call("get_pairwise_transitions_PEW_async_R", inputs, input_positions,
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  p_on, p_off, update_prob, states_dec, num_states,
@@ -134,7 +135,7 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
 
     } else {
 
-      transition_matrix <- .Call("get_cumulative_transition_matrix_PEW_sync_R", inputs, input_positions,
+      pairwise_transitions <- .Call("get_pairwise_transitions_PEW_sync_R", inputs, input_positions,
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  p_on, p_off, states_dec, num_states,
@@ -153,7 +154,9 @@ get_cumulative_transition_matrix <- function(net, method=c("SDDS","BNp","PEW"), 
   #
   # print(states_dec)
 
-  transition_matrix <- matrix(transition_matrix, nrow = num_states, byrow = TRUE)
+  pairwise_transitions <- matrix(pairwise_transitions, nrow = num_states, byrow = TRUE)
   #colnames(transition_matrix) <- net$genes
+
+  return(pairwise_transitions)
 
 }

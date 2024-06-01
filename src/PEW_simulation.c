@@ -761,7 +761,7 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 }
 
 
-double ** get_cumulative_transition_matrix_PEW_async(ProbabilisticEdgeWeight * net, double * update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_PEW_async(ProbabilisticEdgeWeight * net, double * update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -818,7 +818,7 @@ double ** get_cumulative_transition_matrix_PEW_async(ProbabilisticEdgeWeight * n
 
 }
 
-double ** get_cumulative_transition_matrix_PEW_sync(ProbabilisticEdgeWeight * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_PEW_sync(ProbabilisticEdgeWeight * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -1056,7 +1056,7 @@ SEXP get_reached_states_PEW_sync_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-SEXP get_cumulative_transition_matrix_PEW_async_R(SEXP inputs, SEXP input_positions,
+SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
                                                    SEXP outputs, SEXP output_positions,
                                                    SEXP fixed_nodes, SEXP p_on, SEXP p_off,
                                                    SEXP update_prob, SEXP states, SEXP num_states,
@@ -1126,7 +1126,7 @@ SEXP get_cumulative_transition_matrix_PEW_async_R(SEXP inputs, SEXP input_positi
 
 
 
-  double ** transition_matrix = get_cumulative_transition_matrix_PEW_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_pairwise_transitions_PEW_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
@@ -1151,7 +1151,7 @@ SEXP get_cumulative_transition_matrix_PEW_async_R(SEXP inputs, SEXP input_positi
 }
 
 
-SEXP get_cumulative_transition_matrix_PEW_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
                                                   SEXP outputs, SEXP output_positions,
                                                   SEXP fixed_nodes, SEXP p_on, SEXP p_off,
                                                   SEXP states, SEXP num_states, SEXP steps,
@@ -1218,7 +1218,7 @@ SEXP get_cumulative_transition_matrix_PEW_sync_R(SEXP inputs, SEXP input_positio
 
 
 
-  double ** transition_matrix = get_cumulative_transition_matrix_PEW_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_pairwise_transitions_PEW_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));

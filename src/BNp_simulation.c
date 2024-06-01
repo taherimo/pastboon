@@ -776,7 +776,7 @@ unsigned int ** get_reached_states_BNp_async_single(BooleanNetworkWithPerturbati
 
 }
 
-double ** get_cumulative_transition_matrix_BNp_async(BooleanNetworkWithPerturbations * net, double* update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_BNp_async(BooleanNetworkWithPerturbations * net, double* update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -833,7 +833,7 @@ double ** get_cumulative_transition_matrix_BNp_async(BooleanNetworkWithPerturbat
 
 }
 
-double ** get_cumulative_transition_matrix_BNp_sync(BooleanNetworkWithPerturbations * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_BNp_sync(BooleanNetworkWithPerturbations * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -1506,7 +1506,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
 
 }
 
-SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positions,
+SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
                                                    SEXP outputs, SEXP output_positions,
                                                    SEXP fixed_nodes, SEXP p, SEXP update_prob,
                                                    SEXP states, SEXP num_states,
@@ -1575,7 +1575,7 @@ SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positi
 
 
 
-  double ** transition_matrix = get_cumulative_transition_matrix_BNp_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_pairwise_transitions_BNp_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
@@ -1600,7 +1600,7 @@ SEXP get_cumulative_transition_matrix_BNp_async_R(SEXP inputs, SEXP input_positi
 }
 
 
-SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP inputs, SEXP input_positions,
+SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
                                                   SEXP outputs, SEXP output_positions,
                                                   SEXP fixed_nodes, SEXP p,
                                                   SEXP states, SEXP num_states, SEXP steps,
@@ -1667,7 +1667,7 @@ SEXP get_cumulative_transition_matrix_BNp_sync_R(SEXP inputs, SEXP input_positio
 
 
 
-  double ** transition_matrix = get_cumulative_transition_matrix_BNp_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_pairwise_transitions_BNp_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
