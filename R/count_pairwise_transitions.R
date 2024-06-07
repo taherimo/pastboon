@@ -1,6 +1,6 @@
 
-get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, states,
-                                  time_step=1, repeats=1000,
+count_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, states,
+                                  steps=1, repeats=1000,
                                   asynchronous=T, update_prob=NULL)
 {
 
@@ -45,7 +45,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                              as.integer(net$fixed),
                              p00, p01, p10, p11,
                              update_prob, states_dec, num_states,
-                             as.integer(time_step), as.integer(repeats),
+                             as.integer(steps), as.integer(repeats),
                              PACKAGE = "PARBONET")
 
 
@@ -64,7 +64,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                                as.integer(net$fixed),
                                p00, p01, p10, p11,
                                states_dec, num_states,
-                               as.integer(time_step), as.integer(repeats),
+                               as.integer(steps), as.integer(repeats),
                                PACKAGE = "PARBONET")
 
 
@@ -82,7 +82,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                                  as.integer(net$fixed),
                                  params,
                                  update_prob, states_dec, num_states,
-                                 as.integer(time_step), as.integer(repeats),
+                                 as.integer(steps), as.integer(repeats),
                                  PACKAGE = "PARBONET")
 
 
@@ -101,7 +101,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                                  as.integer(net$fixed),
                                  params,
                                  states_dec, num_states,
-                                 as.integer(time_step), as.integer(repeats),
+                                 as.integer(steps), as.integer(repeats),
                                  PACKAGE = "PARBONET")
 
 
@@ -121,7 +121,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  p_on, p_off, update_prob, states_dec, num_states,
-                                 as.integer(time_step), as.integer(repeats),
+                                 as.integer(steps), as.integer(repeats),
                                  PACKAGE = "PARBONET")
 
 
@@ -139,7 +139,7 @@ get_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, 
                                  outputs, output_positions,
                                  as.integer(net$fixed),
                                  p_on, p_off, states_dec, num_states,
-                                 as.integer(time_step), as.integer(repeats),
+                                 as.integer(steps), as.integer(repeats),
                                  PACKAGE = "PARBONET")
 
 

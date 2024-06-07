@@ -6,8 +6,8 @@ import("BoolNet")
 
 
 
-export(get_node_activities)
-export(get_convergence_time)
+export(calculate_node_activities)
+export(calculate_convergence_time)
 export(get_reached_states)
-export(get_pairwise_transitions)
-export(get_edges)
+export(count_pairwise_transitions)
+export(extract_edges)

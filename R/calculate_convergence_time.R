@@ -1,5 +1,5 @@
 
-get_convergence_time <- function(node_activities, threshold, window_size=1) {
+calculate_convergence_time <- function(node_activities, threshold, window_size=1) {
 
   # the first row is consideres as time 0
 

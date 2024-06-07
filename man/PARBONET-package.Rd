@@ -38,13 +38,13 @@ Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>
 }
 
 \references{
-Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. "EURASIP Journal on Bioinformatics and Systems Biology", 2012, 1-11. [DOI:10.1186/1687-4153-2012-5](https://doi.org/10.1186/1687-4153-2012-5)
+Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. "EURASIP Journal on Bioinformatics and Systems Biology", 2012, 1-11.
 \cr
 \cr
-Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. "PLoS Computational Biology", 18(10), e1010536. [DOI:10.1371/journal.pcbi.1010536](https://doi.org/10.1371/journal.pcbi.1010536)
+Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. "PLoS Computational Biology", 18(10), e1010536.
 \cr
 \cr
-Golinelli, O., & Derrida, B. (1989). Barrier heights in the Kauffman model. "Journal De Physique", 50(13), 1587-1601. [DOI:10.1051/jphys:0198900500130158700](https://doi.org/10.1051/jphys:0198900500130158700)
+Golinelli, O., & Derrida, B. (1989). Barrier heights in the Kauffman model. "Journal De Physique", 50(13), 1587-1601.
 
 Further references are listed in the corresponding reference sections.
 }

@@ -24,6 +24,9 @@ static inline unsigned int intrand(unsigned int maxVal)
 	return (unsigned int)(unif_rand() * maxVal);
 }
 
+/**
+ * Returns a random integer value in [0,UINT_MAX]
+ */
 static inline unsigned int intrand_fullrange()
 {
   return (unsigned int)(unif_rand() * (UINT_MAX + 1));

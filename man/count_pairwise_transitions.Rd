@@ -1,15 +1,15 @@
-\name{get_reached_states}
-\alias{get_reached_states}
+\name{count_pairwise_transitions}
+\alias{count_pairwise_transitions}
 \title{
-Returns the reached states
+Calculation of pairwise transitions between a given set of states
 }
 \description{
-The reached states are obtained after simulating a Boolean network for some time-steps.
+For a given set of states, the frequencies of transition between each pair of states aftrer some time-steps are calculated.
 }
 \usage{
-get_reached_states(net, method=c("SDDS","BNp","PEW"),
-                   params, steps, repeats, initial_states= NULL,
-                   update_prob= NULL,asynchronous= TRUE)
+count_pairwise_transitions(net, method=c("SDDS","BNp","PEW"), params,
+                           states, steps=1, repeats=1000,
+                           asynchronous=TRUE, update_prob=NULL)
 }
 \arguments{
 \item{net}{A network structure of class \code{BooleanNetwork} from \pkg{BoolNet}.}
