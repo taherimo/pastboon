@@ -20,6 +20,11 @@ get_convergence_time(node_activities, threshold, window_size=1)
 \details{
 If the change of all curves are less than \code{threshold} then it is assumed that the the convergene time step is reached.
 }
+
+\value{
+The time-step at which the curves are converged. If no convergence time is detected \code{NA} is returned.
+}
+
 \examples{
 # load the example network
 data(lac_operon_net)

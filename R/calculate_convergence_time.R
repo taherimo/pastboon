@@ -27,6 +27,7 @@ calculate_convergence_time <- function(node_activities, threshold, window_size=1
 
   if(is.na(convergence_time)) {
     cat("No convergence was detected! Try a higher threshold and/or window_size.")
+    return(NA)
   }
 
   return(convergence_time + 1)

@@ -18,7 +18,7 @@ get_reached_states(net, method=c("SDDS","BNp","PEW"),
 
 \item{params}{The parameter values depending to the value of \code{method}. If \code{method= "SDDS"}, the \code{params} argument is expected to be a list of four equal-size vectors \code{p00}, \code{p01}, \code{p10}, and \code{p11}. If \code{method= "BNp"}, the \code{params} argument is expected to be vector of probabilities. Finally, if \code{params= "PEW"}, the \code{params} argument is expected to be a a list of two equall-size vectors \code{p_on} and \code{p_off}. The length of all probability vectors should be equal to the number of network nodes.}
 
-\item{steps}{The number of time steps which should be a non-negatve integer.}
+\item{steps}{The number of time-steps which should be a non-negatve integer.}
 
 \item{repeats}{The number of time repeats which should be a positive integer.}
 

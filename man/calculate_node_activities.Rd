@@ -32,9 +32,15 @@ calculate_node_activities(net, method=c("SDDS","BNp","PEW"),
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used where a single node is updated at each time-step. In this case \code{update_prob} indicates update probabuilities. If \code{FALSE}, synchronous update is utilized.}
 }
+
 \details{
 In the current version of PARBONET, only \code{BooleanNetwork} networks are supported.
 }
+
+\value{
+A matrix with \code{steps + 1} rows (the first row corresponds to initial node activities) and \code{length(net$genes)} columns that represents node activities in each time-step.
+}
+
 \references{
 Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. "EURASIP Journal on Bioinformatics and Systems Biology", 2012, 1-11.
 
