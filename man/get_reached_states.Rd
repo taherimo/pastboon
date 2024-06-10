@@ -9,7 +9,7 @@ The reached states are obtained after simulating a Boolean network for some time
 \usage{
 get_reached_states(net, method=c("SDDS","BNp","PEW"),
                    params, steps, repeats, initial_states= NULL,
-                   asynchronous= TRUEو update_prob= NULL)
+                   asynchronous= TRUE, update_prob= NULL)
 }
 \arguments{
 \item{net}{A network structure of class \code{BooleanNetwork} from \pkg{BoolNet}.}
