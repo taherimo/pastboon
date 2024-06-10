@@ -9,7 +9,7 @@ The reached states are obtained after simulating a Boolean network for some time
 \usage{
 get_reached_states(net, method=c("SDDS","BNp","PEW"),
                    params, steps, repeats, initial_states= NULL,
-                   update_prob= NULL,asynchronous= TRUE)
+                   asynchronous= TRUEو update_prob= NULL)
 }
 \arguments{
 \item{net}{A network structure of class \code{BooleanNetwork} from \pkg{BoolNet}.}
@@ -24,3 +24,19 @@ get_reached_states(net, method=c("SDDS","BNp","PEW"),
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used where a single node is updated at each time-step. In this case \code{update_prob} indicates update probabuilities. If \code{FALSE}, synchronous update is utilized.}
 }
+
+\details{
+This function returns the reached states after simulating a network for \code{steps} time-steps.
+}
+
+\value{
+The set of reached states.
+}
+
+\examples{
+
+# load the example network
+data(lac_operon_net)
+
+}
+

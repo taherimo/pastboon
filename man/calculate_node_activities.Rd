@@ -9,8 +9,8 @@ Calculates fraction of active states at each time step for each node among a num
 \usage{
 calculate_node_activities(net, method=c("SDDS","BNp","PEW"),
                           params, steps, repeats=1000,
-                          initial_prob= NULL, update_prob= NULL,
-                          return_last_step= FALSE, asynchronous= TRUE)
+                          initial_prob= NULL, return_last_step= FALSE,
+                          asynchronous= TRUEو update_prob= NULL)
 }
 
 \arguments{

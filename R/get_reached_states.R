@@ -1,6 +1,6 @@
 get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
                                       steps, repeats, initial_states=NULL,
-                                      update_prob=NULL,asynchronous=T) {
+                                      asynchronous=T, update_prob=NULL) {
 
 
   if(!is.positive.integer(steps)) {
