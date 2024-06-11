@@ -1,11 +1,11 @@
 
-calculate_convergence_time <- function(node_activities, threshold, window_size=1) {
+calc_convergence_time <- function(node_act, threshold, window_size=1) {
 
   # the first row is consideres as time 0
 
-  # check dimensions of the matrix node_activities
+  # check dimensions of the matrix node_act
 
-  if (!is.data.frame(node_activities) & !is.matrix(node_activities)) {
+  if (!is.data.frame(node_act) & !is.matrix(node_act)) {
     stop("The input must be a data table.")
   }
 
@@ -17,7 +17,7 @@ calculate_convergence_time <- function(node_activities, threshold, window_size=1
     stop("The numbwe of time-steps (rows) should be equal or greator than \"window_size\".")
   }
 
-  differences <- diff(node_activities, 1, along = 1)
+  differences <- diff(node_act, 1, along = 1)
 
   #first_row_below_threshold <- which(apply(matrix_data, 1, function(row) all(row < threshold)), arr.ind = TRUE)[1, 1]
 

@@ -1,7 +1,7 @@
 
-calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
+calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                      steps, repeats=1000, initial_prob=NULL,
-                     return_last_step=F, asynchronous=T, update_prob=NULL) {
+                     last_step=F, asynchronous=T, update_prob=NULL) {
 
   if(!is.positive.integer(steps)) {
     stop("The value of the argument \"steps\" is not integer.")
@@ -38,8 +38,8 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
   }
 
 
-  if (!is.logical_value(return_last_step))
-    stop("The value of the return_last_step argument should be logical (TRUE or FALSE).")
+  if (!is.logical_value(last_step))
+    stop("The value of the last_step argument should be logical (TRUE or FALSE).")
 
   if (!is.logical_value(asynchronous))
     stop("The value of the asybchronous argument should be logical (TRUE or FALSE).")
@@ -71,7 +71,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                p00, p01, p10, p11,
                                initial_prob, update_prob,
                                as.integer(steps), as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
 
 
     } else {
@@ -85,7 +85,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                initial_prob,
                                as.integer(steps),
                                as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
 
     }
 
@@ -99,7 +99,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                as.integer(net$fixed), params,
                                initial_prob, update_prob,
                                as.integer(steps), as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
 
     } else {
 
@@ -107,7 +107,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                outputs, output_positions,
                                as.integer(net$fixed), params,
                                initial_prob, as.integer(steps), as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
     }
 
   },
@@ -130,7 +130,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                as.integer(net$fixed),
                                p_on, p_off, initial_prob, update_prob,
                                as.integer(steps), as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
 
 
     } else {
@@ -143,7 +143,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                                p_on, p_off, initial_prob,
                                as.integer(steps),
                                as.integer(repeats),
-                               as.integer(return_last_step), PACKAGE = "PARBONET")
+                               as.integer(last_step), PACKAGE = "PARBONET")
 
     }
 
@@ -153,7 +153,7 @@ calculate_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
 
 
 
-  if(return_last_step) {
+  if(last_step) {
     names(node_activities) <- net$genes
   }
   else {

@@ -1,5 +1,5 @@
 
-count_pairwise_transitions <- function(net, method=c("SDDS","BNp","PEW"), params, states,
+count_pairwise_trans <- function(net, method=c("SDDS","BNp","PEW"), params, states,
                                   steps=1, repeats=1000,
                                   asynchronous=T, update_prob=NULL)
 {

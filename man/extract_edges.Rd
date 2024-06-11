@@ -1,13 +1,13 @@
 \name{extract_edges}
 \alias{extract_edges}
 \title{
-Extracts edges from a Boolean network
+Extract edges from a Boolean network
 }
 \description{
-The list of directed edges (links) are extracted from a given Boolean network.
+Extracts the list of directed edges (links) from a given Boolean network.
 }
 \usage{
-extract_edges(network, node_names= TRUE)
+extract_edges(network, node_names = TRUE)
 }
 \arguments{
 \item{net}{A network structure of class \code{BooleanNetwork} from \pkg{BoolNet}.}
