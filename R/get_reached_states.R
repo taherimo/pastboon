@@ -32,7 +32,7 @@ get_reached_states <- function(net, method=c("SDDS","BNp","PEW"), params,
       num_initial_states <- nrow(initial_states)
       if(num_initial_states>1) {
         if(repeats>1) {
-          stop("in the case of repeats>1, a single initial state or no initial state can be given")
+          stop("In the case of repeats > 1, a single initial state or no initial state can be given.")
         }
         initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
       }

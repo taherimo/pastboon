@@ -12,7 +12,7 @@ count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params,
                            asynchronous = TRUE, update_prob = NULL)
 }
 \arguments{
-\item{net}{A network structure of class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
+\item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
 
 \item{method}{The parameterization method to be used. If "SDDS", stochastic discrete dynamical system proposed by Murrugarra et al. will be used. If "BNp", Boolean network with perturbation initially presented by Golinelli and Derrida (and later by Shmulevich et al. and Trairatphisan et al.) will be utilized. If "PEW", Boolean network with probabilistic edge weights proposed by Deritei et al. will be employed. For each of these cases a different pattern for the \code{params} argument is expected.}
 

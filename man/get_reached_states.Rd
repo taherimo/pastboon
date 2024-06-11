@@ -12,7 +12,7 @@ get_reached_states(net, method = c("SDDS","BNp","PEW"),
                    asynchronous = TRUE, update_prob = NULL)
 }
 \arguments{
-\item{net}{A network structure of class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
+\item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
 
 \item{method}{The parameterization method to be used. If "SDDS", stochastic discrete dynamical system proposed by Murrugarra et al. will be used. If "BNp", Boolean network with perturbation initially presented by Golinelli and Derrida (and later by Shmulevich et al. and Trairatphisan et al.) will be utilized. If "PEW", Boolean network with probabilistic edge weights proposed by Deritei et al. will be employed. For each of these cases a different pattern for the \code{params} argument is expected.}
 
@@ -22,7 +22,8 @@ get_reached_states(net, method = c("SDDS","BNp","PEW"),
 
 \item{repeats}{The number of repeats, which should be a positive integer.}
 
-\item{initial_states}{The list of initial states as a table where each row corresponds to binary form of a state. I \code{NULL} the initial state(s) are chosen randomly based on the uniform distrivution.}
+\item{initial_states}{The list of initial states as a matrix  where the rows are binary form of the states (or single binary vector for a single initial state). he number of matrix columns (the length of the vector) should be equal to the number of network nodes. The  If \code{NULL} the initial state(s) are chosen randomly based on the uniform distrivution.
+}
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used where a single node is updated at each time-step. In this case \code{update_prob} indicates update probabuilities. If \code{FALSE}, synchronous update is utilized.}
 
@@ -30,7 +31,7 @@ get_reached_states(net, method = c("SDDS","BNp","PEW"),
 }
 
 \details{
-This function returns the reached states after simulating a network for \code{steps} time-steps.
+This function returns the reached states (the states in the last time-step) after simulating a network for \code{steps} time-steps. If multiple initial states are provided by user, then the \code{repeats} argument is ignored.
 }
 
 \value{
