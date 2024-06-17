@@ -1,5 +1,5 @@
 
-calc_convergence_time <- function(node_act, threshold, window_size=1) {
+calc_convergence_time <- function(node_act, threshold, window_size = 1) {
 
   # the first row is consideres as time 0
 
@@ -40,5 +40,5 @@ find_consecutive_true <- function(vec, n) {
       return(i)
     }
   }
-  return(NA)  # Return NA if no consecutive TRUE values are found
+  return(NA)
 }

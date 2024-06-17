@@ -1,7 +1,7 @@
 
 calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
-                     steps, repeats=1000, initial_prob=NULL,
-                     last_step=F, asynchronous=T, update_prob=NULL) {
+                     steps, repeats = 1000, initial_prob= NULL, last_step = FALSE,
+                     asynchronous = TRUE, update_prob = NULL) {
 
   if(!is.positive.integer(steps)) {
     stop("The value of the argument \"steps\" is not integer.")

@@ -1,7 +1,7 @@
 
-count_pairwise_trans <- function(net, method=c("SDDS","BNp","PEW"), params, states,
-                                  steps=1, repeats=1000,
-                                  asynchronous=T, update_prob=NULL)
+count_pairwise_trans <- function(net, method = c("SDDS","BNp","PEW"), params,
+                                 states, steps = 1, repeats = 1000,
+                                 asynchronous = TRUE, update_prob = NULL)
 {
 
   # the C code requires all interactions to be coded into one vector:
@@ -123,14 +123,6 @@ count_pairwise_trans <- function(net, method=c("SDDS","BNp","PEW"), params, stat
                                  p_on, p_off, update_prob, states_dec, num_states,
                                  as.integer(steps), as.integer(repeats),
                                  PACKAGE = "PARBONET")
-
-
-      # SEXP inputs, SEXP input_positions,
-      # SEXP outputs, SEXP output_positions,
-      # SEXP fixed_nodes, SEXP p00, SEXP p01,
-      # SEXP p10, SEXP p11, SEXP update_prob,
-      # SEXP states, SEXP num_states,
-      # SEXP steps, SEXP repeats
 
 
     } else {

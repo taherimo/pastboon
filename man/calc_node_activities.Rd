@@ -16,9 +16,11 @@ calc_node_activities(net, method = c("SDDS","BNp","PEW"),
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
 
-\item{method}{The parameterization method to be used. If "SDDS", stochastic discrete dynamical system proposed by Murrugarra et al. will be used. If "BNp", Boolean network with perturbation initially presented by Golinelli and Derrida (and later by Shmulevich et al. and Trairatphisan et al.) will be utilized. If "PEW", Boolean network with probabilistic edge weights proposed by Deritei et al. will be employed. For each of these cases a different pattern for the \code{params} argument is expected.}
+\item{method}{The parameterization method to be used. For "SDDS", "BNp", amd
+"PEW" the methods \emph{stochastic discrete dynamical systems}, \emph{Boolean network with perturbations}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see the Details section.
+}
 
-\item{params}{The parameter values depending on \code{method}. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network nodes.}
+\item{params}{The parameter values depending on \code{method}. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network edges based on the order of the edges obtained from \code{\link{extract_edges}}.}
 
 \item{steps}{The number of time-steps, which should be a non-negatve integer.}
 
@@ -35,33 +37,36 @@ calc_node_activities(net, method = c("SDDS","BNp","PEW"),
 
 \details{
 By incorporating any kind of stochasticity in the update rule of a Boolean network and repeating its simulation several times, one can consider the average value of each variable (node) across the repeats as a continuous variable. This way, the discrete binary variables are turned into continuous variables, which makes continuous analysis methods applicable to study the dynamic behavior of the Boolean network. This function calculates the average value (i.e. node activity) of each network node in each time-step.
+
+Three Boolean network parameterization methods are implemented in this function: \emph{stochastic discrete dynamical systems} (SDDS) proposed by Murrugarra et al.; \emph{Boolean network with perturbations} (BNp) initially suggested by Golinelli and Derrida, later presented by Shmulevich et al. and Trairatphisan et al.; and \emph{Boolean network with probabilistic edge weights} (PEW) proposed by Deritei et al. All these methods actually different ways of including stochasticity in the Boolean networks.
 }
 
 \value{
-If \code{last_step = TRUE}, a vector with the length equal to the number of network nodes, representing activity rate of each node at the last time-step. If \code{last_step= FALSE}, a matrix with \code{steps + 1} rows (the first row corresponds to the time-step 0) and \code{length(net$genes)} columns that represents node activities in each time-step.
+If \code{last_step = TRUE}, a vector with the length equal to the number of network nodes, representing activity rate of each node at the last time-step. If \code{last_step= FALSE}, a matrix with \code{steps + 1} rows (the first row corresponds to the time-step 0) and \code{length(net$genes)} columns that represents node activities in each time-step. The order of the nodes in the columns is same as \code{net$genes}.
 }
 
 \references{
 Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. "EURASIP Journal on Bioinformatics and Systems Biology", 2012, 1-11.
 
-Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. "PLoS Computational Biology", 18(10), e1010536.
+Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. \emph{PLoS Computational Biology}, 18(10), e1010536.
 
 Golinelli, O., & Derrida, B. (1989). Barrier heights in the Kauffman model. "Journal De Physique", 50(13), 1587-1601.
-Shmulevich, I., Dougherty, E. R., & Zhang, W. (2002). Gene perturbation and intervention in probabilistic Boolean networks. "Bioinformatics", 18(10), 1319-1331.
+Shmulevich, I., Dougherty, E. R., & Zhang, W. (2002). Gene perturbation and intervention in probabilistic Boolean networks. \emph{Bioinformatics}, 18(10), 1319-1331.
 
-Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter, T. (2013). Recent development and biomedical applications of probabilistic Boolean networks. "Cell communication and signaling", 11, 1-25.
+Shmulevich, I., Dougherty, E. R., & Zhang, W. (2002). Gene perturbation and intervention in probabilistic Boolean networks. \emph{Bioinformatics}, 18(10), 1319-1331.
+
+Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter, T. (2013). Recent development and biomedical applications of probabilistic Boolean networks. \emph{Cell communication and signaling}, 11, 1-25.
 }
+
 \examples{
 
 # load the example network
 data(lac_operon_net)
 
-###############################
-# Example 1: The SDDS Method  #
-###############################
+# /\/\/\/\ Example 1: The SDDS Method /\/\/\/\
 
 # define the parameter for the SDDS method
-props <- rep(0.95, length(lac_operon_net$genes)
+props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
 # get node activities after simulation using the SDDS method and asynchronous update
@@ -78,9 +83,9 @@ plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity (\%)
 legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
         cex=0.5, fill=seq_len(length(lac_operon_net$genes)))
 
-###############################
-# Example 2: The BNp Method   #
-###############################
+
+# /\/\/\/\ Example 2: The BNp Method /\/\/\/\
+
 
 # define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
@@ -106,9 +111,8 @@ legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
     cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
 
 
-###############################
-# Example 3: The PEW Method   #
-###############################
+# /\/\/\/\ Example 3: The PEW Method /\/\/\/\
+
 
 # extract edges from the network
 edges <- extract_edges(lac_operon_net)
@@ -139,3 +143,4 @@ legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
        cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
 
 }
+

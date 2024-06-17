@@ -1,11 +1,15 @@
-extract_edges <- function(network, node_names= TRUE) {
 
-  inputs <- as.integer(sapply(network$interactions, FUN = function(x) {x$input}))
+extract_edges <- function(net, node_names = TRUE) {
+
+  inputs <- sapply(net$interactions, FUN = function(x) {x$input})
   #edges <- list(source= unname(unlist(inputs)), destination= rep(1:length(network$genes),sapply(inputs, length)))
-  if (node_names)
-    edges <- data.frame(source= unname(unlist(inputs)), destination= rep(1:length(network$genes),sapply(inputs, length)))
-  else
-    edges <- data.frame(source= network$genes[unname(unlist(inputs))], destination= network$genes[rep(1:length(network$genes),sapply(inputs, length))])
+  if (node_names) {
+    edges <- data.frame(source= net$genes[unname(unlist(inputs))], destination= net$genes[rep(1:length(net$genes),sapply(inputs, length))])
+
+  } else {
+    edges <- data.frame(source= unname(unlist(inputs)), destination= rep(1:length(net$genes),sapply(inputs, length)))
+  }
+
 
 
   rownames(edges) <- 1:nrow(edges)

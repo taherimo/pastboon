@@ -11,7 +11,7 @@ get_convergence_time(node_act, threshold, window_size = 1)
 }
 
 \arguments{
-\item{node_act}{A table that describes node activities in different time-steps where its rows and columns correspond to the time-steps and nodes, respectively. It is the output of \code{\link{calc_node_activities}}.
+\item{node_act}{A matrix that describes node activities in different time-steps where its rows and columns correspond to the time-steps and nodes, respectively. It is the output of \code{\link{calc_node_activities}}.
 }
 \item{threshold}{A value that determines the maximum change in node activiies to decide if they are concerged.}
 
