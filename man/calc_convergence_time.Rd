@@ -26,6 +26,7 @@ The time-step at which the curves are converged. If no convergence time is detec
 }
 
 \examples{
+
 # load the example network
 data(lac_operon_net)
 
@@ -34,8 +35,8 @@ props <- rep(0.95, length(lac_operon_net$genes)
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
 # get node activities after simulation using the SDDS method and asynchronous update
-node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params =                                            params, steps= 100, repeats = 10000)
+node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params = params,
+    steps= 100, repeats = 10000)
 
 calc_convergence_time(node_act)
-
 }

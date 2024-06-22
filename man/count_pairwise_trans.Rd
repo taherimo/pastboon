@@ -7,9 +7,8 @@ Count pairwise transitions between a given set of states
 Counts the frequencies of transition between each pair of states from a given set of states.
 }
 \usage{
-count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params,
-                           states, steps = 1, repeats = 1000,
-                           asynchronous = TRUE, update_prob = NULL)
+count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params, states, steps = 1,
+                     repeats = 1000, asynchronous = TRUE, update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
@@ -20,7 +19,7 @@ count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params,
 
 \item{params}{The parameter values depending on \code{method}. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network edges based on the order of the edges obtained from \code{\link{extract_edges}}.}
 
-\iten{states}{The network states that pairwise transitions among them are going to be counted. Should be a matrix where the rows are binary form of the states (or single binary vector for a single state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes.}
+\item{states}{The network states that pairwise transitions among them are going to be counted. Should be a matrix where the rows are binary form of the states (or single binary vector for a single state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes.}
 
 \item{steps}{The number of time-steps, which should be a non-negatve integer.}
 
@@ -55,27 +54,35 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 
 \examples{
 
+# >>>>>>>>>>>>>>>>  Load network and generate random initial states  <<<<<<<<<<<<<<<<<
+
 # load the example network
 data(lac_operon_net)
 
-# /\/\/\/\ Example 1: The SDDS Method /\/\/\/\
+# Generate some random states
+states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes),
+    replace = TRUE), nrow = 10, ncol = length(lac_operon_net$genes))
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # define the parameter for the SDDS method
 props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
-reached_states <- count_pairwise_trans(net, method = "SDDS", params = params, steps = 100, repeats = 10)
+# obtain frequency of pairwise transitions
+pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+    method = "SDDS", params = params, steps = 100, repeats = 10)
 
-
-# /\/\/\/\ Example 2: The BNp Method /\/\/\/\
-
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
 
+# obtain frequency of pairwise transitions
+pairwise_trans <- count_pairwise_trans(net, states = states, method = "BNp",
+    params = params, steps = 100, repeats = 10)
 
-# /\/\/\/\ Example 3: The PEW Method /\/\/\/\
-
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # extract edges from the network
 edges <- extract_edges(lac_operon_net)
@@ -83,8 +90,11 @@ edges <- extract_edges(lac_operon_net)
 # define the parameters for the PEW method
 p_on <- runif(nrow(edges))
 p_off <- runif(nrow(edges))
-params <- list(p_on=p_on, p_off=p_off)
+params <- list(p_on = p_on, p_off = p_off)
 
+# obtain frequency of pairwise transitions
+pairwise_trans <- count_pairwise_trans(net, method = "PEW", params = params,
+    steps = 100, repeats = 10)
 }
 
 

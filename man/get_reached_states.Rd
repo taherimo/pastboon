@@ -7,9 +7,8 @@ Obtain the reached states
 Obtains the reached states after simulating a Boolean network for some time-steps.
 }
 \usage{
-get_reached_states(net, method = c("SDDS","BNp","PEW"),
-                   params, steps, repeats = NULL, initial_states = NULL,
-                   asynchronous = TRUE, update_prob = NULL)
+get_reached_states(net, method = c("SDDS","BNp","PEW"), params, steps, repeats = NULL,
+                   initial_states = NULL, asynchronous = TRUE, update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
@@ -24,7 +23,7 @@ get_reached_states(net, method = c("SDDS","BNp","PEW"),
 
 \item{repeats}{The number of repeats, which should be a positive integer. If two or more initial states are provided via \code{initial_states}, then this argument is ignored. If \code{NULL} (default), then \code{initial_states} should not be \code{NULL}.}
 
-\item{initial_states}{The set of initial states as a matrix  where each row corresponds to the binary form of a state (or single binary vector for a single initial state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes. The order of the nodes in the columns is considerd same as \code{net$genes}. If \code{NULL} (default), the initial state(s) are chosen randomly for \code{repeats} number of times based on the uniform distribution, thus \codes{repeats} should not be \code{NULL} ate the same time.
+\item{initial_states}{The set of initial states as a matrix  where each row corresponds to the binary form of a state (or single binary vector for a single initial state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes. The order of the nodes in the columns is considerd same as \code{net$genes}. If \code{NULL} (default), the initial state(s) are chosen randomly for \code{repeats} number of times based on the uniform distribution, thus \code{repeats} should not be \code{NULL} ate the same time.
 }
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used where a single node is updated at each time-step. In this case \code{update_prob} indicates update probabuilities. If \code{FALSE}, synchronous update is utilized.}
@@ -33,7 +32,7 @@ get_reached_states(net, method = c("SDDS","BNp","PEW"),
 }
 
 \details{
-This function returns the reached states (the states in the last time-step) after simulating a network for \code{steps} time-steps and repeating it for \code{repeats} number of times. If \code{initial_states = NULL}, then the intial states are chosen randomly based on uniform distribution for \code{repeats} number of times and as a result, \code{repeats} number of reached states are returned. If two or more initial states are provided by user, then the \code{repeats} argument is ignored, and one reached state is returned for each initial state. Please note that \code{repeats} and \code{initial_states} should not be \code{NULL} at the same time.
+This function returns the reached states (the states in the last time-step) after simulating a network for \code{steps} time-steps and repeating it for \code{repeats} number of times. If \code{initial_states = NULL}, then the intial states are chosen randomly based on uniform distribution for \code{repeats} number of times and as a result, \code{repeats} number of reached states are returned. If two or more initial states are provided by user, then the \code{repeats} argument is ignored, and one reached state is returned for each initial state. If \code{repeats = NULL}, then the number of the returned reached states is equal to the number of inirial states. i.e. for each initial state a reached state is returned. Please note that \code{repeats} and \code{initial_states} should not be \code{NULL} at the same time.
 }
 
 \value{
@@ -56,52 +55,70 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 
 \examples{
 
-# load the example network
+# >>>>>>>>>>>>>>>>  Load network and generate random initial states  <<<<<<<<<<<<<<<<<
+
+# Load the example network
 data(lac_operon_net)
 
+# Generate a single initial state
+initial_state <- sample(c(0, 1), length(lac_operon_net$genes), replace = TRUE)
 
-# /\/\/\/\ Example 1: The SDDS Method /\/\/\/\
+# Generate multiple (10) initial states
+initial_states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes),
+    replace = TRUE), nrow = 10, ncol = length(lac_operon_net$genes))
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# define the parameter for the SDDS method
+# Define the parameters for the SDDS method
 props <- rep(0.95, length(lac_operon_net$genes))
-params <- list(p00= props, p01= props, p10= props, p11= props)
+params <- list(p00 = props, p01 = props, p10 = props, p11 = props)
 
-# no initial states are provided
-reached_states <- get_reached_states(net, method = "SDDS", params = params, steps = 100, repeats = 10)
+# No initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "SDDS", params = params,
+    steps = 100, repeats = 10)
 
-# generating 10 random initial states
-initial_states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes), replace = TRUE), nrow = 10, ncol = length(lac_operon_net$genes))
+# A single initial state is provided
+reached_states <- get_reached_states(lac_operon_net, method = "SDDS", params = params,
+    steps = 100, initial_states = initial_state, repeats = 10)
 
-# some initial states are provided
-reached_states <- get_reached_states(net, method = "SDDS", params = params, steps = 100, initial_states = initial_states)
+# Multiple initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "SDDS", params = params,
+    steps = 100, initial_states = initial_states)
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
-# /\/\/\/\ Example 2: The BNp Method /\/\/\/\
-
-
-# define the parameters for the BNp method
+# Define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
 
-# no initial states are provided
-reached_states <- get_reached_states(net, method = "BNp", params = params, steps = 100, repeats = 10)
+# No initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "BNp", params = params,
+    steps = 100, repeats = 10)
 
+# A single initial state is provided
+reached_states <- get_reached_states(lac_operon_net, method = "BNp", params = params,
+    steps = 100, initial_states = initial_state, repeats = 10)
 
-# /\/\/\/\ Example 3: The PEW Method /\/\/\/\
+# Multiple initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "BNp", params = params,
+    steps = 100, initial_states = initial_states)
 
-# extract edges from the network
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Extract edges from the network
 edges <- extract_edges(lac_operon_net)
 
-# define the parameters for the PEW method
+# Define the parameters for the PEW method
 p_on <- runif(nrow(edges))
 p_off <- runif(nrow(edges))
-params <- list(p_on=p_on, p_off=p_off)
+params <- list(p_on = p_on, p_off = p_off)
 
+# No initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
+    steps = 100, repeats = 10)
 
-# no initial states are provided
-reached_states <- get_reached_states(net, method = "PEW", params = params, steps = 100, repeats = 10)
+# Multiple initial states are provided
+reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
+    steps = 100, initial_states = initial_states)
 
 }
-
 

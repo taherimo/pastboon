@@ -16,7 +16,7 @@ Version: \tab 1.0\cr
 Date: \tab 2024-10-01\cr
 License: \tab Artistic-2.0\cr
 }
-Adapting a Boolean network to different contexts finds many applications in different fields. Boolean networks usually are designed to describe average behaviour a system without taking into account its specificity in different conditions. For instance, the Boolean models which are presenred to portray molecular network of different cell types usually ignore heterogeneity within the cells. Altering such such Boolean networks to resemble specific cells is of great importance in precision medicine.
+Adapting a Boolean network to different contexts finds many applications in different fields. Boolean networks usually are designed to describe average behaviour a system without taking into account its specificity in different conditions. For instance, the Boolean models which are presenred to portray molecular network of different cell types usually ignore heterogeneity within the cells. Altering such such Boolean networks to resemble specific cell types is of great importance in precision medicine.
 
 One way to manipulate dynamical behaviour of the Boolean networks is to incorporate stochasticity-related parameters in these networks and try to make the dynamical behaviour of the network as close as possible to our desired behavior by adjusting the parameter values. In the current version of \code{PARBONET}, three methods to parameterize the Boolean network are implemnted:
 

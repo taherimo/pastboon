@@ -5,11 +5,15 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
 
 
   if(!is.positive.integer(steps)) {
-    stop("The value of the argument \"steps\" is not positive integer.")
+    stop("The value of the argument \"steps\" is not positive integer!")
   }
 
-  if(!is.positive.integer(repeats)) {
-   stop("The value of the argument \"repeats\" is not integer.")
+  if(!is.positive.integer(repeats) & !is.null(repeats)) {
+   stop("The value of the argument \"repeats\" is not integer!")
+  }
+
+  if(!is.vector(initial_states) & !is.matrix(initial_states) & !is.null(initial_states)) {
+    stop("The argument \"initial_states\" should be either a vector, a matrix or NULL!")
   }
 
 
@@ -17,6 +21,9 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
 
   # assert ncols(initial_states) == length(net$genes)
   if(!is.null(initial_states)) {
+    if (is.null(repeats)) {
+      repeats <- 1
+    }
     if(!all(initial_states == 0 | initial_states == 1)) {
       stop("Non-binary value(s) in initial_states.")
     }
@@ -26,15 +33,25 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
       }
       initial_states_dec <- bin2dec(initial_states, length(net$genes))
       num_initial_states <- 1
-    } else {
+    } else if(nrow(initial_states)==1) {
+      if(length(initial_states)!=length(net$genes)) {
+        stop("The number of variables in initial_states doesn't match the number of network nodes.")
+      }
+      initial_states_dec <- bin2dec(initial_states[1,], length(net$genes))
+      num_initial_states <- 1
+    }
+    else {
       if(ncol(initial_states)!=length(net$genes)) {
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
       }
       num_initial_states <- nrow(initial_states)
       if(num_initial_states>1) {
-        if(repeats>1) {
-          stop("In the case of repeats > 1, a single initial state or no initial state can be given.")
-        }
+
+          if(repeats>1) {
+            stop("In the case of repeats > 1, a single initial state or no initial state can be given.")
+          }
+
+        # repeats is NULL or 1
         initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
       }
 
@@ -42,7 +59,7 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   } else if (!is.null(repeats)) {
     num_initial_states <- repeats
   } else {
-    stop("The values of repeats and initial_states cannot be NULL at the same time!")
+    stop("The values of \"repeats\" and \"initial_states\" cannot be NULL at the same time!")
   }
 
   if(!is.null(update_prob)) {
@@ -153,8 +170,6 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
     if(num_initial_states==1) {
 
       if(asynchronous) {
-
-        print(initial_states_dec)
 
 
         reached_states <- .Call("get_reached_states_SDDS_async_single_R", inputs, input_positions,
@@ -342,6 +357,7 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   if(num_initial_states==1) {
 
     reached_states_bin <- dec2bin(reached_states,len=length(net$genes))
+    names(reached_states_bin) <- net$genes
 
   } else {
 
@@ -350,7 +366,8 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
     reached_states_bin <- apply(reached_states, 1, dec2bin, len=length(net$genes))
 
 
-    reached_states_bin <- t(reached_states_bin)[,1:length(net$genes)]
+    #reached_states_bin <- t(reached_states_bin)[,1:length(net$genes)]
+    reached_states_bin <- t(reached_states_bin)
     colnames(reached_states_bin) <- net$genes
 
   }

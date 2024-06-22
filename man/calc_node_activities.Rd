@@ -7,10 +7,9 @@ Calculate activity rate for each node
 Calculates activity rate of the nodes (i.e. the number of times a node is active, i.e. ON, divided by the number of repeats) at each time-step.
 }
 \usage{
-calc_node_activities(net, method = c("SDDS","BNp","PEW"),
-                          params, steps, repeats = 1000,
-                          initial_prob = NULL, last_step = FALSE,
-                          asynchronous = TRUE, update_prob = NULL)
+calc_node_activities(net, method = c("SDDS","BNp","PEW"), params, steps,
+                     repeats = 1000, initial_prob = NULL, last_step = FALSE,
+                     asynchronous = TRUE, update_prob = NULL)
 }
 
 \arguments{
@@ -60,59 +59,49 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 
 \examples{
 
-# load the example network
+# >>>>>>>>>>>>>>>>  Load network and generate random initial states  <<<<<<<<<<<<<<<<<
+
+# Load the example network
 data(lac_operon_net)
 
-# /\/\/\/\ Example 1: The SDDS Method /\/\/\/\
+# Define plot function
+plot_node_activities <- function(node_activities) {
+  layout(matrix(c(1,2),nrow=1), width=c(4,1))
+  par(mar=c(5,4,4,0))
+  matplot(1:nrow(node_activities), node_act, type = "l", frame = TRUE, lwd = 2,
+  lty = 1, xlab= "time-step", ylab= "Node activity")
+  par(mar=c(5,0,4,2))
+  plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity")
+  legend("center", colnames(node_act),col=seq_len(ncol(node_activities)),
+      cex=0.5, fill=seq_len(ncol(node_activities)))
+}
 
-# define the parameter for the SDDS method
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Define the parameter for the SDDS method
 props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
 # get node activities after simulation using the SDDS method and asynchronous update
 node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params = params,
-                            steps= 100, repeats = 10000)
+    steps= 100, repeats = 10000)
 
 # plot node activities
-layout(matrix(c(1,2),nrow=1), width=c(4,1))
-par(mar=c(5,4,4,0)) #No margin on the right side
-matplot(1:nrow(node_act), node_act*100, type = "l", frame = TRUE, lwd = 2, lty = 1,
-        xlab= "time-step", ylab= "Node activity (\%)")
-par(mar=c(5,0,4,2)) #No margin on the left side
-plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity (\%)")
-legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
-        cex=0.5, fill=seq_len(length(lac_operon_net$genes)))
+plot_node_activities(node_act)
 
-
-# /\/\/\/\ Example 2: The BNp Method /\/\/\/\
-
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
 
 # get node activities after simulation using the BNp method and asynchronous update
 node_act <- calc_node_activities(lac_operon_net, method = "BNp", params = params,
-                            steps=50, repeats = 5000)
+    steps=50, repeats = 5000)
 
 # plot node activities
+plot_node_activities(node_act)
 
-layout(matrix(c(1,2),nrow=1), width=c(4,1))
-
-par(mar=c(5,4,4,0)) #No margin on the right side
-
-matplot(1:nrow(node_act), node_act*100, type = "l", frame = TRUE, lwd = 2, lty = 1,
-        xlab= "time-step", ylab= "Node activity (\%)")
-
-par(mar=c(5,0,4,2)) #No margin on the left side
-
-plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity (\%)")
-
-legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
-    cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
-
-
-# /\/\/\/\ Example 3: The PEW Method /\/\/\/\
-
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # extract edges from the network
 edges <- extract_edges(lac_operon_net)
@@ -124,23 +113,10 @@ params <- list(p_on=p_on, p_off=p_off)
 
 # get node activities after simulation using the PEW method and asynchronous update
 node_act <- calc_node_activities(lac_operon_net, method= "PEW", params = params,
-                            asynchronous = TRUE, steps = 100, repeats = 10000)
+    asynchronous = TRUE, steps = 100, repeats = 10000)
 
 # plot node activities
-
-layout(matrix(c(1,2),nrow=1), width=c(4,1))
-
-par(mar=c(5,4,4,0)) #No margin on the right side
-
-matplot(1:nrow(node_act), node_act*100, type = "l", frame = TRUE, lwd = 2, lty = 1,
-        xlab= "time-step", ylab= "Node activity (\%)")
-
-par(mar=c(5,0,4,2)) #No margin on the left side
-
-plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity (\%)")
-
-legend("center", colnames(node_act),col=seq_len(length(lac_operon_net$genes)),
-       cex=0.5,fill=seq_len(length(lac_operon_net$genes)))
+plot_node_activities(node_act)
 
 }
 
