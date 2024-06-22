@@ -5,8 +5,7 @@ Version: 0.1.0
 Depends: BoolNet
 Author: Mohammad Taheri-Ledari
 Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>
-Description: Provides functions for simulation of parameterized stochastic
-    Boolean networks.
+Description: Provides functions for simulation of parameterized stochastic Boolean networks.
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
