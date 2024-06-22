@@ -7,8 +7,9 @@ Obtain the reached states
 Obtains the reached states after simulating a Boolean network for some time-steps.
 }
 \usage{
-get_reached_states(net, method = c("SDDS","BNp","PEW"), params, steps, repeats = NULL,
-                   initial_states = NULL, asynchronous = TRUE, update_prob = NULL)
+get_reached_states(net, method = c("SDDS","BNp","PEW"), params, steps,
+                   repeats = NULL, initial_states = NULL, asynchronous = TRUE,
+                   update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
@@ -119,6 +120,5 @@ reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = pa
 # Multiple initial states are provided
 reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
     steps = 100, initial_states = initial_states)
-
 }
 

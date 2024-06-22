@@ -25,9 +25,9 @@ A data frame is returned where its rows correspond to the directed edges of the 
 
 \examples{
 
-# load the example network
+# Load the example network
 data(lac_operon_net)
 
+# Extract edges from the network
 edges <- extract_edges(lac_operon_net)
-
 }

@@ -7,8 +7,9 @@ Count pairwise transitions between a given set of states
 Counts the frequencies of transition between each pair of states from a given set of states.
 }
 \usage{
-count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params, states, steps = 1,
-                     repeats = 1000, asynchronous = TRUE, update_prob = NULL)
+count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params, states,
+                     steps = 1, repeats = 1000, asynchronous = TRUE,
+                     update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
@@ -56,7 +57,7 @@ Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter,
 
 # >>>>>>>>>>>>>>>>  Load network and generate random initial states  <<<<<<<<<<<<<<<<<
 
-# load the example network
+# Load the example network
 data(lac_operon_net)
 
 # Generate some random states
@@ -65,34 +66,34 @@ states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes),
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# define the parameter for the SDDS method
+# Define the parameter for the SDDS method
 props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
-# obtain frequency of pairwise transitions
+# Obtain frequency of pairwise transitions
 pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
     method = "SDDS", params = params, steps = 100, repeats = 10)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# define the parameters for the BNp method
+# Define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
 
-# obtain frequency of pairwise transitions
+# Obtain frequency of pairwise transitions
 pairwise_trans <- count_pairwise_trans(net, states = states, method = "BNp",
     params = params, steps = 100, repeats = 10)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# extract edges from the network
+# Extract edges from the network
 edges <- extract_edges(lac_operon_net)
 
-# define the parameters for the PEW method
+# Define the parameters for the PEW method
 p_on <- runif(nrow(edges))
 p_off <- runif(nrow(edges))
 params <- list(p_on = p_on, p_off = p_off)
 
-# obtain frequency of pairwise transitions
+# Obtain frequency of pairwise transitions
 pairwise_trans <- count_pairwise_trans(net, method = "PEW", params = params,
     steps = 100, repeats = 10)
 }
