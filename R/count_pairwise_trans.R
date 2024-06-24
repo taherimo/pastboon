@@ -4,6 +4,10 @@ count_pairwise_trans <- function(net, method = c("SDDS","BNp","PEW"), params,
                                  asynchronous = TRUE, update_prob = NULL)
 {
 
+  if(!is.BooleanNetwork(net))
+    stop("The value of the argument \"net\" must accord to the \"BooleanNetwork\" definition in \"BoolNet\".")
+
+
   if(!is.vector(states) & !is.matrix(states))
     stop("The value of the argument \"initial_states\" must be either a vector or a matrix.")
 

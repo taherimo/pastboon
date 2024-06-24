@@ -4,6 +4,10 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
                                       asynchronous = TRUE, update_prob = NULL) {
 
 
+  if(!is.BooleanNetwork(net))
+    stop("The value of the argument \"net\" must accord to the \"BooleanNetwork\" definition in \"BoolNet\".")
+
+
   if(!is.positive.integer(steps))
     stop("The value of the argument \"steps\" is not positive integer!")
 

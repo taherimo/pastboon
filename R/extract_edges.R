@@ -1,6 +1,10 @@
 
 extract_edges <- function(net, node_names = TRUE) {
 
+  if(!is.BooleanNetwork(net))
+    stop("The value of the argument \"net\" must accord to the \"BooleanNetwork\" definition in \"BoolNet\".")
+
+
   if (!is.logical_value(node_names))
     stop("The value of the argument \"node_names\" must be logical (TRUE or FALSE).")
 
