@@ -7,7 +7,7 @@
 #include "random.h"
 
 
-static inline void apply_single_function_SDDS(unsigned int * currentState, unsigned int geneIdx, AsynchronousBooleanNetwork * net)
+static inline void apply_single_function_SDDS(unsigned int * currentState, unsigned int geneIdx, StochasticDiscreteDynamicalSystem * net)
 {
   unsigned int k = 0;
 
@@ -115,11 +115,11 @@ static inline void apply_single_function_SDDS(unsigned int * currentState, unsig
 }
 
 
-static inline void state_transition_SDDS_asynchronous(unsigned int * currentState, AsynchronousBooleanNetwork * net)
+static inline void state_transition_SDDS_asynchronous(unsigned int * currentState, double * update_prob, StochasticDiscreteDynamicalSystem * net)
 {
   unsigned int i;
 
-  if (net->update_prob == NULL)
+  if (update_prob == NULL)
     // uniform gene selection
   {
     unsigned int r;
@@ -137,7 +137,7 @@ static inline void state_transition_SDDS_asynchronous(unsigned int * currentStat
     // is less than <r>
     for (i = 0; i < net->num_nodes; ++i)
     {
-      if (net->update_prob[i] < r && net->update_prob[i+1] >= r)
+      if (update_prob[i] < r && update_prob[i+1] >= r)
         break;
     }
     // make a transition with the chosen gene
@@ -146,7 +146,7 @@ static inline void state_transition_SDDS_asynchronous(unsigned int * currentStat
 }
 
 
-void state_transition_SDDS_synchronous(unsigned int * currentState, SynchronousBooleanNetwork * net, unsigned int elementsPerEntry)
+void state_transition_SDDS_synchronous(unsigned int * currentState, StochasticDiscreteDynamicalSystem * net, unsigned int elementsPerEntry)
 {
 
   unsigned int i = 0, k = 0;
@@ -246,7 +246,7 @@ void state_transition_SDDS_synchronous(unsigned int * currentState, SynchronousB
 
 
 
-double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+double * get_node_activities_SDDS_async_last_step(StochasticDiscreteDynamicalSystem * net, double * update_prob, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -298,7 +298,7 @@ double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * n
     for (j = 1; j <= num_steps; j++)
     {
 
-      state_transition_SDDS_asynchronous(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, update_prob, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
     }
@@ -327,7 +327,7 @@ double * get_node_activities_SDDS_async_last_step(AsynchronousBooleanNetwork * n
 
 
 
-double ** get_node_activities_SDDS_async_traj(AsynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+double ** get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem * net, double * update_prob, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -398,7 +398,7 @@ double ** get_node_activities_SDDS_async_traj(AsynchronousBooleanNetwork * net, 
     for (j = 1; j <= num_steps; j++)
     {
 
-      state_transition_SDDS_asynchronous(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, update_prob, net);
       //stateTransition(current_state,net,num_elements);
 
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
@@ -436,7 +436,7 @@ double ** get_node_activities_SDDS_async_traj(AsynchronousBooleanNetwork * net, 
 }
 
 
-double ** get_node_activities_SDDS_sync_traj(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_node_activities_SDDS_sync_traj(StochasticDiscreteDynamicalSystem * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
   double* traj_vals = CALLOC(net->num_nodes * (num_steps+1), sizeof(double));
   double** traj = CALLOC(net->num_nodes, sizeof(double*));
 
@@ -536,7 +536,7 @@ double ** get_node_activities_SDDS_sync_traj(SynchronousBooleanNetwork * net, do
 }
 
 
-double * get_node_activities_SDDS_sync_last_step(SynchronousBooleanNetwork * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double * get_node_activities_SDDS_sync_last_step(StochasticDiscreteDynamicalSystem * net, double * initial_prob, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* traj = CALLOC(net->num_nodes, sizeof(double));
 
@@ -581,7 +581,7 @@ double * get_node_activities_SDDS_sync_last_step(SynchronousBooleanNetwork * net
   return traj;
 }
 
-unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_async_batch(StochasticDiscreteDynamicalSystem * net, double * update_prob, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
 
 {
 
@@ -621,7 +621,7 @@ unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork *
     for (j = 1; j <= num_steps; j++)
     {
 
-      state_transition_SDDS_asynchronous(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, update_prob, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -642,7 +642,7 @@ unsigned int ** get_reached_states_SDDS_async_batch(AsynchronousBooleanNetwork *
 
 
 
-unsigned int ** get_reached_states_SDDS_sync_batch(SynchronousBooleanNetwork * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_sync_batch(StochasticDiscreteDynamicalSystem * net, unsigned int * initial_states, unsigned int num_initial_states, int num_steps, unsigned int num_elements)
 
 {
 
@@ -707,7 +707,7 @@ unsigned int ** get_reached_states_SDDS_sync_batch(SynchronousBooleanNetwork * n
 
 
 
-unsigned int ** get_reached_states_SDDS_async_single(AsynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_async_single(StochasticDiscreteDynamicalSystem * net, double* update_prob, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -745,7 +745,7 @@ unsigned int ** get_reached_states_SDDS_async_single(AsynchronousBooleanNetwork 
     for (j = 1; j <= num_steps; j++)
     {
 
-      state_transition_SDDS_asynchronous(current_state, net);
+      state_transition_SDDS_asynchronous(current_state, update_prob, net);
       //stateTransition(current_state,net,num_elements);
       //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -765,7 +765,7 @@ unsigned int ** get_reached_states_SDDS_async_single(AsynchronousBooleanNetwork 
 }
 
 
-unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
+unsigned int ** get_reached_states_SDDS_sync_single(StochasticDiscreteDynamicalSystem * net, unsigned int * initial_state, unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
 {
 
@@ -823,7 +823,7 @@ unsigned int ** get_reached_states_SDDS_sync_single(SynchronousBooleanNetwork * 
 }
 
 
-double ** get_pairwise_transitions_SDDS_async(AsynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_SDDS_async(StochasticDiscreteDynamicalSystem * net, double * update_prob, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -857,7 +857,7 @@ double ** get_pairwise_transitions_SDDS_async(AsynchronousBooleanNetwork * net, 
       for (k = 1; k <= num_steps; k++)
       {
 
-        state_transition_SDDS_asynchronous(current_state, net);
+        state_transition_SDDS_asynchronous(current_state, update_prob, net);
         //stateTransition(current_state,net,num_elements);
         //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
@@ -880,7 +880,7 @@ double ** get_pairwise_transitions_SDDS_async(AsynchronousBooleanNetwork * net, 
 
 }
 
-double ** get_pairwise_transitions_SDDS_sync(SynchronousBooleanNetwork * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+double ** get_pairwise_transitions_SDDS_sync(StochasticDiscreteDynamicalSystem * net, unsigned int ** states, unsigned int num_states, unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
   double* trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
   double** trans_mat = CALLOC(num_states, sizeof(double*));
@@ -949,7 +949,7 @@ SEXP get_reached_states_SDDS_async_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-  AsynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -962,10 +962,10 @@ SEXP get_reached_states_SDDS_async_single_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
-    network.update_prob = REAL(update_prob);
 
+  double * _update_prob = NULL;
+  if (!isNull(update_prob) && length(update_prob) > 0)
+    _update_prob = REAL(update_prob);
 
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++)
@@ -1002,7 +1002,7 @@ SEXP get_reached_states_SDDS_async_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-  unsigned int ** reached_states = get_reached_states_SDDS_async_single(&network, _initial_state, _num_repeats, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_async_single(&network, _update_prob, _initial_state, _num_repeats, _num_steps, _numElements);
 
 
   // for(unsigned int j = 0; j < _numElements; j++) {
@@ -1041,7 +1041,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
 
 
 
-  SynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1131,7 +1131,7 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
                                    SEXP states, SEXP num_states,
                                    SEXP steps, SEXP repeats) {
 
-  AsynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1144,9 +1144,10 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.update_prob = NULL;
+
+  double * _update_prob = NULL;
   if (!isNull(update_prob) && length(update_prob) > 0)
-    network.update_prob = REAL(update_prob);
+    _update_prob = REAL(update_prob);
 
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++)
@@ -1196,7 +1197,7 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
 
 
-  double ** transition_matrix = get_pairwise_transitions_SDDS_async(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
+  double ** transition_matrix = get_pairwise_transitions_SDDS_async(&network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
 
 
   SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
@@ -1228,7 +1229,7 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                                    SEXP num_states, SEXP steps,
                                    SEXP repeats) {
 
-  SynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1329,7 +1330,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   //REAL(result)[1] = 67.89;
   //UNPROTECT(1);
 
-  AsynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1342,9 +1343,11 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.update_prob = NULL;
+
+  double * _update_prob = NULL;
   if (!isNull(update_prob) && length(update_prob) > 0)
-    network.update_prob = REAL(update_prob);
+    _update_prob = REAL(update_prob);
+
 
   double * _initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
@@ -1393,7 +1396,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
   if(_last_step) {
 
-    double * traj = get_node_activities_SDDS_async_last_step(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double * traj = get_node_activities_SDDS_async_last_step(&network, _update_prob, _initial_prob, _numRepeats, _num_steps, _numElements);
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
@@ -1404,7 +1407,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   }
   else {
 
-    double ** traj = get_node_activities_SDDS_async_traj(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
+    double ** traj = get_node_activities_SDDS_async_traj(&network, _update_prob, _initial_prob, _numRepeats, _num_steps, _numElements);
     //unsigned long long * reachedStates = simulate_singleInt(&network, (long long *)_startStates, (long long)_numStartStates, _steps);
 
     //printf("%.6f %d\n", traj[0][0], _numElements);
@@ -1462,7 +1465,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                       SEXP steps, SEXP repeats, SEXP last_step) {
 
 
-  SynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1475,6 +1478,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
+
   double * _initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
     _initial_prob = REAL(initial_prob);
@@ -1570,7 +1574,7 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
 
 
 
-  AsynchronousBooleanNetwork network;
+  StochasticDiscreteDynamicalSystem network;
   //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
@@ -1583,9 +1587,11 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
-  network.update_prob = NULL;
+
+  double * _update_prob = NULL;
   if (!isNull(update_prob) && length(update_prob) > 0)
-    network.update_prob = REAL(update_prob);
+    _update_prob = REAL(update_prob);
+
 
 
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
@@ -1625,26 +1631,15 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   }
 
 
-
-
-
-
   int _num_steps = *INTEGER(steps);
 
-
-
-
-
   //srand(INTEGER(seed)[0]);
-
-
-
 
   GetRNGstate();  // Activate R's random number generator
 
 
 
-  unsigned int ** reached_states = get_reached_states_SDDS_async_batch(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
+  unsigned int ** reached_states = get_reached_states_SDDS_async_batch(&network, _update_prob, _initial_states, _num_initial_states, _num_steps, _numElements);
 
 
   // for(unsigned int j = 0; j < _numElements; j++) {
@@ -1683,8 +1678,7 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
 
 
 
-  SynchronousBooleanNetwork network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
+  StochasticDiscreteDynamicalSystem network;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
