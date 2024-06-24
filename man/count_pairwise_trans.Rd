@@ -92,8 +92,8 @@ p_off <- runif(nrow(edges))
 params <- list(p_on = p_on, p_off = p_off)
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(net, method = "PEW", params = params,
-    steps = 100, repeats = 10)
+pairwise_trans <- count_pairwise_trans(net, states = states, method = "PEW",
+    params = params, steps = 100, repeats = 10)
 }
 
 

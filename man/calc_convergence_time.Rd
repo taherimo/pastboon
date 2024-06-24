@@ -38,6 +38,6 @@ params <- list(p00= props, p01= props, p10= props, p11= props)
 node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params = params,
     steps= 100, repeats = 10000)
 
-# Calculate convergence time
-calc_convergence_time(node_act)
+# Calculate convergence time1
+calc_convergence_time(node_act, threshold = 0.01)
 }
