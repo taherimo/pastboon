@@ -7,7 +7,7 @@ Calculate converegence time-step for node activities
 Given node activity trajectories for a set of variables \code{node_act}, this function calculates the time-step that the changes in all the curves are below \code{threshold} in the next \code{window_size} consecutive time-steps.
 }
 \usage{
-get_convergence_time(node_act, threshold, window_size = 1)
+calc_convergence_time(node_act, threshold, window_size = 1)
 }
 
 \arguments{

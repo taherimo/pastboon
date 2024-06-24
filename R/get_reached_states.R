@@ -4,17 +4,14 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
                                       asynchronous = TRUE, update_prob = NULL) {
 
 
-  if(!is.positive.integer(steps)) {
+  if(!is.positive.integer(steps))
     stop("The value of the argument \"steps\" is not positive integer!")
-  }
 
-  if(!is.positive.integer(repeats) & !is.null(repeats)) {
+  if(!is.positive.integer(repeats) & !is.null(repeats))
    stop("The value of the argument \"repeats\" is not integer!")
-  }
 
-  if(!is.vector(initial_states) & !is.matrix(initial_states) & !is.null(initial_states)) {
-    stop("The argument \"initial_states\" should be either a vector, a matrix or NULL!")
-  }
+  if(!is.vector(initial_states) & !is.matrix(initial_states) & !is.null(initial_states))
+    stop("The value of the argument \"initial_states\" must be either a vector, a matrix or NULL!")
 
 
   initial_states_dec <- NULL
@@ -24,9 +21,9 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
     if (is.null(repeats)) {
       repeats <- 1
     }
-    if(!all(initial_states == 0 | initial_states == 1)) {
-      stop("Non-binary value(s) in initial_states.")
-    }
+    if(!all(initial_states == 0 | initial_states == 1))
+      stop("All the elements in \"states\" must be either zero or one.")
+
     if(is.vector(initial_states)) {
       if(length(initial_states)!=length(net$genes)) {
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
@@ -45,42 +42,42 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
         stop("The number of variables in initial_states doesn't match the number of network nodes.")
       }
       num_initial_states <- nrow(initial_states)
-      if(num_initial_states>1) {
-
-          if(repeats>1) {
-            stop("In the case of repeats > 1, a single initial state or no initial state can be given.")
-          }
-
-        # repeats is NULL or 1
-        initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
+      if(repeats>1) {
+        stop("In the case of \"repeats > 1\", a single initial state or no initial state can be given.")
       }
 
+      # repeats is NULL or 1
+      initial_states_dec <- as.vector(apply(initial_states, 1, bin2dec, len=length(net$genes)))
+
     }
+
   } else if (!is.null(repeats)) {
     num_initial_states <- repeats
   } else {
-    stop("The values of \"repeats\" and \"initial_states\" cannot be NULL at the same time!")
+    stop("The values of the arguments \"repeats\" and \"initial_states\" cannot be NULL at the same time!")
   }
+
+  if (!is.logical_value(asynchronous))
+    stop("The value of the argument \"asynchronous\" must be logical (TRUE or FALSE).")
 
   if(!is.null(update_prob)) {
     if (asynchronous) {
       if (!is.all_non_negative_float(update_prob)) {
         if(is.vector(update_prob)) {
           if(length(update_prob)!=length(net$genes)) {
-            stop("The length of update_prob should be a equal to the number of network nodes.")
+            stop("The length of \"update_prob\" must be a equal to the number of network nodes.")
           } else if (sum(update_prob) != 1) {
-            stop("The sum of the update_prob values should be 1.")
+            stop("The sum of the \"update_prob\" values must be one.")
           }
         } else {
-          stop("The argument update_prob should be a vector.")
+          stop("The value of the argument \"update_prob\" must be a vector.")
         }
       } else {
-        stop("All update_prob values should be non-negative and non-NA.")
+        stop("All \"update prob\" values must be non-negative and non-NA.")
       }
     } else {
-      cat("Since asynchronous = FALSE, ignoring update_prob!")
+      warning("Since \"asynchronous = FALSE\", ignoring \"update_prob\".")
     }
-
   }
 
   # if(is.null(initial_states)) {
@@ -128,8 +125,7 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   #     return(NA)
   # }
 
-  if (!is.logical_value(asynchronous))
-    stop("The value of the asybchronous argument should be logical (TRUE or FALSE).")
+
 
 
   # the C code requires all interactions to be coded into one vector:
@@ -147,25 +143,24 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   switch(match.arg(method), SDDS={
 
     if (!is.list(params) || is.null(names(params))) {
-      stop("The params argument must be a named list.")
+      stop("The value of the argument \"params\" must be a named list.")
     }
 
 
     if (!all(c("p00", "p01", "p10", "p11") %in% names(params))) {
-      stop("Input list must contain vectors named 'p00', 'p01', 'p10', and 'p11'.")
+      stop("The value of the argument \"params\" must be a named list consisting of \"p00\", \"p01\", \"p10\", and \"p11\".")
     }
 
     if(length(params$p00) != length(net$genes) |
        length(params$p01) != length(net$genes) |
        length(params$p10) != length(net$genes) |
        length(params$p11) != length(net$genes)) {
-      stop("Length of p00, p01, p10, and p11 must be equal to the number of network nodes.")
+      stop("The lengths of \"p00\", \"p01\", \"p10\", and \"p11\" must be equal to the number of network nodes.")
     }
 
     if(!is.nonNA.numeric(params$p00) | !is.nonNA.numeric(params$p01) | !is.nonNA.numeric(params$p10) | !is.nonNA.numeric(params$p11)) {
-      stop("The vectors p00, p01, p10, and p11 must be numeric without NA values.")
+      stop("The vectors\"p00\", \"p01\", \"p10\", and \"p11\" must be numeric without NA values.")
     }
-
 
     if(num_initial_states==1) {
 
@@ -218,12 +213,12 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   },
   BNp={
 
-    if(length(params) != length(net$genes)) {
-      stop("Length of params must be equal to the number of network nodes.")
+    if(!is.nonNA.numeric(params)) {
+      stop("The value of the argument \"params\" must be numeric vector without NA values.")
     }
 
-    if(!is.nonNA.numeric(params)) {
-      stop("The vector params must be numeric without NA values.")
+    if(length(params) != length(net$genes)) {
+      stop("The length of \"params\" must be equal to the number of network nodes.")
     }
 
 
@@ -277,25 +272,22 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
   },
   PEW={
 
-
     if (!is.list(params) || is.null(names(params))) {
-      stop("The params argument must be a named list.")
+      stop("The value of the argument \"params\" must be a named list.")
     }
-
 
     if (!all(c("p_on", "p_off") %in% names(params))) {
-      stop("Input list must contain vectors named 'p_on' and 'p_off'.")
+      stop("The value of the argument \"params\" must be a named list consisting of \"p_on\" and \"p_off\".")
     }
 
-    if(length(params$p_on) != nrow(get_edges(net)) |
-       length(params$p_off) != nrow(get_edges(net))) {
-      stop("Length of p_on and p_off must be equal to the number of network edges.")
+    if(length(params$p_on) != nrow(extract_edges(net)) |
+       length(params$p_off) != nrow(extract_edges(net))) {
+      stop("The lengths of \"p_on\" and \"p_off\" must be equal to the number of network edges.")
     }
 
     if(!is.nonNA.numeric(params$p_on) | !is.nonNA.numeric(params$p_off)) {
-      stop("The vectors p_on and p_off must be numeric without NA values.")
+      stop("The vectors \"p_on\" and \"p_off\" must be numeric without NA values.")
     }
-
 
     if(num_initial_states==1) {
 
@@ -343,16 +335,9 @@ get_reached_states <- function(net, method = c("SDDS","BNp","PEW"), params,
 
     }
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
+  stop("The value of the argument \"method\" must be one of \"SDDS\",\"BNp\",\"PEW\"")
 
   )
-
-
-
-
-
-  #print(reached_states)
-
 
   if(num_initial_states==1) {
 

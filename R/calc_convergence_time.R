@@ -5,16 +5,21 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
 
   # check dimensions of the matrix node_act
 
-  if (!is.data.frame(node_act) & !is.matrix(node_act)) {
-    stop("The input must be a data table.")
+  # if (!is.data.frame(node_act) & !is.matrix(node_act)) {
+  #   stop("The value of the argument \"node_act\" must be a matrix or a data.frame.")
+  # }
+
+  if (!is.matrix(node_act)) {
+    stop("The value of the argument \"node_act\" must be a matrix.")
   }
 
+
   if(!is.positive.integer(window_size)) {
-    stop("The value of the argument \"window_size\" is not positive integer.")
+    stop("The value of the argument \"window_size\" must be a positive integer.")
   }
 
   if (nrow < window_size) {
-    stop("The numbwe of time-steps (rows) should be equal or greator than \"window_size\".")
+    stop("The rows in \"node_act\" (time-steps) must be equal to or greater than \"window_size\".")
   }
 
   differences <- diff(node_act, 1, along = 1)

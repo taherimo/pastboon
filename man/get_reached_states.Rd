@@ -115,6 +115,10 @@ params <- list(p_on = p_on, p_off = p_off)
 reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
     steps = 100, repeats = 10)
 
+# A single initial state is provided
+reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
+    steps = 100, initial_states = initial_state, repeats = 10)
+
 # Multiple initial states are provided
 reached_states <- get_reached_states(lac_operon_net, method = "PEW", params = params,
     steps = 100, initial_states = initial_states)

@@ -1,6 +1,10 @@
 
 extract_edges <- function(net, node_names = TRUE) {
 
+  if (!is.logical_value(node_names))
+    stop("The value of the argument \"node_names\" must be logical (TRUE or FALSE).")
+
+
   inputs <- sapply(net$interactions, FUN = function(x) {x$input})
   #edges <- list(source= unname(unlist(inputs)), destination= rep(1:length(network$genes),sapply(inputs, length)))
   if (node_names) {

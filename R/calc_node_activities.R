@@ -3,48 +3,49 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
                      steps, repeats = 1000, initial_prob= NULL, last_step = FALSE,
                      asynchronous = TRUE, update_prob = NULL) {
 
-  if(!is.positive.integer(steps)) {
-    stop("The value of the argument \"steps\" is not integer.")
-  }
+  if(!is.positive.integer(steps))
+    stop("The value of the argument \"steps\" must be an integer.")
 
-  if(!is.positive.integer(repeats)) {
-    stop("The value of the argument \"repeats\" is not integer.")
-  }
+  if(!is.positive.integer(repeats))
+    stop("The value of the argument \"repeats\" must be an integer.")
+
 
   if(!is.null(initial_prob)) {
     if(is.vector(initial_prob)) {
       if(length(initial_prob)!=length(net$genes)) {
-        stop("The length of initial_prob should be a equal to the number of network nodes.")
+        stop("The length of \"initial_prob\" must be equal to the number of network nodes.")
       }
     } else {
-      stop("The argument initial_prob should be a vector.")
+      stop("The value of the argument \"initial_prob\" must be a vector.")
     }
   }
-
-  if(!is.null(update_prob)) {
-    if (!is.all_non_negative_float(update_prob)) {
-      if(is.vector(update_prob)) {
-        if(length(update_prob)!=length(net$genes)) {
-          stop("The length of update_prob should be a equal to the number of network nodes.")
-        } else if (sum(update_prob) != 1) {
-          stop("The sum of the update_prob values should be 1.")
-        }
-      } else {
-        stop("The argument update_prob should be a vector.")
-      }
-    } else {
-      stop("All update prob values should be non-negative and non-NA.")
-    }
-  }
-
 
   if (!is.logical_value(last_step))
-    stop("The value of the last_step argument should be logical (TRUE or FALSE).")
+    stop("The value of the argument \"last_step\" must be logical (TRUE or FALSE).")
 
   if (!is.logical_value(asynchronous))
-    stop("The value of the asybchronous argument should be logical (TRUE or FALSE).")
+    stop("The value of the argument \"asynchronous\" must be logical (TRUE or FALSE).")
 
 
+  if(!is.null(update_prob)) {
+    if (asynchronous) {
+      if (!is.all_non_negative_float(update_prob)) {
+        if(is.vector(update_prob)) {
+          if(length(update_prob)!=length(net$genes)) {
+            stop("The length of \"update_prob\" must be a equal to the number of network nodes.")
+          } else if (sum(update_prob) != 1) {
+            stop("The sum of the \"update_prob\" values must be one.")
+          }
+        } else {
+          stop("The value of the argument \"update_prob\" must be a vector.")
+        }
+      } else {
+        stop("All \"update prob\" values must be non-negative and non-NA.")
+      }
+    } else {
+      warning("Since \"asynchronous = FALSE\", ignoring \"update_prob\".")
+    }
+  }
 
   # the C code requires all interactions to be coded into one vector:
   # Assemble all input gene lists in one list <inputs>, and remember the split positions in <input_positions>.
@@ -58,20 +59,34 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
 
   switch(match.arg(method), SDDS={
 
-    p00 <- params$p00
-    p01 <- params$p01
-    p10 <- params$p10
-    p11 <- params$p11
+    if (!is.list(params) || is.null(names(params)))
+      stop("The value of the argument \"params\" must be a named list.")
+
+
+    if (!all(c("p00", "p01", "p10", "p11") %in% names(params)))
+      stop("The value of the argument \"params\" must be a named list consisting of \"p00\", \"p01\", \"p10\", and \"p11\".")
+
+
+    if(length(params$p00) != length(net$genes) |
+       length(params$p01) != length(net$genes) |
+       length(params$p10) != length(net$genes) |
+       length(params$p11) != length(net$genes))
+      stop("The lengths of \"p00\", \"p01\", \"p10\", and \"p11\" must be equal to the number of network nodes.")
+
+
+    if(!is.nonNA.numeric(params$p00) | !is.nonNA.numeric(params$p01) | !is.nonNA.numeric(params$p10) | !is.nonNA.numeric(params$p11))
+      stop("The vectors\"p00\", \"p01\", \"p10\", and \"p11\" must be numeric without NA values.")
+
+
 
     if(asynchronous) {
 
       node_activities <- .Call("get_node_activities_SDDS_async_R", inputs, input_positions,
-                               outputs, output_positions,
-                               as.integer(net$fixed),
-                               p00, p01, p10, p11,
-                               initial_prob, update_prob,
-                               as.integer(steps), as.integer(repeats),
-                               as.integer(last_step), PACKAGE = "PARBONET")
+                               outputs, output_positions, as.integer(net$fixed),
+                               params$p00, params$p01, params$p10, params$p11,
+                               initial_prob, update_prob, as.integer(steps),
+                               as.integer(repeats), as.integer(last_step),
+                               PACKAGE = "PARBONET")
 
 
     } else {
@@ -81,7 +96,7 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
       node_activities <- .Call("get_node_activities_SDDS_sync_R", inputs, input_positions,
                                outputs, output_positions,
                                as.integer(net$fixed),
-                               p00, p01, p10, p11,
+                               params$p00, params$p01, params$p10, params$p11,
                                initial_prob,
                                as.integer(steps),
                                as.integer(repeats),
@@ -92,6 +107,14 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
 
   },
   BNp={
+
+    if(!is.nonNA.numeric(params))
+      stop("The value of the argument \"params\" must be numeric vector without NA values.")
+
+
+    if(length(params) != length(net$genes))
+      stop("The length of \"params\" must be equal to the number of network nodes.")
+
 
     if(asynchronous) {
       node_activities <- .Call("get_node_activities_BNp_async_R", inputs, input_positions,
@@ -113,14 +136,22 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
   },
   PEW={
 
-    p_on <- params$p_on
-    p_off <- params$p_off
+    if (!is.list(params) || is.null(names(params)))
+      stop("The value of the argument \"params\" must be a named list.")
 
-    if(length(p_on) != length(inputs))
-      stop("The length of \"p_on\" should be equal to the number of edges!")
 
-    if(length(p_off) != length(inputs))
-      stop("The length of \"p_off\" should be equal to the number of edges!")
+    if (!all(c("p_on", "p_off") %in% names(params)))
+      stop("The value of the argument \"params\" must be a named list consisting of \"p_on\" and \"p_off\".")
+
+
+    if(length(params$p_on) != nrow(extract_edges(net)) |
+       length(params$p_off) != nrow(extract_edges(net)))
+      stop("The lengths of \"p_on\" and \"p_off\" must be equal to the number of network edges.")
+
+
+    if(!is.nonNA.numeric(params$p_on) | !is.nonNA.numeric(params$p_off))
+      stop("The vectors \"p_on\" and \"p_off\" must be numeric without NA values.")
+
 
 
     if(asynchronous) {
@@ -128,7 +159,7 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
       node_activities <- .Call("get_node_activities_PEW_async_R", inputs, input_positions,
                                outputs, output_positions,
                                as.integer(net$fixed),
-                               p_on, p_off, initial_prob, update_prob,
+                               params$p_on, params$p_off, initial_prob, update_prob,
                                as.integer(steps), as.integer(repeats),
                                as.integer(last_step), PACKAGE = "PARBONET")
 
@@ -140,7 +171,7 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
       node_activities <- .Call("get_node_activities_PEW_sync_R", inputs, input_positions,
                                outputs, output_positions,
                                as.integer(net$fixed),
-                               p_on, p_off, initial_prob,
+                               params$p_on, params$p_off, initial_prob,
                                as.integer(steps),
                                as.integer(repeats),
                                as.integer(last_step), PACKAGE = "PARBONET")
@@ -148,7 +179,7 @@ calc_node_activities <- function(net, method=c("SDDS","BNp","PEW"), params,
     }
 
   },
-  stop("'method' must be one of \"SDDS\",\"BNp\",\"PEW\"")
+  stop("The value of the argument \"method\" must be one of \"SDDS\",\"BNp\",\"PEW\"")
   )
 
 
