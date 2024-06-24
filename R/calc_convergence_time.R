@@ -13,12 +13,25 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
     stop("The value of the argument \"node_act\" must be a matrix.")
   }
 
+  if(!is.numeric(threshold))
+    stop("The value of the argument \"threshold\" must be numeric.")
+
+  if(!is.scalar(threshold))
+    stop("The value of the argument \"threshold\" must be a scalar.")
+
+  if(threshold < 0)
+    stop("The value of the argument \"threshold\" must be non-negative.")
+
+
+
+  if(!is.scalar(window_size))
+    stop("The value of the argument \"window_size\" must be a scalar.")
 
   if(!is.positive.integer(window_size)) {
     stop("The value of the argument \"window_size\" must be a positive integer.")
   }
 
-  if (nrow < window_size) {
+  if (nrow(node_act) < window_size) {
     stop("The rows in \"node_act\" (time-steps) must be equal to or greater than \"window_size\".")
   }
 

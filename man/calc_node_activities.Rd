@@ -66,14 +66,14 @@ data(lac_operon_net)
 
 # Define plot function
 plot_node_activities <- function(node_activities) {
-  layout(matrix(c(1,2),nrow=1), width=c(4,1))
+  layout(matrix(c(1,2),nrow = 1), width = c(4,1))
   par(mar=c(5,4,4,0))
   matplot(1:nrow(node_activities), node_act, type = "l", frame = TRUE, lwd = 2,
   lty = 1, xlab= "time-step", ylab= "Node activity")
-  par(mar=c(5,0,4,2))
-  plot(c(0,1),type= "n", axes= FALSE, xlab= "time-step", ylab= "Node activity")
-  legend("center", colnames(node_act),col=seq_len(ncol(node_activities)),
-      cex=0.5, fill=seq_len(ncol(node_activities)))
+  par(mar = c(5,0,4,2))
+  plot(c(0,1),type = "n", axes = FALSE, xlab = "")
+  legend("center", colnames(node_act),col = seq_len(ncol(node_activities)),
+      cex = 0.5, fill = seq_len(ncol(node_activities)))
 }
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -82,9 +82,9 @@ plot_node_activities <- function(node_activities) {
 props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
-# Get node activities after simulation using the SDDS method and asynchronous update
+# Get node activities after simulation using the SDDS method
 node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params = params,
-    steps= 100, repeats = 10000)
+    steps = 100, repeats = 10000)
 
 # Plot node activities
 plot_node_activities(node_act)
@@ -94,9 +94,9 @@ plot_node_activities(node_act)
 # Define the parameters for the BNp method
 params <- rep(0.05, length(lac_operon_net$genes))
 
-# Get node activities after simulation using the BNp method and asynchronous update
+# Get node activities after simulation using the BNp method
 node_act <- calc_node_activities(lac_operon_net, method = "BNp", params = params,
-    steps=50, repeats = 5000)
+    steps=100, repeats = 10000)
 
 # Plot node activities
 plot_node_activities(node_act)
@@ -111,9 +111,9 @@ p_on <- runif(nrow(edges))
 p_off <- runif(nrow(edges))
 params <- list(p_on=p_on, p_off=p_off)
 
-# Get node activities after simulation using the PEW method and asynchronous update
+# Get node activities after simulation using the PEW method
 node_act <- calc_node_activities(lac_operon_net, method= "PEW", params = params,
-    asynchronous = TRUE, steps = 100, repeats = 10000)
+    steps = 100, repeats = 10000)
 
 # Plot node activities
 plot_node_activities(node_act)

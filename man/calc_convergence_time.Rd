@@ -31,10 +31,10 @@ The time-step at which the curves are converged. If no convergence time is detec
 data(lac_operon_net)
 
 # Define the parameter for the SDDS method
-props <- rep(0.95, length(lac_operon_net$genes)
+props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00= props, p01= props, p10= props, p11= props)
 
-# Get node activities after simulation using the SDDS method and asynchronous update
+# Get node activities after simulation using the SDDS method
 node_act <- calc_node_activities(lac_operon_net, method= "SDDS", params = params,
     steps= 100, repeats = 10000)
 
