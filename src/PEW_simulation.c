@@ -58,13 +58,6 @@ static inline void apply_single_function_PEW(unsigned int * currentState, unsign
       // => value does not change
       currentState[geneIdx / BITS_PER_BLOCK_32] |= (previous_node_state << (geneIdx % BITS_PER_BLOCK_32));
 
-    // if(geneIdx==80) {
-    //   printf("previous state = %d\n", previous_node_state);
-    //   printf("transition = %d\n", transition);
-    //   printf("input position start = %d\n", net->input_positions[geneIdx]);
-    //   printf("input position end = %d\n", net->input_positions[geneIdx+1]);
-    // }
-
   }
   else {
 
@@ -189,7 +182,6 @@ void state_transition_PEW_synchronous(unsigned int * currentState, Probabilistic
 
   }
 
-  //printf("stateTransition %u %u %d\n", currentState[0], nextState[0], elementsPerEntry);
   memcpy(currentState,&nextState,sizeof(unsigned int) * elementsPerEntry);
 }
 
@@ -212,27 +204,15 @@ double * get_node_activities_PEW_async_last_step(ProbabilisticEdgeWeight * net, 
 
   unsigned int i = 0, j = 0, k = 0;
 
-  // for(i = 0; i < net->num_nodes; i++) {
-  //   for(j = 0; j < num_steps; j++) {
-  //     printf("traj[%u][%u]= %.00f\n", i, j, traj[i*num_steps  + j]);
-  //   }
-  // }
-
-
   for (i = 0; i < num_repeats; i++) {
-    //unsigned int currentState[net->numElements];
 
     for(j = 0; j < num_elements; j++) {
-      //current_state[j] = (rand() << (BITS_PER_BLOCK_32 - 1)) ^ rand();
-      //printf("current state in for block %d:  %u\n", j, current_state[j]);
       current_state[j] = 0;
     }
 
     for(k = 0; k < net->num_nodes; k++) {
       if(initial_prob[k] > 0 & initial_prob[k] < 1) {
-        //double r = doublerand_1();
         if (doublerand_1() <= initial_prob[k]) {
-          //printf("%d ----- %f ----- %f ------ %f\n", k, net->initial_prob[k], r, unif_rand());
           current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
         }
       }
@@ -245,21 +225,12 @@ double * get_node_activities_PEW_async_last_step(ProbabilisticEdgeWeight * net, 
 
     for (j = 1; j <= num_steps; j++)
     {
-
       state_transition_PEW_asynchronous(current_state, update_prob, net);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
     }
 
     for(k = 0; k < net->num_nodes; k++) {
-      //printf("inside loop\n");
       if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-        // printf("yes, %f\n", c);
-        //traj[i*num_steps  + j] += c;
-        //printf("traj before = %0.0000f\n", traj[i][j]);
         traj[k] += c;
-        //traj[k * num_steps + j] += c;
-        //printf("traj after = %0.0000f\n", traj[i][j]);
       }
 
     }
@@ -296,20 +267,9 @@ double ** get_node_activities_PEW_async_traj(ProbabilisticEdgeWeight * net, doub
     traj[i] = traj_vals + i*(num_steps+1);
   }
 
-
-  // for(i = 0; i < net->num_nodes; i++) {
-  //   for(j = 0; j < num_steps; j++) {
-  //     printf("traj[%u][%u]= %.00f\n", i, j, traj[i*num_steps  + j]);
-  //   }
-  // }
-
-
   for (i = 0; i < num_repeats; i++) {
-    //unsigned int currentState[net->numElements];
 
     for(j = 0; j < num_elements; j++) {
-      //current_state[j] = (rand() << (BITS_PER_BLOCK_32 - 1)) ^ rand();
-      //printf("current state in for block %d:  %u\n", j, current_state[j]);
       current_state[j] = 0;
     }
 
@@ -320,24 +280,18 @@ double ** get_node_activities_PEW_async_traj(ProbabilisticEdgeWeight * net, doub
         }
       }
       else if(initial_prob[k] > 0 & initial_prob[k] < 1) {
-        //double r = doublerand_1();
         if (doublerand_1() < initial_prob[k]) {
-          //printf("%d ----- %f ----- %f ------ %f\n", k, net->initial_prob[k], r, unif_rand());
           current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
         }
       }
       else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |= (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
-      //printf("inside loop\n");
-      //printf("Bit %d = %d\n", k, GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32));
-      //printf("block = %lu, bit = %lu, value = %d\n", k / BITS_PER_BLOCK_32, k % BITS_PER_BLOCK_32, GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32));
+
       if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-        //if(GET_BIT_ARRAY(current_state, k)) {
         traj[k][0] += c;
       }
-      //traj[k * num_steps] += c;
-      //printf("traj[%d][0] = %f\n", k, traj[k][0]);
+
     }
 
 
@@ -345,34 +299,15 @@ double ** get_node_activities_PEW_async_traj(ProbabilisticEdgeWeight * net, doub
     {
 
       state_transition_PEW_asynchronous(current_state, update_prob, net);
-      //stateTransition(current_state,net,num_elements);
-
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
       for(k = 0; k < net->num_nodes; k++) {
-        //printf("inside loop\n");
+
         if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-          // printf("yes, %f\n", c);
-          //traj[i*num_steps  + j] += c;
-          //printf("traj before = %0.0000f\n", traj[i][j]);
           traj[k][j] += c;
-          //traj[k * num_steps + j] += c;
-          //printf("traj after = %0.0000f\n", traj[i][j]);
         }
       }
 
     }
-
-
-    // for(k = 0; k < net->num_nodes; k++) {
-    //   printf("traj[%d][0] = %f\n", k, traj[k][0]);
-    // }
-
-    //printf("\n");
-
-
-    //printf("%d %u %u\n", i, currentStates[i][0], currentStates[i][1]);
-    //currentStates[i]=stateTransition(currentStates[i], net);
 
   }
 
@@ -397,19 +332,10 @@ double ** get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight * net, doubl
 
   unsigned int i = 0, j = 0, k = 0;
 
-  // for(i = 0; i < net->num_nodes; i++) {
-  //   for(j = 0; j < num_steps; j++) {
-  //     printf("traj[%u][%u]= %.00f\n", i, j, traj[i*num_steps  + j]);
-  //   }
-  // }
-
 
   for (i = 0; i < num_repeats; i++) {
-    //unsigned int currentState[net->numElements];
 
     for(j = 0; j < num_elements; j++) {
-      //current_state[j] = (rand() << (BITS_PER_BLOCK_32 - 1)) ^ rand();
-      //printf("current state in for block %d:  %u\n", j, current_state[j]);
       current_state[j] = 0;
     }
 
@@ -420,24 +346,19 @@ double ** get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight * net, doubl
         }
       }
       else if(initial_prob[k] > 0 & initial_prob[k] < 1) {
-        //double r = doublerand_1();
         if (doublerand_1() < initial_prob[k]) {
-          //printf("%d ----- %f ----- %f ------ %f\n", k, net->initial_prob[k], r, unif_rand());
           current_state[k / BITS_PER_BLOCK_32] |= (1 << (k % BITS_PER_BLOCK_32));
         }
       }
       else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |= (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
-      //printf("inside loop\n");
-      //printf("Bit %d = %d\n", k, GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32));
-      //printf("block = %lu, bit = %lu, value = %d\n", k / BITS_PER_BLOCK_32, k % BITS_PER_BLOCK_32, GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32));
+
       if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
         //if(GET_BIT_ARRAY(current_state, k)) {
         traj[k][0] += c;
       }
-      //traj[k * num_steps] += c;
-      //printf("traj[%d][0] = %f\n", k, traj[k][0]);
+
     }
 
 
@@ -445,34 +366,17 @@ double ** get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight * net, doubl
     {
 
       state_transition_PEW_synchronous(current_state, net, num_elements);
-      //stateTransition(current_state,net,num_elements);
-
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
       for(k = 0; k < net->num_nodes; k++) {
         //printf("inside loop\n");
         if(GET_BIT(current_state[k / BITS_PER_BLOCK_32], k % BITS_PER_BLOCK_32)) {
-          // printf("yes, %f\n", c);
-          //traj[i*num_steps  + j] += c;
-          //printf("traj before = %0.0000f\n", traj[i][j]);
+
           traj[k][j] += c;
-          //traj[k * num_steps + j] += c;
-          //printf("traj after = %0.0000f\n", traj[i][j]);
+
         }
       }
 
     }
-
-
-    // for(k = 0; k < net->num_nodes; k++) {
-    //   printf("traj[%d][0] = %f\n", k, traj[k][0]);
-    // }
-
-    //printf("\n");
-
-
-    //printf("%d %u %u\n", i, currentStates[i][0], currentStates[i][1]);
-    //currentStates[i]=stateTransition(currentStates[i], net);
 
   }
 
@@ -532,14 +436,10 @@ unsigned int ** get_reached_states_PEW_async_batch(ProbabilisticEdgeWeight * net
 
   unsigned int i = 0, j = 0;
 
-
-  //printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
-
   unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
   unsigned int ** reached_states = CALLOC(num_initial_states, sizeof(int*));
 
   for (i=0;i<num_initial_states;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i*num_elements;
   }
 
@@ -567,14 +467,11 @@ unsigned int ** get_reached_states_PEW_async_batch(ProbabilisticEdgeWeight * net
     {
 
       state_transition_PEW_asynchronous(current_state, update_prob, net);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
     }
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -591,14 +488,10 @@ unsigned int ** get_reached_states_PEW_async_single(ProbabilisticEdgeWeight * ne
 
   unsigned int i = 0, j = 0;
 
-
-  //printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_repeats,num_steps,num_elements);
-
   unsigned int * reached_states_vals = CALLOC(num_repeats * num_elements, sizeof(unsigned int));
   unsigned int ** reached_states = CALLOC(num_repeats, sizeof(int*));
 
   for (i=0;i<num_repeats;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i*num_elements;
   }
 
@@ -617,21 +510,15 @@ unsigned int ** get_reached_states_PEW_async_single(ProbabilisticEdgeWeight * ne
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_state[j];
-      //printf("initial_states[%u]=%u\n",j,initial_state[j]);
     }
 
     for (j = 1; j <= num_steps; j++)
     {
-
       state_transition_PEW_asynchronous(current_state, update_prob, net);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
     }
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -648,13 +535,10 @@ unsigned int ** get_reached_states_PEW_sync_batch(ProbabilisticEdgeWeight * net,
 
   unsigned int i = 0, j = 0;
 
-  //printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_initial_states,num_steps,num_elements);
-
   unsigned int * reached_states_vals = CALLOC(num_initial_states * num_elements, sizeof(unsigned int));
   unsigned int ** reached_states = CALLOC(num_initial_states, sizeof(int*));
 
   for (i=0;i<num_initial_states;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i*num_elements;
   }
 
@@ -676,21 +560,16 @@ unsigned int ** get_reached_states_PEW_sync_batch(ProbabilisticEdgeWeight * net,
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_states[i * num_elements + j];
-      //printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements + j]);
     }
 
     for (j = 1; j <= num_steps; j++)
     {
 
       state_transition_PEW_synchronous(current_state, net, num_elements);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
     }
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -708,13 +587,10 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 
   unsigned int i = 0, j = 0;
 
-  //printf("num_initial_states=%d, num_steps=%d, num_elements=%u\n",num_repeats,num_steps,num_elements);
-
   unsigned int * reached_states_vals = CALLOC(num_repeats * num_elements, sizeof(unsigned int));
   unsigned int ** reached_states = CALLOC(num_repeats, sizeof(int*));
 
   for (i=0;i<num_repeats;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i*num_elements;
   }
 
@@ -734,21 +610,15 @@ unsigned int ** get_reached_states_PEW_sync_single(ProbabilisticEdgeWeight * net
 
     for(j = 0; j < num_elements; j++) {
       current_state[j] = initial_state[j];
-      //printf("initial_states[%u]=%u\n",j,initial_state[j]);
     }
 
     for (j = 1; j <= num_steps; j++)
     {
-
       state_transition_PEW_synchronous(current_state, net, num_elements);
-      //stateTransition(current_state,net,num_elements);
-      //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
     }
 
     for(j = 0; j < num_elements; j++) {
       reached_states[i][j] = current_state[j];
-      //printf("reached_states[%u][%u]=%u\n",i,j,reached_states[i][j]);
     }
 
   }
@@ -781,29 +651,21 @@ double ** get_pairwise_transitions_PEW_async(ProbabilisticEdgeWeight * net, doub
   for (i=0;i<num_states;i++){
 
 
-    //reached_states = get_reached_states_async(net,current_state,num_repeats,num_steps, num_elements);
-
     for (j=0;j<num_repeats;j++){
 
       for(k = 0; k < num_elements; k++) {
         current_state[k] = states[i][k];
-        //current_state[j] = states[i * num_elements + j];
-        //printf("states[%u]=%u\n",i,states[i][j]);
       }
 
       for (k = 1; k <= num_steps; k++)
       {
 
         state_transition_PEW_asynchronous(current_state, update_prob, net);
-        //stateTransition(current_state,net,num_elements);
-        //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
 
         for(l=0; l<num_states;l++) {
 
-          //if(areArraysEqual(reached_states[j], states[k], num_elements)) {
           if(areArraysEqual(current_state, states[l], num_elements)) {
             trans_mat[i][l] += c;
-            //printf("%u --- %u\n", j,k);
             break;
           }
         }
@@ -829,7 +691,6 @@ double ** get_pairwise_transitions_PEW_sync(ProbabilisticEdgeWeight * net, unsig
   double c = 1.0;
 
   for (i=0;i<num_states;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     trans_mat[i] = trans_mat_vals + i*num_states;
   }
 
@@ -837,31 +698,22 @@ double ** get_pairwise_transitions_PEW_sync(ProbabilisticEdgeWeight * net, unsig
 
   for (i=0;i<num_states;i++){
 
-
-    //reached_states = get_reached_states_async(net,current_state,num_repeats,num_steps, num_elements);
-
     for (j=0;j<num_repeats;j++){
 
       for(k = 0; k < num_elements; k++) {
         current_state[k] = states[i][k];
-        //current_state[j] = states[i * num_elements + j];
-        //printf("states[%u]=%u\n",i,states[i][j]);
       }
 
       for (k = 1; k <= num_steps; k++)
       {
 
         state_transition_PEW_synchronous(current_state, net, num_elements);
-        //stateTransition(current_state,net,num_elements);
-        //printf("current state in for block 0 in step %d:  %u\n", j, current_state[0]);
-
 
         for(l=0; l<num_states;l++) {
 
           //if(areArraysEqual(reached_states[j], states[k], num_elements)) {
           if(areArraysEqual(current_state, states[l], num_elements)) {
             trans_mat[i][l] += c;
-            //printf("%u --- %u\n", j,k);
             break;
           }
         }
@@ -976,7 +828,6 @@ SEXP get_reached_states_PEW_sync_single_R(SEXP inputs, SEXP input_positions,
 
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1033,8 +884,6 @@ SEXP get_reached_states_PEW_sync_single_R(SEXP inputs, SEXP input_positions,
 
   SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _numElements));
   //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
-
-  //memcpy(INTEGER(result), reached_states, _num_initial_states * sizeof(unsigned int));
 
 
   for (unsigned int i = 0; i < _num_repeats; ++i) {
@@ -1140,9 +989,6 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  // FREE(_states);
-  // FREE(_states_2d);
-  // FREE(_states_2d_vals);
 
   return result;
 
@@ -1157,7 +1003,6 @@ SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
                                                   SEXP repeats) {
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1201,7 +1046,6 @@ SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
   unsigned int ** _states_2d = CALLOC(_num_states, sizeof(unsigned int *));
 
   for (i=0;i<_num_states;i++){
-    //traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     _states_2d[i] = _states_2d_vals + i*_num_elements;
   }
 
@@ -1212,9 +1056,7 @@ SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
   }
 
 
-
-  GetRNGstate();  // Activate R's random number generator
-
+  GetRNGstate();
 
 
   double ** transition_matrix = get_pairwise_transitions_PEW_sync(&network, _states_2d, _num_states, _num_repeats, _num_steps, _num_elements);
@@ -1226,15 +1068,12 @@ SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
     memcpy(&REAL(result)[i * _num_states], transition_matrix[i], _num_states * sizeof(double));
   }
 
-  PutRNGstate();  // Deactivate R's random number generator
+  PutRNGstate();
 
 
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  // FREE(_states);
-  // FREE(_states_2d);
-  // FREE(_states_2d_vals);
 
   return result;
 
@@ -1247,15 +1086,8 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
                                       SEXP fixed_nodes, SEXP p_on, SEXP p_off,
                                       SEXP initial_prob, SEXP update_prob,
                                       SEXP steps, SEXP repeats, SEXP last_step) {
-  //int * inputs = INTEGER(inputs_R);
-  //SEXP result;
-  //result = PROTECT(allocVector(REALSXP, 2));
-  //REAL(result)[0] = 123.45;
-  //REAL(result)[1] = 67.89;
-  //UNPROTECT(1);
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1273,12 +1105,7 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
   double * _initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
     _initial_prob = REAL(initial_prob);
-  //network.epsilon = REAL(epsilon)[0];
 
-  // count fixed genes, and create an index array for non-fixed genes:
-  // <network.non_fixed_node_bits[i]> contains the bit positions in a state
-  // at which the <i>-th gene is stored - this is different from <i>
-  // as fixed genes are not stored
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++)
   {
@@ -1297,13 +1124,6 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
 
-  //unsigned int* _startStates = (unsigned int*) INTEGER(startStates);
-  //unsigned long long * _startStates = (unsigned long long *) INTEGER(startStates);
-
-  //printf("start state in simulate_R: %u\n", _startStates[0]);
-  //unsigned int _numStartStates = length(startStates)/_numElements;  // max 32 bits
-  //unsigned long long _numStartStates = length(startStates);
-
   unsigned int _num_steps = (unsigned int) *INTEGER(steps);
   unsigned int _numRepeats = (unsigned int) *INTEGER(repeats);
 
@@ -1311,7 +1131,7 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
 
   //srand(INTEGER(seed)[0]);
 
-  GetRNGstate();  // Activate R's random number generator
+  GetRNGstate();
 
   SEXP result;
 
@@ -1321,7 +1141,6 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
-    //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
@@ -1332,21 +1151,17 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-    //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
 
     for (unsigned int i = 0; i < network.num_nodes; ++i) {
       memcpy(&REAL(result)[i * (_num_steps+1)], traj[i], (_num_steps + 1) * sizeof(double));
     }
 
 
-
-    //memcpy(INTEGER(result), reachedStates, _numStartStates * network.numElements * sizeof(int));
-
     //free(reachedStates);
 
   }
 
-  PutRNGstate();  // Deactivate R's random number generator
+  PutRNGstate();
 
 
   UNPROTECT(1);
@@ -1367,7 +1182,6 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
 
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1401,13 +1215,6 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
 
-  //unsigned int* _startStates = (unsigned int*) INTEGER(startStates);
-  //unsigned long long * _startStates = (unsigned long long *) INTEGER(startStates);
-
-  //printf("start state in simulate_R: %u\n", _startStates[0]);
-  //unsigned int _numStartStates = length(startStates)/_numElements;  // max 32 bits
-  //unsigned long long _numStartStates = length(startStates);
-
   unsigned int _num_steps = *INTEGER(steps);
   unsigned int _numRepeats = *INTEGER(repeats);
 
@@ -1415,7 +1222,7 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
 
 
 
-  GetRNGstate();  // Activate R's random number generator
+  GetRNGstate();
 
   SEXP result;
 
@@ -1425,7 +1232,6 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
 
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
-    //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
@@ -1433,24 +1239,20 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
   else {
 
     double ** traj = get_node_activities_PEW_sync_traj(&network, _initial_prob, _numRepeats, _num_steps, _numElements);
-    //unsigned long long * reachedStates = simulate_singleInt(&network, (long long *)_startStates, (long long)_numStartStates, _steps);
-
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-    //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
 
     for (unsigned int i = 0; i < network.num_nodes; ++i) {
       memcpy(&REAL(result)[i * (_num_steps+1)], traj[i], (_num_steps + 1) * sizeof(double));
     }
 
 
-    //memcpy(INTEGER(result), reachedStates, _numStartStates * network.numElements * sizeof(int));
 
     //free(reachedStates);
 
   }
 
-  PutRNGstate();  // Deactivate R's random number generator
+  PutRNGstate();
 
 
 
@@ -1473,7 +1275,6 @@ SEXP get_reached_states_PEW_async_batch_R(SEXP inputs, SEXP input_positions,
 
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1497,23 +1298,12 @@ SEXP get_reached_states_PEW_async_batch_R(SEXP inputs, SEXP input_positions,
     _initial_states = (unsigned int *) INTEGER(initial_states);
 
 
-
-
   unsigned int _numElements;
 
   if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
     _numElements = network.num_nodes / BITS_PER_BLOCK_32;
   else
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-
-
-  //unsigned int _num_initial_states = length(initial_states) / _numElements;
-
-
-  //int * _initial_states = INTEGER(initial_states);
-  //unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
-
 
 
   unsigned int numNonFixed = 0, i;
@@ -1526,44 +1316,24 @@ SEXP get_reached_states_PEW_async_batch_R(SEXP inputs, SEXP input_positions,
   }
 
 
-
-
-
-
   int _num_steps = *INTEGER(steps);
-
-
-
-
 
   //srand(INTEGER(seed)[0]);
 
-
-
-
-  GetRNGstate();  // Activate R's random number generator
+  GetRNGstate();
 
 
 
   unsigned int ** reached_states = get_reached_states_PEW_async_batch(&network, _update_prob, _initial_states, _num_initial_states, _num_steps, _numElements);
 
 
-  // for(unsigned int j = 0; j < _numElements; j++) {
-  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  // }
-
-
   SEXP result = PROTECT(allocVector(INTSXP, _num_initial_states * _numElements));
-  //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
-
-  //memcpy(INTEGER(result), reached_states, _num_initial_states * sizeof(unsigned int));
-
 
   for (unsigned int i = 0; i < _num_initial_states; ++i) {
     memcpy(&INTEGER(result)[i * _numElements], reached_states[i], _numElements * sizeof(unsigned int));
   }
 
-  PutRNGstate();  // Deactivate R's random number generator
+  PutRNGstate();
 
 
   UNPROTECT(1);
@@ -1585,7 +1355,6 @@ SEXP get_reached_states_PEW_sync_batch_R(SEXP inputs, SEXP input_positions,
 
 
   ProbabilisticEdgeWeight network;
-  //network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1610,15 +1379,6 @@ SEXP get_reached_states_PEW_sync_batch_R(SEXP inputs, SEXP input_positions,
   else
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-
-  //unsigned int _num_initial_states = length(initial_states) / _numElements;
-
-
-  //int * _initial_states = INTEGER(initial_states);
-  //unsigned int * _initial_states = (unsigned int *) INTEGER(initial_states);
-
-
-
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++)
   {
@@ -1628,41 +1388,20 @@ SEXP get_reached_states_PEW_sync_batch_R(SEXP inputs, SEXP input_positions,
     }
   }
 
-
-
   int _num_steps = *INTEGER(steps);
 
 
-
-  //srand(INTEGER(seed)[0]);
-
-
-
-
-  GetRNGstate();  // Activate R's random number generator
-
-
+  GetRNGstate();
 
   unsigned int ** reached_states = get_reached_states_PEW_sync_batch(&network, _initial_states, _num_initial_states, _num_steps, _numElements);
 
-
-  // for(unsigned int j = 0; j < _numElements; j++) {
-  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  // }
-
-
   SEXP result = PROTECT(allocVector(INTSXP, _num_initial_states * _numElements));
-  //memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) * sizeof(double));
-
-  //memcpy(INTEGER(result), reached_states, _num_initial_states * sizeof(unsigned int));
-
 
   for (unsigned int i = 0; i < _num_initial_states; ++i) {
     memcpy(&INTEGER(result)[i * _numElements], reached_states[i], _numElements * sizeof(unsigned int));
   }
 
-  PutRNGstate();  // Deactivate R's random number generator
-
+  PutRNGstate();
 
   UNPROTECT(1);
 
