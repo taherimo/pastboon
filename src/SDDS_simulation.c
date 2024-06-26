@@ -240,9 +240,7 @@ double *get_node_activities_SDDS_async_last_step(
     }
 
     for (j = 1; j <= num_steps; j++) {
-
       state_transition_SDDS_asynchronous(current_state, update_prob, net);
-      // stateTransition(current_state,net,num_elements);
     }
 
     for (k = 0; k < net->num_nodes; k++) {
@@ -278,7 +276,6 @@ get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
   unsigned int i = 0, j = 0, k = 0;
 
   for (i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
@@ -295,7 +292,6 @@ get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
               (1 << (k % BITS_PER_BLOCK_32));
         }
       } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        // double r = doublerand_1();
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
@@ -338,7 +334,6 @@ double **get_node_activities_SDDS_sync_traj(
   unsigned int current_state[num_elements];
 
   for (unsigned int i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
@@ -447,7 +442,6 @@ unsigned int **get_reached_states_SDDS_async_batch(
   unsigned int **reached_states = CALLOC(num_initial_states, sizeof(int *));
 
   for (i = 0; i < num_initial_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i * num_elements;
   }
 
@@ -496,7 +490,6 @@ unsigned int **get_reached_states_SDDS_sync_batch(
   unsigned int **reached_states = CALLOC(num_initial_states, sizeof(int *));
 
   for (i = 0; i < num_initial_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     reached_states[i] = reached_states_vals + i * num_elements;
   }
 
@@ -651,8 +644,6 @@ double **get_pairwise_transitions_SDDS_async(
         state_transition_SDDS_asynchronous(current_state, update_prob, net);
 
         for (l = 0; l < num_states; l++) {
-
-          // if(areArraysEqual(reached_states[j], states[k], num_elements)) {
           if (areArraysEqual(current_state, states[l], num_elements)) {
             trans_mat[i][l] += c;
             break;
@@ -680,17 +671,12 @@ double **get_pairwise_transitions_SDDS_sync(
   double c = 1.0;
 
   for (i = 0; i < num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     trans_mat[i] = trans_mat_vals + i * num_states;
   }
 
   unsigned int current_state[num_elements];
 
   for (i = 0; i < num_states; i++) {
-
-    // reached_states =
-    // get_reached_states_async(net,current_state,num_repeats,num_steps,
-    // num_elements);
 
     for (j = 0; j < num_repeats; j++) {
 
@@ -703,8 +689,6 @@ double **get_pairwise_transitions_SDDS_sync(
         state_transition_SDDS_synchronous(current_state, net, num_elements);
 
         for (l = 0; l < num_states; l++) {
-
-          // if(areArraysEqual(reached_states[j], states[k], num_elements)) {
           if (areArraysEqual(current_state, states[l], num_elements)) {
             trans_mat[i][l] += c;
             break;
@@ -723,7 +707,6 @@ SEXP get_reached_states_SDDS_async_single_R(
     SEXP initial_state, SEXP repeats, SEXP steps) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -793,7 +776,6 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
                                            SEXP steps) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -858,7 +840,6 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
                                            SEXP steps, SEXP repeats) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -903,7 +884,6 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
 
   for (i = 0; i < _num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     _states_2d[i] = _states_2d_vals + i * _num_elements;
   }
 
@@ -931,9 +911,6 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  // FREE(_states);
-  // FREE(_states_2d);
-  // FREE(_states_2d_vals);
 
   return result;
 }
@@ -946,7 +923,6 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                                           SEXP repeats) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -987,7 +963,6 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
 
   for (i = 0; i < _num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     _states_2d[i] = _states_2d_vals + i * _num_elements;
   }
 
@@ -997,7 +972,7 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
     }
   }
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   double **transition_matrix = get_pairwise_transitions_SDDS_sync(
       &network, _states_2d, _num_states, _num_repeats, _num_steps,
@@ -1010,14 +985,11 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
            _num_states * sizeof(double));
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  // FREE(_states);
-  // FREE(_states_2d);
-  // FREE(_states_2d_vals);
 
   return result;
 }
@@ -1028,15 +1000,8 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
                                       SEXP p10, SEXP p11, SEXP initial_prob,
                                       SEXP update_prob, SEXP steps,
                                       SEXP repeats, SEXP last_step) {
-  // int * inputs = INTEGER(inputs_R);
-  // SEXP result;
-  // result = PROTECT(allocVector(REALSXP, 2));
-  // REAL(result)[0] = 123.45;
-  // REAL(result)[1] = 67.89;
-  // UNPROTECT(1);
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1056,12 +1021,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   double *_initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
     _initial_prob = REAL(initial_prob);
-  // network.epsilon = REAL(epsilon)[0];
 
-  // count fixed genes, and create an index array for non-fixed genes:
-  // <network.non_fixed_node_bits[i]> contains the bit positions in a state
-  // at which the <i>-th gene is stored - this is different from <i>
-  // as fixed genes are not stored
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
@@ -1083,7 +1043,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
   // srand(INTEGER(seed)[0]);
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   SEXP result;
 
@@ -1094,8 +1054,6 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
         _numElements);
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
-    // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-    // sizeof(double));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
@@ -1104,26 +1062,18 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
     double **traj = get_node_activities_SDDS_async_traj(
         &network, _update_prob, _initial_prob, _numRepeats, _num_steps,
         _numElements);
-    // unsigned long long * reachedStates = simulate_singleInt(&network, (long
-    // long *)_startStates, (long long)_numStartStates, _steps);
 
     result =
         PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-    // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-    // sizeof(double));
 
     for (unsigned int i = 0; i < network.num_nodes; ++i) {
       memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
              (_num_steps + 1) * sizeof(double));
     }
 
-    // memcpy(INTEGER(result), reachedStates, _numStartStates *
-    // network.numElements * sizeof(int));
-
-    // free(reachedStates);
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
@@ -1139,7 +1089,6 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
                                      SEXP steps, SEXP repeats, SEXP last_step) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1175,7 +1124,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
 
   int _last_step = (bool)(*INTEGER(last_step));
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   SEXP result;
 
@@ -1185,8 +1134,6 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
         &network, _initial_prob, _numRepeats, _num_steps, _numElements);
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
-    // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-    // sizeof(double));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
@@ -1194,26 +1141,20 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
 
     double **traj = get_node_activities_SDDS_sync_traj(
         &network, _initial_prob, _numRepeats, _num_steps, _numElements);
-    // unsigned long long * reachedStates = simulate_singleInt(&network, (long
-    // long *)_startStates, (long long)_numStartStates, _steps);
 
     result =
         PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-    // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-    // sizeof(double));
+
 
     for (unsigned int i = 0; i < network.num_nodes; ++i) {
       memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
              (_num_steps + 1) * sizeof(double));
     }
 
-    // memcpy(INTEGER(result), reachedStates, _numStartStates *
-    // network.numElements * sizeof(int));
-
     // free(reachedStates);
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
@@ -1231,7 +1172,6 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
                                            SEXP update_prob, SEXP steps) {
 
   StochasticDiscreteDynamicalSystem network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1272,7 +1212,7 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
 
   // srand(INTEGER(seed)[0]);
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   unsigned int **reached_states = get_reached_states_SDDS_async_batch(
       &network, _update_prob, _initial_states, _num_initial_states, _num_steps,
@@ -1286,7 +1226,7 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
            _numElements * sizeof(unsigned int));
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 

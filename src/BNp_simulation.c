@@ -192,14 +192,12 @@ double **get_node_activities_BNp_sync_traj(BooleanNetworkWithPerturbations *net,
   unsigned int current_state[num_elements];
 
   for (unsigned int i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
   unsigned int i = 0, j = 0, k = 0;
 
   for (i = 0; i < num_repeats; i++) {
-    // unsigned int currentState[net->numElements];
 
     for (j = 0; j < num_elements; j++) {
       current_state[j] = 0;
@@ -313,13 +311,10 @@ get_node_activities_BNp_async_traj(BooleanNetworkWithPerturbations *net,
   unsigned int i = 0, j = 0, k = 0;
 
   for (i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
   for (i = 0; i < num_repeats; i++) {
-    // unsigned int currentState[net->numElements];
-
     for (j = 0; j < num_elements; j++) {
       current_state[j] = 0;
     }
@@ -613,7 +608,6 @@ double **get_pairwise_transitions_BNp_async(
   double c = 1.0;
 
   for (i = 0; i < num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     trans_mat[i] = trans_mat_vals + i * num_states;
   }
 
@@ -632,8 +626,6 @@ double **get_pairwise_transitions_BNp_async(
         state_transition_BNp_asynchronous(current_state, update_prob, net);
 
         for (l = 0; l < num_states; l++) {
-
-          // if(areArraysEqual(reached_states[j], states[k], num_elements)) {
           if (areArraysEqual(current_state, states[l], num_elements)) {
             trans_mat[i][l] += c;
             break;
@@ -793,7 +785,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
 
   // srand(INTEGER(seed)[0]);
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   unsigned int **reached_states = get_reached_states_BNp_sync_batch(
       &network, _initial_states, _num_initial_states, _num_steps, _numElements);
@@ -914,12 +906,7 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
   double *_initial_prob = NULL;
   if (!isNull(initial_prob) && length(initial_prob) > 0)
     _initial_prob = REAL(initial_prob);
-  // network.epsilon = REAL(epsilon)[0];
 
-  // count fixed genes, and create an index array for non-fixed genes:
-  // <network.non_fixed_node_bits[i]> contains the bit positions in a state
-  // at which the <i>-th gene is stored - this is different from <i>
-  // as fixed genes are not stored
   unsigned int numNonFixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
@@ -1054,7 +1041,6 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
                                           SEXP update_prob, SEXP steps) {
 
   BooleanNetworkWithPerturbations network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -1239,7 +1225,6 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
   unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
 
   for (i = 0; i < _num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     _states_2d[i] = _states_2d_vals + i * _num_elements;
   }
 

@@ -241,7 +241,6 @@ double **get_node_activities_PEW_async_traj(
   unsigned int i = 0, j = 0, k = 0;
 
   for (i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
@@ -303,7 +302,6 @@ double **get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight *net,
   unsigned int current_state[num_elements];
 
   for (unsigned int i = 0; i < net->num_nodes; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     traj[i] = traj_vals + i * (num_steps + 1);
   }
 
@@ -343,7 +341,6 @@ double **get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight *net,
       state_transition_PEW_synchronous(current_state, net, num_elements);
 
       for (k = 0; k < net->num_nodes; k++) {
-        // printf("inside loop\n");
         if (GET_BIT(current_state[k / BITS_PER_BLOCK_32],
                     k % BITS_PER_BLOCK_32)) {
 
@@ -436,8 +433,6 @@ unsigned int **get_reached_states_PEW_async_batch(
 
     for (j = 0; j < num_elements; j++) {
       current_state[j] = initial_states[i * num_elements + j];
-      // printf("initial_states[%u]=%u\n",j,initial_states[i * num_elements +
-      // j]);
     }
 
     for (j = 1; j <= num_steps; j++) {
@@ -606,7 +601,6 @@ double **get_pairwise_transitions_PEW_async(
   double c = 1.0;
 
   for (i = 0; i < num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     trans_mat[i] = trans_mat_vals + i * num_states;
   }
 
@@ -739,16 +733,8 @@ SEXP get_reached_states_PEW_async_single_R(SEXP inputs, SEXP input_positions,
       &network, _update_prob, _initial_state, _num_repeats, _num_steps,
       _numElements);
 
-  // for(unsigned int j = 0; j < _numElements; j++) {
-  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  // }
 
   SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _numElements));
-  // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-  // sizeof(double));
-
-  // memcpy(INTEGER(result), reached_states, _num_initial_states *
-  // sizeof(unsigned int));
 
   for (unsigned int i = 0; i < _num_repeats; ++i) {
     memcpy(&INTEGER(result)[i * _numElements], reached_states[i],
@@ -804,25 +790,19 @@ SEXP get_reached_states_PEW_sync_single_R(SEXP inputs, SEXP input_positions,
 
   // srand(INTEGER(seed)[0]);
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   unsigned int **reached_states = get_reached_states_PEW_sync_single(
       &network, _initial_state, _num_repeats, _num_steps, _numElements);
 
-  // for(unsigned int j = 0; j < _numElements; j++) {
-  //   printf("reached_states[%u][%u]=%u\n",0,j,reached_states[0][j]);
-  // }
-
   SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _numElements));
-  // memcpy(&REAL(result)[0], traj, network.num_nodes * (_num_steps + 1) *
-  // sizeof(double));
 
   for (unsigned int i = 0; i < _num_repeats; ++i) {
     memcpy(&INTEGER(result)[i * _numElements], reached_states[i],
            _numElements * sizeof(unsigned int));
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
@@ -839,7 +819,6 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
                                           SEXP steps, SEXP repeats) {
 
   ProbabilisticEdgeWeight network;
-  // network.type = TRUTHTABLE_BOOLEAN_NETWORK;
   network.num_nodes = length(fixed_nodes);
   network.inputs = INTEGER(inputs);
   network.input_positions = INTEGER(input_positions);
@@ -882,7 +861,6 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
   unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
 
   for (i = 0; i < _num_states; i++) {
-    // traj[i] = (unsigned int *)malloc(net->numElements*sizeof(int));
     _states_2d[i] = _states_2d_vals + i * _num_elements;
   }
 
@@ -892,7 +870,7 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
     }
   }
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   double **transition_matrix = get_pairwise_transitions_PEW_async(
       &network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps,
@@ -905,7 +883,7 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
            _num_states * sizeof(double));
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
