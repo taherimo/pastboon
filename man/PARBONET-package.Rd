@@ -6,7 +6,7 @@
 Simulation of Parameterized Stochastic Boolean Networks
 }
 \description{
-Provides functions for simulation of parameterized stochastic Boolean networks.
+Provides functions for simulation of parameterized stochastic Boolean networks. This package includes modified portions of source code from the \pkg{BoolNet} package.
 }
 \details{
 \tabular{ll}{
@@ -38,6 +38,8 @@ Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>
 }
 
 \references{
+Müssel, C., Hopfensitz, M., & Kestler, H. A. (2010). BoolNet—an R package for generation, reconstruction and analysis of Boolean networks. \emph{Bioinformatics}, 26(10), 1378-1380.
+
 Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. \emph{EURASIP Journal on Bioinformatics and Systems Biology}, 2012, 1-11.
 
 Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter, T. (2013). Recent development and biomedical applications of probabilistic Boolean networks. \emph{Cell communication and signaling}, 11, 1-25.

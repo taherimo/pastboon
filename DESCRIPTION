@@ -6,6 +6,7 @@ Depends: BoolNet
 Author: Mohammad Taheri-Ledari
 Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>
 Description: Provides functions for simulation of parameterized stochastic Boolean networks.
+    This package includes modified portions of source code from the BoolNet package.
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true

@@ -2,9 +2,8 @@
 #include <Rinternals.h>
 #include <stdlib.h> // for NUL
 #include <stdbool.h>
-#include "common.h"
+#include "helper_functions.h"
 #include "boolean_network.h"
-#include "random.h"
 
 
 static inline void apply_single_function_BNp(unsigned int * currentState, unsigned int geneIdx, BooleanNetworkWithPerturbations * net)

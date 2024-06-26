@@ -2,9 +2,8 @@
 #include <Rinternals.h>
 #include <stdlib.h> // for NUL
 #include <stdbool.h>
-#include "common.h"
+#include "helper_functions.h"
 #include "boolean_network.h"
-#include "random.h"
 
 
 static inline void apply_single_function_SDDS(unsigned int * currentState, unsigned int geneIdx, StochasticDiscreteDynamicalSystem * net)
@@ -1727,12 +1726,7 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
 
   int _num_steps = *INTEGER(steps);
 
-
-
-  //srand(INTEGER(seed)[0]);
-
-
-
+    //srand(INTEGER(seed)[0]);
 
   GetRNGstate();  // Activate R's random number generator
 
