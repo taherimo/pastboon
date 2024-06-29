@@ -5,12 +5,12 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
     stop("The value of the argument \"net\" must accord to the \"BooleanNetwork\" definition in \"BoolNet\".")
   }
 
-  if (!is.positive.integer(steps)) {
-    stop("The value of the argument \"steps\" must be an integer.")
+  if (!is.nonnegative.integer(steps)) {
+    stop("The value of the argument \"steps\" must be a non-negative integer.")
   }
 
   if (!is.positive.integer(repeats)) {
-    stop("The value of the argument \"repeats\" must be an integer.")
+    stop("The value of the argument \"repeats\" must be a positive integer.")
   }
 
 

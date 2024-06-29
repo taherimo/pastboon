@@ -6,16 +6,16 @@ get_reached_states <- function(net, method = c("SDDS", "BNp", "PEW"), params,
   }
 
 
-  if (!is.positive.integer(steps)) {
-    stop("The value of the argument \"steps\" is not positive integer!")
+  if (!is.nonnegative.integer(steps)) {
+    stop("The value of the argument \"steps\" must be a non-negative integer,")
   }
 
   if (!is.positive.integer(repeats) & !is.null(repeats)) {
-    stop("The value of the argument \"repeats\" is not integer!")
+    stop("The value of the argument \"repeats\" must be a positive integer!")
   }
 
   if (!is.vector(initial_states) & !is.matrix(initial_states) & !is.null(initial_states)) {
-    stop("The value of the argument \"initial_states\" must be either a vector, a matrix or NULL!")
+    stop("The value of the argument \"initial_states\" must be either a vector, a matrix or NULL.")
   }
 
 

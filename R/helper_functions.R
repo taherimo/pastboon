@@ -33,6 +33,18 @@ is.positive.integer <- function(x) {
   return(TRUE)
 }
 
+is.nonnegative.integer <- function(x) {
+  if (x != as.integer(x) || !is.numeric(x)) {
+    return(FALSE)
+  }
+
+  if (x < 0) {
+    return(FALSE)
+  }
+
+  return(TRUE)
+}
+
 
 is.nonNA.numeric <- function(vector) {
   if (!is.numeric(vector)) {

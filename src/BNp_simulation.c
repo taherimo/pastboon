@@ -230,7 +230,6 @@ double **get_node_activities_BNp_sync_traj(BooleanNetworkWithPerturbations *net,
     for (j = 1; j <= num_steps; j++) {
 
       state_transition_BNp_synchronous(current_state, net, num_elements);
-      // stateTransition(current_state,net,num_elements);
 
       for (k = 0; k < net->num_nodes; k++) {
         if (GET_BIT(current_state[k / BITS_PER_BLOCK_32],
@@ -263,18 +262,23 @@ double *get_node_activities_BNp_sync_last_step(
     }
 
     for (k = 0; k < net->num_nodes; k++) {
-      if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        if (doublerand_1() <= initial_prob[k]) {
+      if (initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
           current_state[k / BITS_PER_BLOCK_32] |=
-              (1 << (k % BITS_PER_BLOCK_32));
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        if (doublerand_1() < initial_prob[k]) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
         }
       } else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |=
-            (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
+          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
     }
 
-    for (j = 1; j <= num_steps; j++) {
+    for (j = 0; j < num_steps; j++) {
       state_transition_BNp_synchronous(current_state, net, num_elements);
     }
 
@@ -386,18 +390,23 @@ double *get_node_activities_BNp_async_last_step(
     }
 
     for (k = 0; k < net->num_nodes; k++) {
-      if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        if (doublerand_1() <= initial_prob[k]) {
+      if (initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
           current_state[k / BITS_PER_BLOCK_32] |=
-              (1 << (k % BITS_PER_BLOCK_32));
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        if (doublerand_1() < initial_prob[k]) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
         }
       } else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |=
-            (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
+          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
     }
 
-    for (j = 1; j <= num_steps; j++) {
+    for (j = 0; j < num_steps; j++) {
       state_transition_BNp_asynchronous(current_state, update_prob, net);
     }
 
@@ -741,6 +750,7 @@ SEXP get_reached_states_BNp_sync_single_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -803,6 +813,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -858,6 +869,8 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
+    FREE(traj);
+
   } else {
 
     double **traj = get_node_activities_BNp_sync_traj(
@@ -871,7 +884,7 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
              (_num_steps + 1) * sizeof(double));
     }
 
-    // free(reachedStates);
+    FREE(traj);
   }
 
   PutRNGstate();
@@ -942,6 +955,8 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
+    FREE(traj);
+
   } else {
 
     double **traj = get_node_activities_BNp_async_traj(
@@ -956,7 +971,8 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
              (_num_steps + 1) * sizeof(double));
     }
 
-    // free(reachedStates);
+    FREE(traj);
+
   }
 
   PutRNGstate();
@@ -1029,6 +1045,7 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -1097,6 +1114,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -1177,6 +1195,8 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(transition_matrix);
+  FREE(_states_2d);
 
   return result;
 }
@@ -1252,6 +1272,8 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(transition_matrix);
+  FREE(_states_2d);
 
   return result;
 }

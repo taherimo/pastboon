@@ -41,7 +41,7 @@ Three Boolean network parameterization methods are implemented in this function:
 }
 
 \value{
-If \code{last_step = TRUE}, a vector with the length equal to the number of network nodes, representing activity rate of each node at the last time-step. If \code{last_step= FALSE}, a matrix with \code{steps + 1} rows (the first row corresponds to the time-step 0) and \code{length(net$genes)} columns that represents node activities in each time-step. The order of the nodes in the columns is same as \code{net$genes}.
+If \code{last_step = TRUE}, a vector with the length equal to the number of network nodes, representing activity rate of each node at the last time-step is returned. If \code{last_step= FALSE}, a matrix with \code{steps + 1} rows (the first row corresponds to the time-step 0) and \code{length(net$genes)} columns that represents node activities in each time-step is returned. The order of the nodes in the vector elements or columns (in the case of \code{last_step = TRUE} or \code{last_step = FALSE}, respectively) is same as \code{net$genes}.
 }
 
 \references{

@@ -195,18 +195,23 @@ double *get_node_activities_PEW_async_last_step(
     }
 
     for (k = 0; k < net->num_nodes; k++) {
-      if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        if (doublerand_1() <= initial_prob[k]) {
+      if (initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
           current_state[k / BITS_PER_BLOCK_32] |=
-              (1 << (k % BITS_PER_BLOCK_32));
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        if (doublerand_1() < initial_prob[k]) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
         }
       } else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |=
-            (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
+          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
     }
 
-    for (j = 1; j <= num_steps; j++) {
+    for (j = 0; j < num_steps; j++) {
       state_transition_PEW_asynchronous(current_state, update_prob, net);
     }
 
@@ -374,18 +379,23 @@ double *get_node_activities_PEW_sync_last_step(ProbabilisticEdgeWeight *net,
     }
 
     for (k = 0; k < net->num_nodes; k++) {
-      if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        if (doublerand_1() <= initial_prob[k]) {
+      if (initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
           current_state[k / BITS_PER_BLOCK_32] |=
-              (1 << (k % BITS_PER_BLOCK_32));
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        if (doublerand_1() < initial_prob[k]) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
         }
       } else { // initial state probability is 0 or 1
         current_state[k / BITS_PER_BLOCK_32] |=
-            (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
+          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
       }
     }
 
-    for (j = 1; j <= num_steps; j++) {
+    for (j = 0; j < num_steps; j++) {
       state_transition_PEW_synchronous(current_state, net, num_elements);
     }
 
@@ -727,7 +737,7 @@ SEXP get_reached_states_PEW_async_single_R(SEXP inputs, SEXP input_positions,
 
   // srand(INTEGER(seed)[0]);
 
-  GetRNGstate(); // Activate R's random number generator
+  GetRNGstate();
 
   unsigned int **reached_states = get_reached_states_PEW_async_single(
       &network, _update_prob, _initial_state, _num_repeats, _num_steps,
@@ -741,11 +751,12 @@ SEXP get_reached_states_PEW_async_single_R(SEXP inputs, SEXP input_positions,
            _numElements * sizeof(unsigned int));
   }
 
-  PutRNGstate(); // Deactivate R's random number generator
+  PutRNGstate();
 
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -807,6 +818,7 @@ SEXP get_reached_states_PEW_sync_single_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -888,6 +900,8 @@ SEXP get_pairwise_transitions_PEW_async_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(transition_matrix);
+  FREE(_states_2d);
 
   return result;
 }
@@ -965,6 +979,8 @@ SEXP get_pairwise_transitions_PEW_sync_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(transition_matrix);
+  FREE(_states_2d);
 
   return result;
 }
@@ -1009,7 +1025,7 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
   unsigned int _num_steps = (unsigned int)*INTEGER(steps);
-  unsigned int _numRepeats = (unsigned int)*INTEGER(repeats);
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
 
   int _last_step = (bool)(*INTEGER(last_step));
 
@@ -1022,17 +1038,19 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
   if (_last_step) {
 
     double *traj = get_node_activities_PEW_async_last_step(
-        &network, _update_prob, _initial_prob, _numRepeats, _num_steps,
+        &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
         _numElements);
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
+    FREE(traj);
+
   } else {
 
     double **traj = get_node_activities_PEW_async_traj(
-        &network, _update_prob, _initial_prob, _numRepeats, _num_steps,
+        &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
         _numElements);
 
     result =
@@ -1043,7 +1061,8 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
              (_num_steps + 1) * sizeof(double));
     }
 
-    // free(reachedStates);
+    FREE(traj);
+
   }
 
   PutRNGstate();
@@ -1091,7 +1110,7 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
     _numElements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
   unsigned int _num_steps = *INTEGER(steps);
-  unsigned int _numRepeats = *INTEGER(repeats);
+  unsigned int _num_repeats = *INTEGER(repeats);
 
   int _last_step = (bool)(*INTEGER(last_step));
 
@@ -1102,16 +1121,18 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
   if (_last_step) {
 
     double *traj = get_node_activities_PEW_sync_last_step(
-        &network, _initial_prob, _numRepeats, _num_steps, _numElements);
+        &network, _initial_prob, _num_repeats, _num_steps, _numElements);
 
     result = PROTECT(allocVector(REALSXP, network.num_nodes));
 
     memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
 
+    FREE(traj);
+
   } else {
 
     double **traj = get_node_activities_PEW_sync_traj(
-        &network, _initial_prob, _numRepeats, _num_steps, _numElements);
+        &network, _initial_prob, _num_repeats, _num_steps, _numElements);
 
     result =
         PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
@@ -1121,7 +1142,7 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
              (_num_steps + 1) * sizeof(double));
     }
 
-    // free(reachedStates);
+    FREE(traj);
   }
 
   PutRNGstate();
@@ -1198,6 +1219,7 @@ SEXP get_reached_states_PEW_async_batch_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
@@ -1259,6 +1281,7 @@ SEXP get_reached_states_PEW_sync_batch_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
 
   return result;
 }
