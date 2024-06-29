@@ -3,7 +3,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #include <stdbool.h>
-#include <stdlib.h> // for NUL
+#include <stdlib.h>
 
 static inline void
 apply_single_function_SDDS(unsigned int *currentState, unsigned int geneIdx,
@@ -202,60 +202,7 @@ void state_transition_SDDS_synchronous(unsigned int *currentState,
   memcpy(currentState, &nextState, sizeof(unsigned int) * elementsPerEntry);
 }
 
-double *get_node_activities_SDDS_async_last_step(
-    StochasticDiscreteDynamicalSystem *net, double *update_prob,
-    double *initial_prob, unsigned int num_repeats, int num_steps,
-    unsigned int num_elements)
 
-{
-
-  // https://stackoverflow.com/questions/13761988/what-happens-to-memory-allocated-by-c-functions-in-r-language
-
-  double *traj = CALLOC(net->num_nodes, sizeof(double));
-
-  double c = 1.0 / num_repeats;
-
-  unsigned int current_state[num_elements];
-
-  unsigned int i = 0, j = 0, k = 0;
-
-  for (i = 0; i < num_repeats; i++) {
-
-    for (j = 0; j < num_elements; j++) {
-      current_state[j] = 0;
-    }
-
-    for (k = 0; k < net->num_nodes; k++) {
-      if (initial_prob == NULL) {
-        if (doublerand_1() < 0.5) {
-          current_state[k / BITS_PER_BLOCK_32] |=
-            (1 << (k % BITS_PER_BLOCK_32));
-        }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
-        if (doublerand_1() < initial_prob[k]) {
-          current_state[k / BITS_PER_BLOCK_32] |=
-            (1 << (k % BITS_PER_BLOCK_32));
-        }
-      } else { // initial state probability is 0 or 1
-        current_state[k / BITS_PER_BLOCK_32] |=
-          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
-      }
-    }
-
-    for (j = 0; j < num_steps; j++) {
-      state_transition_SDDS_asynchronous(current_state, update_prob, net);
-    }
-
-    for (k = 0; k < net->num_nodes; k++) {
-      if (GET_BIT(current_state[k / BITS_PER_BLOCK_32],
-                  k % BITS_PER_BLOCK_32)) {
-        traj[k] += c;
-      }
-    }
-  }
-
-  return traj;
-}
 
 double **
 get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
@@ -384,6 +331,61 @@ double **get_node_activities_SDDS_sync_traj(
   return traj;
 }
 
+double *get_node_activities_SDDS_async_last_step(
+    StochasticDiscreteDynamicalSystem *net, double *update_prob,
+    double *initial_prob, unsigned int num_repeats, int num_steps,
+    unsigned int num_elements)
+
+{
+
+  // https://stackoverflow.com/questions/13761988/what-happens-to-memory-allocated-by-c-functions-in-r-language
+
+  double *traj = CALLOC(net->num_nodes, sizeof(double));
+
+  double c = 1.0 / num_repeats;
+
+  unsigned int current_state[num_elements];
+
+  unsigned int i = 0, j = 0, k = 0;
+
+  for (i = 0; i < num_repeats; i++) {
+
+    for (j = 0; j < num_elements; j++) {
+      current_state[j] = 0;
+    }
+
+    for (k = 0; k < net->num_nodes; k++) {
+      if (initial_prob == NULL) {
+        if (doublerand_1() < 0.5) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        if (doublerand_1() < initial_prob[k]) {
+          current_state[k / BITS_PER_BLOCK_32] |=
+            (1 << (k % BITS_PER_BLOCK_32));
+        }
+      } else { // initial state probability is 0 or 1
+        current_state[k / BITS_PER_BLOCK_32] |=
+          (((unsigned int)initial_prob[k]) << (k % BITS_PER_BLOCK_32));
+      }
+    }
+
+    for (j = 0; j < num_steps; j++) {
+      state_transition_SDDS_asynchronous(current_state, update_prob, net);
+    }
+
+    for (k = 0; k < net->num_nodes; k++) {
+      if (GET_BIT(current_state[k / BITS_PER_BLOCK_32],
+                  k % BITS_PER_BLOCK_32)) {
+        traj[k] += c;
+      }
+    }
+  }
+
+  return traj;
+}
+
 double *get_node_activities_SDDS_sync_last_step(
     StochasticDiscreteDynamicalSystem *net, double *initial_prob,
     unsigned int num_repeats, int num_steps, unsigned int num_elements) {
@@ -432,6 +434,96 @@ double *get_node_activities_SDDS_sync_last_step(
   }
 
   return traj;
+}
+
+double **get_pairwise_transitions_SDDS_async(
+    StochasticDiscreteDynamicalSystem *net, double *update_prob,
+    unsigned int **states, unsigned int num_states, unsigned int num_repeats,
+    int num_steps, unsigned int num_elements) {
+
+  double *trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double **trans_mat = CALLOC(num_states, sizeof(double *));
+
+  unsigned int i, j, k, l = 0;
+  unsigned int **reached_states;
+
+  // double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  for (i = 0; i < num_states; i++) {
+    trans_mat[i] = trans_mat_vals + i * num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i = 0; i < num_states; i++) {
+
+    for (j = 0; j < num_repeats; j++) {
+
+      for (k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+      }
+
+      for (k = 1; k <= num_steps; k++) {
+
+        state_transition_SDDS_asynchronous(current_state, update_prob, net);
+
+        for (l = 0; l < num_states; l++) {
+          if (areArraysEqual(current_state, states[l], num_elements)) {
+            trans_mat[i][l] += c;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return (trans_mat);
+}
+
+double **get_pairwise_transitions_SDDS_sync(
+    StochasticDiscreteDynamicalSystem *net, unsigned int **states,
+    unsigned int num_states, unsigned int num_repeats, int num_steps,
+    unsigned int num_elements) {
+
+  double *trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double **trans_mat = CALLOC(num_states, sizeof(double *));
+
+  unsigned int i, j, k, l = 0;
+  unsigned int **reached_states;
+
+  // double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  for (i = 0; i < num_states; i++) {
+    trans_mat[i] = trans_mat_vals + i * num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i = 0; i < num_states; i++) {
+
+    for (j = 0; j < num_repeats; j++) {
+
+      for (k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+      }
+
+      for (k = 1; k <= num_steps; k++) {
+
+        state_transition_SDDS_synchronous(current_state, net, num_elements);
+
+        for (l = 0; l < num_states; l++) {
+          if (areArraysEqual(current_state, states[l], num_elements)) {
+            trans_mat[i][l] += c;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return (trans_mat);
 }
 
 unsigned int **get_reached_states_SDDS_async_batch(
@@ -617,100 +709,14 @@ unsigned int **get_reached_states_SDDS_sync_single(
   return (reached_states);
 }
 
-double **get_pairwise_transitions_SDDS_async(
-    StochasticDiscreteDynamicalSystem *net, double *update_prob,
-    unsigned int **states, unsigned int num_states, unsigned int num_repeats,
-    int num_steps, unsigned int num_elements) {
 
-  double *trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
-  double **trans_mat = CALLOC(num_states, sizeof(double *));
 
-  unsigned int i, j, k, l = 0;
-  unsigned int **reached_states;
-
-  // double c = 1.0 / num_repeats;
-  double c = 1.0;
-
-  for (i = 0; i < num_states; i++) {
-    trans_mat[i] = trans_mat_vals + i * num_states;
-  }
-
-  unsigned int current_state[num_elements];
-
-  for (i = 0; i < num_states; i++) {
-
-    for (j = 0; j < num_repeats; j++) {
-
-      for (k = 0; k < num_elements; k++) {
-        current_state[k] = states[i][k];
-      }
-
-      for (k = 1; k <= num_steps; k++) {
-
-        state_transition_SDDS_asynchronous(current_state, update_prob, net);
-
-        for (l = 0; l < num_states; l++) {
-          if (areArraysEqual(current_state, states[l], num_elements)) {
-            trans_mat[i][l] += c;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  return (trans_mat);
-}
-
-double **get_pairwise_transitions_SDDS_sync(
-    StochasticDiscreteDynamicalSystem *net, unsigned int **states,
-    unsigned int num_states, unsigned int num_repeats, int num_steps,
-    unsigned int num_elements) {
-
-  double *trans_mat_vals = CALLOC(num_states * num_states, sizeof(double));
-  double **trans_mat = CALLOC(num_states, sizeof(double *));
-
-  unsigned int i, j, k, l = 0;
-  unsigned int **reached_states;
-
-  // double c = 1.0 / num_repeats;
-  double c = 1.0;
-
-  for (i = 0; i < num_states; i++) {
-    trans_mat[i] = trans_mat_vals + i * num_states;
-  }
-
-  unsigned int current_state[num_elements];
-
-  for (i = 0; i < num_states; i++) {
-
-    for (j = 0; j < num_repeats; j++) {
-
-      for (k = 0; k < num_elements; k++) {
-        current_state[k] = states[i][k];
-      }
-
-      for (k = 1; k <= num_steps; k++) {
-
-        state_transition_SDDS_synchronous(current_state, net, num_elements);
-
-        for (l = 0; l < num_states; l++) {
-          if (areArraysEqual(current_state, states[l], num_elements)) {
-            trans_mat[i][l] += c;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  return (trans_mat);
-}
-
-SEXP get_reached_states_SDDS_async_single_R(
-    SEXP inputs, SEXP input_positions, SEXP outputs, SEXP output_positions,
-    SEXP fixed_nodes, SEXP p00, SEXP p01, SEXP p10, SEXP p11, SEXP update_prob,
-    SEXP initial_state, SEXP repeats, SEXP steps) {
+SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
+                                      SEXP outputs, SEXP output_positions,
+                                      SEXP fixed_nodes, SEXP p00, SEXP p01,
+                                      SEXP p10, SEXP p11, SEXP initial_prob,
+                                      SEXP update_prob, SEXP steps,
+                                      SEXP repeats, SEXP last_step) {
 
   StochasticDiscreteDynamicalSystem network;
   network.num_nodes = length(fixed_nodes);
@@ -729,16 +735,16 @@ SEXP get_reached_states_SDDS_async_single_R(
   if (!isNull(update_prob) && length(update_prob) > 0)
     _update_prob = REAL(update_prob);
 
-  unsigned int numNonFixed = 0, i;
+  double *_initial_prob = NULL;
+  if (!isNull(initial_prob) && length(initial_prob) > 0)
+    _initial_prob = REAL(initial_prob);
+
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
-
-  unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
-    _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
 
@@ -747,22 +753,45 @@ SEXP get_reached_states_SDDS_async_single_R(
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
   unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
 
-  // srand(INTEGER(seed)[0]);
+  int _last_step = (bool)(*INTEGER(last_step));
+
+
 
   GetRNGstate();
 
-  unsigned int **reached_states = get_reached_states_SDDS_async_single(
-      &network, _update_prob, _initial_state, _num_repeats, _num_steps,
+  SEXP result;
+
+  if (_last_step) {
+
+    double *traj = get_node_activities_SDDS_async_last_step(
+      &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
       _num_elements);
 
-  SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _num_elements));
+    result = PROTECT(allocVector(REALSXP, network.num_nodes));
 
-  for (unsigned int i = 0; i < _num_repeats; ++i) {
-    memcpy(&INTEGER(result)[i * _num_elements], reached_states[i],
-           _num_elements * sizeof(unsigned int));
+    memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
+
+    FREE(traj);
+
+  } else {
+
+    double **traj = get_node_activities_SDDS_async_traj(
+      &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
+      _num_elements);
+
+    result =
+      PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
+
+    for (unsigned int i = 0; i < network.num_nodes; ++i) {
+      memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
+             (_num_steps + 1) * sizeof(double));
+    }
+
+    FREE(traj);
+
   }
 
   PutRNGstate();
@@ -770,17 +799,15 @@ SEXP get_reached_states_SDDS_async_single_R(
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  FREE(reached_states);
 
   return result;
 }
 
-SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
-                                           SEXP outputs, SEXP output_positions,
-                                           SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                           SEXP p10, SEXP p11,
-                                           SEXP initial_state, SEXP repeats,
-                                           SEXP steps) {
+SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
+                                     SEXP outputs, SEXP output_positions,
+                                     SEXP fixed_nodes, SEXP p00, SEXP p01,
+                                     SEXP p10, SEXP p11, SEXP initial_prob,
+                                     SEXP steps, SEXP repeats, SEXP last_step) {
 
   StochasticDiscreteDynamicalSystem network;
   network.num_nodes = length(fixed_nodes);
@@ -795,16 +822,16 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
 
-  unsigned int numNonFixed = 0, i;
+  double *_initial_prob = NULL;
+  if (!isNull(initial_prob) && length(initial_prob) > 0)
+    _initial_prob = REAL(initial_prob);
+
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
-
-  unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
-    _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
 
@@ -813,21 +840,43 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
-  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+  unsigned int _num_steps = *INTEGER(steps);
+  unsigned int _num_repeats = *INTEGER(repeats);
 
-  // srand(INTEGER(seed)[0]);
+  int _last_step = (bool)(*INTEGER(last_step));
 
   GetRNGstate();
 
-  unsigned int **reached_states = get_reached_states_SDDS_sync_single(
-      &network, _initial_state, _num_repeats, _num_steps, _num_elements);
+  SEXP result;
 
-  SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _num_elements));
+  if (_last_step) {
 
-  for (unsigned int i = 0; i < _num_repeats; ++i) {
-    memcpy(&INTEGER(result)[i * _num_elements], reached_states[i],
-           _num_elements * sizeof(unsigned int));
+    double *traj = get_node_activities_SDDS_sync_last_step(
+      &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
+
+    result = PROTECT(allocVector(REALSXP, network.num_nodes));
+
+    memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
+
+    FREE(traj);
+
+
+  } else {
+
+    double **traj = get_node_activities_SDDS_sync_traj(
+      &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
+
+    result =
+    PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
+
+
+    for (unsigned int i = 0; i < network.num_nodes; ++i) {
+      memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
+             (_num_steps + 1) * sizeof(double));
+    }
+
+    FREE(traj);
+
   }
 
   PutRNGstate();
@@ -835,10 +884,10 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   UNPROTECT(1);
 
   FREE(network.non_fixed_node_bits);
-  FREE(reached_states);
 
   return result;
 }
+
 
 SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
                                            SEXP outputs, SEXP output_positions,
@@ -864,10 +913,10 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   if (!isNull(update_prob) && length(update_prob) > 0)
     _update_prob = REAL(update_prob);
 
-  unsigned int numNonFixed = 0, i;
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
 
@@ -945,10 +994,10 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
 
-  unsigned int numNonFixed = 0, i;
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
 
@@ -1006,182 +1055,6 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   return result;
 }
 
-SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
-                                      SEXP outputs, SEXP output_positions,
-                                      SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                      SEXP p10, SEXP p11, SEXP initial_prob,
-                                      SEXP update_prob, SEXP steps,
-                                      SEXP repeats, SEXP last_step) {
-
-  StochasticDiscreteDynamicalSystem network;
-  network.num_nodes = length(fixed_nodes);
-  network.inputs = INTEGER(inputs);
-  network.input_positions = INTEGER(input_positions);
-  network.outputs = INTEGER(outputs);
-  network.output_positions = INTEGER(output_positions);
-  network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
-  network.p00 = REAL(p00);
-  network.p01 = REAL(p01);
-  network.p10 = REAL(p10);
-  network.p11 = REAL(p11);
-
-  double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
-    _update_prob = REAL(update_prob);
-
-  double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
-    _initial_prob = REAL(initial_prob);
-
-  unsigned int numNonFixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
-    }
-  }
-
-  unsigned int _num_elements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
-  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
-
-  int _last_step = (bool)(*INTEGER(last_step));
-
-  // srand(INTEGER(seed)[0]);
-
-  GetRNGstate();
-
-  SEXP result;
-
-  if (_last_step) {
-
-    double *traj = get_node_activities_SDDS_async_last_step(
-        &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
-        _num_elements);
-
-    result = PROTECT(allocVector(REALSXP, network.num_nodes));
-
-    memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
-
-    FREE(traj);
-
-  } else {
-
-    double **traj = get_node_activities_SDDS_async_traj(
-        &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
-        _num_elements);
-
-    result =
-        PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-
-    for (unsigned int i = 0; i < network.num_nodes; ++i) {
-      memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
-             (_num_steps + 1) * sizeof(double));
-    }
-
-    FREE(traj);
-
-  }
-
-  PutRNGstate();
-
-  UNPROTECT(1);
-
-  FREE(network.non_fixed_node_bits);
-
-  return result;
-}
-
-SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
-                                     SEXP outputs, SEXP output_positions,
-                                     SEXP fixed_nodes, SEXP p00, SEXP p01,
-                                     SEXP p10, SEXP p11, SEXP initial_prob,
-                                     SEXP steps, SEXP repeats, SEXP last_step) {
-
-  StochasticDiscreteDynamicalSystem network;
-  network.num_nodes = length(fixed_nodes);
-  network.inputs = INTEGER(inputs);
-  network.input_positions = INTEGER(input_positions);
-  network.outputs = INTEGER(outputs);
-  network.output_positions = INTEGER(output_positions);
-  network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
-  network.p00 = REAL(p00);
-  network.p01 = REAL(p01);
-  network.p10 = REAL(p10);
-  network.p11 = REAL(p11);
-
-  double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
-    _initial_prob = REAL(initial_prob);
-
-  unsigned int numNonFixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
-    }
-  }
-
-  unsigned int _num_elements;
-
-  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
-  else
-    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
-
-  unsigned int _num_steps = *INTEGER(steps);
-  unsigned int _num_repeats = *INTEGER(repeats);
-
-  int _last_step = (bool)(*INTEGER(last_step));
-
-  GetRNGstate();
-
-  SEXP result;
-
-  if (_last_step) {
-
-    double *traj = get_node_activities_SDDS_sync_last_step(
-        &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
-
-    result = PROTECT(allocVector(REALSXP, network.num_nodes));
-
-    memcpy(REAL(result), traj, network.num_nodes * sizeof(double));
-
-    FREE(traj);
-
-
-  } else {
-
-    double **traj = get_node_activities_SDDS_sync_traj(
-        &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
-
-    result =
-        PROTECT(allocVector(REALSXP, network.num_nodes * (_num_steps + 1)));
-
-
-    for (unsigned int i = 0; i < network.num_nodes; ++i) {
-      memcpy(&REAL(result)[i * (_num_steps + 1)], traj[i],
-             (_num_steps + 1) * sizeof(double));
-    }
-
-    FREE(traj);
-
-  }
-
-  PutRNGstate();
-
-  UNPROTECT(1);
-
-  FREE(network.non_fixed_node_bits);
-
-  return result;
-}
 
 SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
                                            SEXP outputs, SEXP output_positions,
@@ -1221,16 +1094,16 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int numNonFixed = 0, i;
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
 
   int _num_steps = *INTEGER(steps);
 
-  // srand(INTEGER(seed)[0]);
+
 
   GetRNGstate();
 
@@ -1289,16 +1162,16 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int numNonFixed = 0, i;
+  unsigned int num_non_fixed = 0, i;
   for (i = 0; i < network.num_nodes; i++) {
     if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = numNonFixed++;
+      network.non_fixed_node_bits[i] = num_non_fixed++;
     }
   }
 
   int _num_steps = *INTEGER(steps);
 
-  // srand(INTEGER(seed)[0]);
+
 
   GetRNGstate();
 
@@ -1309,6 +1182,137 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
       PROTECT(allocVector(INTSXP, _num_initial_states * _num_elements));
 
   for (unsigned int i = 0; i < _num_initial_states; ++i) {
+    memcpy(&INTEGER(result)[i * _num_elements], reached_states[i],
+           _num_elements * sizeof(unsigned int));
+  }
+
+  PutRNGstate();
+
+  UNPROTECT(1);
+
+  FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
+
+  return result;
+}
+
+SEXP get_reached_states_SDDS_async_single_R(
+    SEXP inputs, SEXP input_positions, SEXP outputs, SEXP output_positions,
+    SEXP fixed_nodes, SEXP p00, SEXP p01, SEXP p10, SEXP p11, SEXP update_prob,
+    SEXP initial_state, SEXP repeats, SEXP steps) {
+
+  StochasticDiscreteDynamicalSystem network;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p00 = REAL(p00);
+  network.p01 = REAL(p01);
+  network.p10 = REAL(p10);
+  network.p11 = REAL(p11);
+
+  double *_update_prob = NULL;
+  if (!isNull(update_prob) && length(update_prob) > 0)
+    _update_prob = REAL(update_prob);
+
+  unsigned int num_non_fixed = 0, i;
+  for (i = 0; i < network.num_nodes; i++) {
+    if (network.fixed_nodes[i] == -1) {
+      network.non_fixed_node_bits[i] = num_non_fixed++;
+    }
+  }
+
+  unsigned int *_initial_state = NULL;
+  if (!isNull(initial_state) && length(initial_state) > 0)
+    _initial_state = (unsigned int *)INTEGER(initial_state);
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
+  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+
+
+
+  GetRNGstate();
+
+  unsigned int **reached_states = get_reached_states_SDDS_async_single(
+    &network, _update_prob, _initial_state, _num_repeats, _num_steps,
+    _num_elements);
+
+  SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _num_elements));
+
+  for (unsigned int i = 0; i < _num_repeats; ++i) {
+    memcpy(&INTEGER(result)[i * _num_elements], reached_states[i],
+           _num_elements * sizeof(unsigned int));
+  }
+
+  PutRNGstate();
+
+  UNPROTECT(1);
+
+  FREE(network.non_fixed_node_bits);
+  FREE(reached_states);
+
+  return result;
+}
+
+SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
+                                           SEXP outputs, SEXP output_positions,
+                                           SEXP fixed_nodes, SEXP p00, SEXP p01,
+                                           SEXP p10, SEXP p11,
+                                           SEXP initial_state, SEXP repeats,
+                                           SEXP steps) {
+
+  StochasticDiscreteDynamicalSystem network;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p00 = REAL(p00);
+  network.p01 = REAL(p01);
+  network.p10 = REAL(p10);
+  network.p11 = REAL(p11);
+
+  unsigned int num_non_fixed = 0, i;
+  for (i = 0; i < network.num_nodes; i++) {
+    if (network.fixed_nodes[i] == -1) {
+      network.non_fixed_node_bits[i] = num_non_fixed++;
+    }
+  }
+
+  unsigned int *_initial_state = NULL;
+  if (!isNull(initial_state) && length(initial_state) > 0)
+    _initial_state = (unsigned int *)INTEGER(initial_state);
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
+  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+
+  GetRNGstate();
+
+  unsigned int **reached_states = get_reached_states_SDDS_sync_single(
+    &network, _initial_state, _num_repeats, _num_steps, _num_elements);
+
+  SEXP result = PROTECT(allocVector(INTSXP, _num_repeats * _num_elements));
+
+  for (unsigned int i = 0; i < _num_repeats; ++i) {
     memcpy(&INTEGER(result)[i * _num_elements], reached_states[i],
            _num_elements * sizeof(unsigned int));
   }
