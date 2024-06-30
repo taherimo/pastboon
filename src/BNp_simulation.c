@@ -96,7 +96,7 @@ state_transition_BNp_asynchronous(unsigned int *currentState,
     // find the last index in the cumulative distribution that
     // is less than <r>
     for (i = 0; i < net->num_nodes; ++i) {
-      if (update_prob[i] < r && update_prob[i + 1] >= r)
+      if ((update_prob[i] < r) && (update_prob[i + 1] >= r))
         break;
     }
     // make a transition with the chosen gene
@@ -216,7 +216,7 @@ double **
             current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
           }
-        } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+        } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
           // double r = doublerand_1();
           if (doublerand_1() < initial_prob[k]) {
             current_state[k / BITS_PER_BLOCK_32] |=
@@ -282,7 +282,7 @@ double **get_node_activities_BNp_sync_traj(BooleanNetworkWithPerturbations *net,
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         // double r = doublerand_1();
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
@@ -349,7 +349,7 @@ double *get_node_activities_BNp_async_last_step(
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
@@ -399,7 +399,7 @@ double *get_node_activities_BNp_sync_last_step(
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
@@ -718,11 +718,11 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
   network.p = REAL(p);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
+  if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -806,7 +806,7 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
   network.p = REAL(p);
 
   double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
+  if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -888,7 +888,7 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
   network.p = REAL(p);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -1050,7 +1050,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
   unsigned int *_initial_states = NULL;
-  if (!isNull(initial_states) && length(initial_states) > 0)
+  if ((!isNull(initial_states)) && (length(initial_states) > 0))
     _initial_states = (unsigned int *)INTEGER(initial_states);
 
   unsigned int _num_elements;
@@ -1061,7 +1061,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -1119,7 +1119,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
   unsigned int *_initial_states = NULL;
-  if (!isNull(initial_states) && length(initial_states) > 0)
+  if ((!isNull(initial_states)) && (length(initial_states) > 0))
     _initial_states = (unsigned int *)INTEGER(initial_states);
 
   unsigned int _num_elements;
@@ -1180,7 +1180,7 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
   network.p = REAL(p);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -1191,7 +1191,7 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
   }
 
   unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
+  if ((!isNull(initial_state)) && (length(initial_state) > 0))
     _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
@@ -1253,7 +1253,7 @@ SEXP get_reached_states_BNp_sync_single_R(SEXP inputs, SEXP input_positions,
   }
 
   unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
+  if ((!isNull(initial_state)) && (length(initial_state) > 0))
     _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
