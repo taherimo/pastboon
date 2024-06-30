@@ -445,7 +445,6 @@ double **get_pairwise_transitions_SDDS_async(
   double **trans_mat = CALLOC(num_states, sizeof(double *));
 
   unsigned int i, j, k, l = 0;
-  unsigned int **reached_states;
 
   // double c = 1.0 / num_repeats;
   double c = 1.0;
@@ -490,7 +489,6 @@ double **get_pairwise_transitions_SDDS_sync(
   double **trans_mat = CALLOC(num_states, sizeof(double *));
 
   unsigned int i, j, k, l = 0;
-  unsigned int **reached_states;
 
   // double c = 1.0 / num_repeats;
   double c = 1.0;
