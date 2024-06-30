@@ -2,10 +2,6 @@ useDynLib(PARBONET, .registration=TRUE)
 
 
 
-import("BoolNet")
-
-
-
 export(calc_node_activities)
 export(calc_convergence_time)
 export(get_reached_states)

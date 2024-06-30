@@ -78,8 +78,8 @@ pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
 params <- rep(0.05, length(lac_operon_net$genes))
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(net, states = states, method = "BNp",
-    params = params, steps = 100, repeats = 10)
+pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+    method = "BNp", params = params, steps = 100, repeats = 10)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -92,8 +92,8 @@ p_off <- runif(nrow(edges))
 params <- list(p_on = p_on, p_off = p_off)
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(net, states = states, method = "PEW",
-    params = params, steps = 100, repeats = 10)
+pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+    method = "PEW", params = params, steps = 100, repeats = 10)
 }
 
 
