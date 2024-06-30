@@ -42,16 +42,16 @@ apply_single_function_SDDS(unsigned int *currentState, unsigned int geneIdx,
 
     if (transition != -1) {
 
-      if (previous_node_state == 0 && transition == 0) {
+      if ((previous_node_state == 0) && (transition == 0)) {
         if (doublerand_1() > net->p00[geneIdx])
           transition = 1;
-      } else if (previous_node_state == 0 && transition == 1) {
+      } else if ((previous_node_state == 0) && (transition == 1)) {
         if (doublerand_1() > net->p01[geneIdx])
           transition = 0;
-      } else if (previous_node_state == 1 && transition == 0) {
+      } else if ((previous_node_state == 1) && (transition == 0)) {
         if (doublerand_1() > net->p10[geneIdx])
           transition = 1;
-      } else if (previous_node_state == 1 && transition == 1) {
+      } else if ((previous_node_state == 1) && (transition == 1)) {
         if (doublerand_1() > net->p11[geneIdx])
           transition = 0;
       }
@@ -107,7 +107,7 @@ state_transition_SDDS_asynchronous(unsigned int *currentState,
     // find the last index in the cumulative distribution that
     // is less than <r>
     for (i = 0; i < net->num_nodes; ++i) {
-      if (update_prob[i] < r && update_prob[i + 1] >= r)
+      if ((update_prob[i] < r) && (update_prob[i + 1] >= r))
         break;
     }
     // make a transition with the chosen gene
@@ -156,16 +156,16 @@ void state_transition_SDDS_synchronous(unsigned int *currentState,
 
       if (transition != -1) {
 
-        if (previous_node_state == 0 && transition == 0) {
+        if ((previous_node_state == 0) && (transition == 0)) {
           if (doublerand_1() > net->p00[i - 1])
             transition = 1;
-        } else if (previous_node_state == 0 && transition == 1) {
+        } else if ((previous_node_state == 0) && (transition == 1)) {
           if (doublerand_1() > net->p01[i - 1])
             transition = 0;
-        } else if (previous_node_state == 1 && transition == 0) {
+        } else if ((previous_node_state == 1) && (transition == 0)) {
           if (doublerand_1() > net->p10[i - 1])
             transition = 1;
-        } else if (previous_node_state == 1 && transition == 1) {
+        } else if ((previous_node_state == 1) && (transition == 1)) {
           if (doublerand_1() > net->p11[i - 1])
             transition = 0;
         }
@@ -239,7 +239,7 @@ get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
@@ -299,7 +299,7 @@ double **get_node_activities_SDDS_sync_traj(
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
               (1 << (k % BITS_PER_BLOCK_32));
@@ -360,7 +360,7 @@ double *get_node_activities_SDDS_async_last_step(
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
@@ -410,7 +410,7 @@ double *get_node_activities_SDDS_sync_last_step(
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
         }
-      } else if (initial_prob[k] > 0 & initial_prob[k] < 1) {
+      } else if ((initial_prob[k] > 0) && (initial_prob[k] < 1)) {
         if (doublerand_1() < initial_prob[k]) {
           current_state[k / BITS_PER_BLOCK_32] |=
             (1 << (k % BITS_PER_BLOCK_32));
@@ -732,11 +732,11 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.p11 = REAL(p11);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
+  if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -823,7 +823,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   network.p11 = REAL(p11);
 
   double *_initial_prob = NULL;
-  if (!isNull(initial_prob) && length(initial_prob) > 0)
+  if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -910,7 +910,7 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.p11 = REAL(p11);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -1078,13 +1078,13 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   network.p11 = REAL(p11);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
   unsigned int *_initial_states = NULL;
-  if (!isNull(initial_states) && length(initial_states) > 0)
+  if ((!isNull(initial_states)) && (length(initial_states) > 0))
     _initial_states = (unsigned int *)INTEGER(initial_states);
 
   unsigned int _num_elements;
@@ -1152,7 +1152,7 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
 
   unsigned int *_initial_states = NULL;
-  if (!isNull(initial_states) && length(initial_states) > 0)
+  if ((!isNull(initial_states)) && (length(initial_states) > 0))
     _initial_states = (unsigned int *)INTEGER(initial_states);
 
   unsigned int _num_elements;
@@ -1215,7 +1215,7 @@ SEXP get_reached_states_SDDS_async_single_R(
   network.p11 = REAL(p11);
 
   double *_update_prob = NULL;
-  if (!isNull(update_prob) && length(update_prob) > 0)
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
   unsigned int num_non_fixed = 0, i;
@@ -1226,7 +1226,7 @@ SEXP get_reached_states_SDDS_async_single_R(
   }
 
   unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
+  if ((!isNull(initial_state)) && (length(initial_state) > 0))
     _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
@@ -1292,7 +1292,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   }
 
   unsigned int *_initial_state = NULL;
-  if (!isNull(initial_state) && length(initial_state) > 0)
+  if ((!isNull(initial_state)) && (length(initial_state) > 0))
     _initial_state = (unsigned int *)INTEGER(initial_state);
 
   unsigned int _num_elements;
