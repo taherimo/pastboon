@@ -7,18 +7,18 @@ Count pairwise transitions between a given set of states
 Counts the frequencies of transition between each pair of states from a given set of states.
 }
 \usage{
-count_pairwise_trans(net, method = c("SDDS","BNp","PEW"), params, states,
+count_pairwise_trans(net, method = c("BNp","SDDS","PEW"), params, states,
                      steps = 1, repeats = 1000, asynchronous = TRUE,
                      update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
 
-\item{method}{The parameterization method to be used. For "SDDS", "BNp", amd
-"PEW" the methods \emph{stochastic discrete dynamical systems}, \emph{Boolean network with perturbations}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see \code{\link{calc_node_activities}}.
+\item{method}{The parameterization method to be used. For "BNp", "SDDS", and
+"PEW" the methods \emph{Boolean network with perturbations}, \emph{stochastic discrete dynamical systems}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see the Details section.
 }
 
-\item{params}{The parameter values depending on \code{method}. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network edges based on the order of the edges obtained from \code{\link{extract_edges}}.}
+\item{params}{The parameter values depending on \code{method}. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network edges based on the order of the edges obtained from \code{\link{extract_edges}}.}
 
 \item{states}{The network states that pairwise transitions among them are going to be counted. Should be a matrix where the rows are binary form of the states (or single binary vector for a single state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes.}
 
@@ -40,13 +40,13 @@ A matrix where each element (i, j) shows the number of transitions from the \emp
 }
 
 \references{
-Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. \emph{EURASIP Journal on Bioinformatics and Systems Biology}, 2012, 1-11.
-
 Golinelli, O., & Derrida, B. (1989). Barrier heights in the Kauffman model. \emph{Journal De Physique}, 50(13), 1587-1601.
 
 Shmulevich, I., Dougherty, E. R., & Zhang, W. (2002). Gene perturbation and intervention in probabilistic Boolean networks. \emph{Bioinformatics}, 18(10), 1319-1331.
 
 Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter, T. (2013). Recent development and biomedical applications of probabilistic Boolean networks. \emph{Cell communication and signaling}, 11, 1-25.
+
+Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. \emph{EURASIP Journal on Bioinformatics and Systems Biology}, 2012, 1-11.
 
 Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. \emph{PLoS Computational Biology}, 18(10), e1010536.
 }
@@ -62,6 +62,15 @@ data(lac_operon_net)
 states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes),
     replace = TRUE), nrow = 10, ncol = length(lac_operon_net$genes))
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Define the parameters for the BNp method
+params <- rep(0.05, length(lac_operon_net$genes))
+
+# Obtain frequency of pairwise transitions
+pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+    method = "BNp", params = params, steps = 100, repeats = 10)
+
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 # Define the parameter for the SDDS method
@@ -71,15 +80,6 @@ params <- list(p00= props, p01= props, p10= props, p11= props)
 # Obtain frequency of pairwise transitions
 pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
     method = "SDDS", params = params, steps = 100, repeats = 10)
-
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-# Define the parameters for the BNp method
-params <- rep(0.05, length(lac_operon_net$genes))
-
-# Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
-    method = "BNp", params = params, steps = 100, repeats = 10)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

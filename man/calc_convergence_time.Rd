@@ -18,7 +18,7 @@ calc_convergence_time(node_act, threshold, window_size = 1)
 \item{window_size}{The number of the consecutive time-steps that the curves are required to be stable (changes are below \code{threshold}). The default is 1.}
 }
 \details{
-If the change of all curves are less than \code{threshold} then it is assumed that the the convergene time step is reached.
+If the changes of all curves are less than \code{threshold}, it is assumed that the network has converged to a steady-state distribution where the probabilities of activity of the variables (nodes) no longer change.
 }
 
 \value{

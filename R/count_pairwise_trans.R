@@ -1,4 +1,4 @@
-count_pairwise_trans <- function(net, method = c("SDDS", "BNp", "PEW"), params,
+count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                  states, steps = 1, repeats = 1000,
                                  asynchronous = TRUE, update_prob = NULL) {
   if (!is.BooleanNetwork(net)) {
@@ -84,33 +84,46 @@ count_pairwise_trans <- function(net, method = c("SDDS", "BNp", "PEW"), params,
   }
 
 
-  # the C code requires all interactions to be coded into one vector:
-  # Assemble all input gene lists in one list <inputGenes>, and remember the split positions in <inputGenePositions>.
   inputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$input)))
   input_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$input)))))
 
-  # Do the same for the transition functions.
   outputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$func)))
   output_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$func)))))
 
-  # if (any(states != 0 & states != 1)) {
-  #   cat("Error!")
-  #   return(NA)
-  # }
-  #
-  # if(is.vector(states)) {
-  #   states_dec <- bin2dec(states, length(net$genes))
-  #   num_states <- 1
-  # }
-  # else {
-  #   states_dec <- as.vector(apply(states, 1, bin2dec, len=length(net$genes)))
-  #   num_states <- nrow(states)
-  #   #print(t(apply(apply(initial_states, 1, bin2dec, len=length(net$genes)),2,dec2bin,len=length(net$genes))))
-  #
-  # }
-
-
   switch(match.arg(method),
+     BNp = {
+
+       if (length(params) != length(net$genes)) {
+         stop("The length of \"params\" must be equal to the number of network nodes.")
+       }
+
+       if (!is.all_in_range_0_1(params)) {
+         stop("The value of the argument \"params\" must be a vector consisting of values in the range [0,1].")
+       }
+
+
+       if (asynchronous) {
+         pairwise_transitions <- .Call("get_pairwise_transitions_BNp_async_R", inputs, input_positions,
+                                       outputs, output_positions,
+                                       as.integer(net$fixed),
+                                       params,
+                                       update_prob, states_dec, num_states,
+                                       as.integer(steps), as.integer(repeats),
+                                       PACKAGE = "PARBONET"
+         )
+
+
+       } else {
+         pairwise_transitions <- .Call("get_pairwise_transitions_BNp_sync_R", inputs, input_positions,
+                                       outputs, output_positions,
+                                       as.integer(net$fixed),
+                                       params,
+                                       states_dec, num_states,
+                                       as.integer(steps), as.integer(repeats),
+                                       PACKAGE = "PARBONET"
+         )
+       }
+     },
     SDDS = {
       if (!is.list(params) || is.null(names(params))) {
         stop("The value of the argument \"params\" must be a named list.")
@@ -145,57 +158,11 @@ count_pairwise_trans <- function(net, method = c("SDDS", "BNp", "PEW"), params,
           PACKAGE = "PARBONET"
         )
 
-
-        # SEXP inputs, SEXP input_positions,
-        # SEXP outputs, SEXP output_positions,
-        # SEXP fixed_nodes, SEXP p00, SEXP p01,
-        # SEXP p10, SEXP p11, SEXP update_prob,
-        # SEXP states, SEXP num_states,
-        # SEXP steps, SEXP repeats
       } else {
         pairwise_transitions <- .Call("get_pairwise_transitions_SDDS_sync_R", inputs, input_positions,
           outputs, output_positions,
           as.integer(net$fixed),
           params$p00, params$p01, params$p10, params$p11,
-          states_dec, num_states,
-          as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
-        )
-      }
-    },
-    BNp = {
-
-      if (length(params) != length(net$genes)) {
-        stop("The length of \"params\" must be equal to the number of network nodes.")
-      }
-
-      if (!is.all_in_range_0_1(params)) {
-        stop("The value of the argument \"params\" must be a vector consisting of values in the range [0,1].")
-      }
-
-
-      if (asynchronous) {
-        pairwise_transitions <- .Call("get_pairwise_transitions_BNp_async_R", inputs, input_positions,
-          outputs, output_positions,
-          as.integer(net$fixed),
-          params,
-          update_prob, states_dec, num_states,
-          as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
-        )
-
-
-        # SEXP inputs, SEXP input_positions,
-        # SEXP outputs, SEXP output_positions,
-        # SEXP fixed_nodes, SEXP p00, SEXP p01,
-        # SEXP p10, SEXP p11, SEXP update_prob,
-        # SEXP states, SEXP num_states,
-        # SEXP steps, SEXP repeats
-      } else {
-        pairwise_transitions <- .Call("get_pairwise_transitions_BNp_sync_R", inputs, input_positions,
-          outputs, output_positions,
-          as.integer(net$fixed),
-          params,
           states_dec, num_states,
           as.integer(steps), as.integer(repeats),
           PACKAGE = "PARBONET"

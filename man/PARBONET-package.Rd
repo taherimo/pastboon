@@ -21,8 +21,8 @@ Adapting a Boolean network to different contexts finds many applications in diff
 One way to manipulate dynamical behaviour of the Boolean networks is to incorporate stochasticity-related parameters in these networks and try to make the dynamical behaviour of the network as close as possible to our desired behavior by adjusting the parameter values. In the current version of \code{PARBONET}, three methods to parameterize the Boolean network are implemnted:
 
 \itemize{
-\item{SDDS, \emph{Stochastic discrete dynamical systems} (Murrugarra et al.)}
 \item{BNp, \emph{Boolean network with perturbations} (Trairatphisan et al.)}
+\item{SDDS, \emph{Stochastic discrete dynamical systems} (Murrugarra et al.)}
 \item{PEW, \emph{Boolean network with probabilistic edge weights} (Deritei et al.)}
 
 }
@@ -40,9 +40,9 @@ Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>
 \references{
 Müssel, C., Hopfensitz, M., & Kestler, H. A. (2010). BoolNet—an R package for generation, reconstruction and analysis of Boolean networks. \emph{Bioinformatics}, 26(10), 1378-1380.
 
-Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. \emph{EURASIP Journal on Bioinformatics and Systems Biology}, 2012, 1-11.
-
 Trairatphisan, P., Mizera, A., Pang, J., Tantar, A. A., Schneider, J., & Sauter, T. (2013). Recent development and biomedical applications of probabilistic Boolean networks. \emph{Cell communication and signaling}, 11, 1-25.
+
+Murrugarra, D., Veliz-Cuba, A., Aguilar, B., Arat, S., & Laubenbacher, R. (2012). Modeling stochasticity and variability in gene regulatory networks. \emph{EURASIP Journal on Bioinformatics and Systems Biology}, 2012, 1-11.
 
 Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fine-tune Boolean network dynamics. \emph{PLoS Computational Biology}, 18(10), e1010536.
 }

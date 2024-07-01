@@ -1,4 +1,4 @@
-calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
+calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                  steps, repeats = 1000, initial_prob = NULL, last_step = FALSE,
                                  asynchronous = TRUE, update_prob = NULL) {
   if (!is.BooleanNetwork(net)) {
@@ -72,18 +72,46 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
     }
   }
 
-  # the C code requires all interactions to be coded into one vector:
-  # Assemble all input gene lists in one list <inputs>, and remember the split positions in <input_positions>.
   inputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$input)))
   input_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$input)))))
 
-  # Do the same for the transition functions.
   outputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$func)))
   output_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$func)))))
 
 
   switch(match.arg(method),
+     BNp = {
+
+       if (length(params) != length(net$genes)) {
+         stop("The length of \"params\" must be equal to the number of network nodes.")
+       }
+
+       if (!is.all_in_range_0_1(params)) {
+         stop("The value of the argument \"params\" must be a vector consisting of values in the range [0,1].")
+       }
+
+
+       if (asynchronous) {
+         node_activities <- .Call("get_node_activities_BNp_async_R", inputs, input_positions,
+                                  outputs, output_positions,
+                                  as.integer(net$fixed), params,
+                                  initial_prob, update_prob,
+                                  as.integer(steps), as.integer(repeats),
+                                  as.integer(last_step),
+                                  PACKAGE = "PARBONET"
+         )
+       } else {
+         node_activities <- .Call("get_node_activities_BNp_sync_R", inputs, input_positions,
+                                  outputs, output_positions,
+                                  as.integer(net$fixed), params,
+                                  initial_prob, as.integer(steps), as.integer(repeats),
+                                  as.integer(last_step),
+                                  PACKAGE = "PARBONET"
+         )
+       }
+     },
     SDDS = {
+
       if (!is.list(params) || is.null(names(params))) {
         stop("The value of the argument \"params\" must be a named list.")
       }
@@ -124,36 +152,6 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
           initial_prob,
           as.integer(steps),
           as.integer(repeats),
-          as.integer(last_step),
-          PACKAGE = "PARBONET"
-        )
-      }
-    },
-    BNp = {
-
-      if (length(params) != length(net$genes)) {
-        stop("The length of \"params\" must be equal to the number of network nodes.")
-      }
-
-      if (!is.all_in_range_0_1(params)) {
-        stop("The value of the argument \"params\" must be a vector consisting of values in the range [0,1].")
-      }
-
-
-      if (asynchronous) {
-        node_activities <- .Call("get_node_activities_BNp_async_R", inputs, input_positions,
-          outputs, output_positions,
-          as.integer(net$fixed), params,
-          initial_prob, update_prob,
-          as.integer(steps), as.integer(repeats),
-          as.integer(last_step),
-          PACKAGE = "PARBONET"
-        )
-      } else {
-        node_activities <- .Call("get_node_activities_BNp_sync_R", inputs, input_positions,
-          outputs, output_positions,
-          as.integer(net$fixed), params,
-          initial_prob, as.integer(steps), as.integer(repeats),
           as.integer(last_step),
           PACKAGE = "PARBONET"
         )
