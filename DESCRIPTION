@@ -2,6 +2,7 @@ Package: PARBONET
 Type: Package
 Title: Simulation of Parameterized Stochastic Boolean Networks
 Version: 0.1.0
+Depends: R (>= 3.5.0)
 Suggests: BoolNet
 Author: Mohammad Taheri-Ledari
 Maintainer: Mohammad Taheri-Ledari <mo.taheri@ut.ac.ir>

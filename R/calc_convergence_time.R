@@ -1,28 +1,17 @@
 calc_convergence_time <- function(node_act, threshold, window_size = 1) {
-  # the first row is consideres as time 0
 
-  # check dimensions of the matrix node_act
-
-  # if (!is.data.frame(node_act) & !is.matrix(node_act)) {
-  #   stop("The value of the argument \"node_act\" must be a matrix or a data.frame.")
-  # }
 
   if (!is.matrix(node_act)) {
     stop("The value of the argument \"node_act\" must be a matrix.")
-  }
-
-  if (!is.numeric(threshold)) {
-    stop("The value of the argument \"threshold\" must be numeric.")
   }
 
   if (!is.scalar(threshold)) {
     stop("The value of the argument \"threshold\" must be a scalar.")
   }
 
-  if (threshold < 0) {
-    stop("The value of the argument \"threshold\" must be non-negative.")
+  if (!is.non_negative_real(threshold)) {
+    stop("The value of the argument \"threshold\" must be a non-negative real.")
   }
-
 
 
   if (!is.scalar(window_size)) {
@@ -38,8 +27,6 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
   }
 
   differences <- diff(node_act, 1, along = 1)
-
-  # first_row_below_threshold <- which(apply(matrix_data, 1, function(row) all(row < threshold)), arr.ind = TRUE)[1, 1]
 
   rows_below_threshold <- apply(differences, 1, function(row) all(row < threshold))
 

@@ -45,17 +45,14 @@ is.nonnegative.integer <- function(x) {
   return(TRUE)
 }
 
-
-is.nonNA.numeric <- function(vector) {
-  if (!is.numeric(vector)) {
-    return(FALSE)
-  }
-  return(all(!is.na(vector)))
+is.non_negative_real <- function(x) {
+  is.numeric(x) && !is.na(x) && x >= 0
 }
 
-is.all_non_negative_float <- function(x) {
-  is.numeric(x) && all(!is.na(x)) && all(x >= 0)
+is.all_in_range_0_1 <- function(x) {
+  is.numeric(x) && all(!is.na(x)) && all(x >= 0) && all(x <= 1)
 }
+
 
 is.logical_value <- function(x) {
   is.logical(x) && length(x) == 1
@@ -78,11 +75,7 @@ trim <- function(string) {
 
 
 is.BooleanNetwork <- function(net) {
-  # # Load the BoolNet package to access the BooleanNetwork class
-  # if (!requireNamespace("BoolNet", quietly = TRUE)) {
-  #   stop("The BoolNet package is required but not installed.")
-  # }
-  #
+
   # Check if 'net' is a list
   if (!is.list(net)) {
     stop("The value of the argument \"net\" must be a named list consisting of \"interactions\", \"genes\", and \"fixed\".")
@@ -99,12 +92,12 @@ is.BooleanNetwork <- function(net) {
     stop("\"genes\" must be a character vector.")
   }
 
-  if (!is.nonNA.numeric(net$fixed)) {
-    stop("\"fixed\" must be numeric vector.")
+  if (!all(net$fixed == as.integer(net$fixed)) || !is.numeric(net$fixed)) {
+    if (!all(net$fixed %in% c(0, 1, -1))) {
+      stop("\"fixed\" must be numeric vector consisting of the values: 0, 1, or -1.")
+    }
   }
 
-  # Optionally, additional checks can be added here
-  # e.g., checking lengths or specific constraints on the elements
 
   # Check if the lengths of 'genes', 'fixed', and 'interactions' are equal
   len_genes <- length(net$genes)
@@ -124,7 +117,3 @@ is.BooleanNetwork <- function(net) {
 
   return(TRUE)
 }
-
-# Example usage:
-# net <- list(interactions = list(...), genes = c("gene1", "gene2"), fixed = c(1, -1, 0))
-# checkBooleanNetwork(net)

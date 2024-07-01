@@ -5,8 +5,16 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
     stop("The value of the argument \"net\" must accord to the \"BooleanNetwork\" definition in \"BoolNet\".")
   }
 
+  if (!is.scalar(steps)) {
+    stop("The value of the argument \"steps\" must be a scalar.")
+  }
+
   if (!is.nonnegative.integer(steps)) {
     stop("The value of the argument \"steps\" must be a non-negative integer.")
+  }
+
+  if (!is.scalar(repeats)) {
+    stop("The value of the argument \"repeats\" must be a scalar.")
   }
 
   if (!is.positive.integer(repeats)) {
@@ -16,9 +24,15 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
 
   if (!is.null(initial_prob)) {
     if (is.vector(initial_prob)) {
+
       if (length(initial_prob) != length(net$genes)) {
         stop("The length of \"initial_prob\" must be equal to the number of network nodes.")
       }
+
+      if (!is.all_in_range_0_1(initial_prob)) {
+        stop("All values in \"initial_prob\" must be in the range [0,1].")
+      }
+
     } else {
       stop("The value of the argument \"initial_prob\" must be a vector.")
     }
@@ -35,19 +49,24 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
 
   if (!is.null(update_prob)) {
     if (asynchronous) {
-      if (!is.all_non_negative_float(update_prob)) {
-        if (is.vector(update_prob)) {
-          if (length(update_prob) != length(net$genes)) {
-            stop("The length of \"update_prob\" must be a equal to the number of network nodes.")
-          } else if (sum(update_prob) != 1) {
-            stop("The sum of the \"update_prob\" values must be one.")
-          }
-        } else {
-          stop("The value of the argument \"update_prob\" must be a vector.")
+      if (is.vector(update_prob)) {
+
+        if (length(update_prob) != length(net$genes)) {
+          stop("The length of \"update_prob\" must be a equal to the number of network nodes.")
         }
+
+        if (!is.all_in_range_0_1(update_prob)) {
+          stop("All values in \"initial_prob\" must be in the range [0,1].")
+        }
+
+        if (sum(update_prob) != 1) {
+          stop("The sum of the \"update_prob\" values must be one.")
+        }
+
       } else {
-        stop("All \"update prob\" values must be non-negative and non-NA.")
+        stop("The value of the argument \"update_prob\" must be a vector.")
       }
+
     } else {
       warning("Since \"asynchronous = FALSE\", ignoring \"update_prob\".")
     }
@@ -83,8 +102,8 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
       }
 
 
-      if (!is.nonNA.numeric(params$p00) | !is.nonNA.numeric(params$p01) | !is.nonNA.numeric(params$p10) | !is.nonNA.numeric(params$p11)) {
-        stop("The vectors\"p00\", \"p01\", \"p10\", and \"p11\" must be numeric without NA values.")
+      if (!is.all_in_range_0_1(params$p00) | !is.all_in_range_0_1(params$p01) | !is.all_in_range_0_1(params$p10) | !is.all_in_range_0_1(params$p11)) {
+        stop("The vectors\"p00\", \"p01\", \"p10\", and \"p11\" must consist of values in the range [0,1].")
       }
 
 
@@ -111,13 +130,13 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
       }
     },
     BNp = {
-      if (!is.nonNA.numeric(params)) {
-        stop("The value of the argument \"params\" must be numeric vector without NA values.")
-      }
-
 
       if (length(params) != length(net$genes)) {
         stop("The length of \"params\" must be equal to the number of network nodes.")
+      }
+
+      if (!is.all_in_range_0_1(params)) {
+        stop("The value of the argument \"params\" must be a vector consisting of values in the range [0,1].")
       }
 
 
@@ -141,6 +160,7 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
       }
     },
     PEW = {
+
       if (!is.list(params) || is.null(names(params))) {
         stop("The value of the argument \"params\" must be a named list.")
       }
@@ -157,10 +177,9 @@ calc_node_activities <- function(net, method = c("SDDS", "BNp", "PEW"), params,
       }
 
 
-      if (!is.nonNA.numeric(params$p_on) | !is.nonNA.numeric(params$p_off)) {
-        stop("The vectors \"p_on\" and \"p_off\" must be numeric without NA values.")
+      if (!is.all_in_range_0_1(params$p_on) | !is.all_in_range_0_1(params$p_off)) {
+        stop("The vectors \"p_on\" and \"p_off\" must consist of values in the range [0,1].")
       }
-
 
 
       if (asynchronous) {
