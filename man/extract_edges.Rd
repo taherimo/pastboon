@@ -16,7 +16,7 @@ extract_edges(net, node_names = TRUE)
 }
 
 \details{
-Since the Boolean network have a directed graph topology, this function extracts the list of directed edges from a given Boolean network.
+Since the Boolean networks have a directed graph topology, this function extracts the list of directed edges from a given Boolean network.
 }
 
 \value{
