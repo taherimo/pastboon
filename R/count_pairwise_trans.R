@@ -7,7 +7,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
 
 
   if (!is.vector(states) & !is.matrix(states)) {
-    stop("The value of the argument \"initial_states\" must be either a vector or a matrix.")
+    stop("The value of the argument \"states\" must be either a vector or a matrix.")
   }
 
   if (!all(states == 0 | states == 1)) {
