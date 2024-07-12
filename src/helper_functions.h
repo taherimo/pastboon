@@ -67,7 +67,7 @@ extern int areArraysEqual(unsigned int arr1[], unsigned int arr2[],
                           unsigned int size);
 
 // Returns a random double in [0,1)
-static inline double doublerand_1() { return unif_rand(); }
+static inline double doublerand_1(void) { return unif_rand(); }
 
 // Returns a random integer value in [0,maxVal-1]
 static inline unsigned int intrand(unsigned int maxVal) {
@@ -75,7 +75,7 @@ static inline unsigned int intrand(unsigned int maxVal) {
 }
 
 // Returns a random integer value in [0,UINT_MAX]
-static inline unsigned int intrand_fullrange() {
+static inline unsigned int intrand_fullrange(void) {
   return (unsigned int)(unif_rand() * (UINT_MAX + 1));
 }
 
