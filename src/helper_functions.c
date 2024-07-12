@@ -4,7 +4,7 @@
 
 AllocatedMemory *memoryMap = NULL;
 
-void freeAllMemory() {
+void freeAllMemory(void) {
   AllocatedMemory *m, *tmp;
   HASH_ITER(hh, memoryMap, m, tmp) {
     HASH_DEL(memoryMap, m);
