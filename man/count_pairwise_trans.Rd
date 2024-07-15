@@ -12,7 +12,7 @@ count_pairwise_trans(net, method = c("BNp","SDDS","PEW"), params, states,
                      update_prob = NULL)
 }
 \arguments{
-\item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
+\item{net}{A network structure of the class \code{BooleanNetwork} from the \code{BoolNet} package.}
 
 \item{method}{The parameterization method to be used. For "BNp", "SDDS", and
 "PEW" the methods \emph{Boolean network with perturbations}, \emph{stochastic discrete dynamical systems}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see the Details section.

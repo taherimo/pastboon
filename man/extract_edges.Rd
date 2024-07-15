@@ -10,7 +10,7 @@ Extracts the list of directed edges (links) from a given Boolean network.
 extract_edges(net, node_names = TRUE)
 }
 \arguments{
-\item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
+\item{net}{A network structure of the class \code{BooleanNetwork} from the \code{BoolNet} package.}
 
 \item{node_names}{If TRUE (default), the edges are returned by node names, otherwise the edges are retuend by node indices.}
 }

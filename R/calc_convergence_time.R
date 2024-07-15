@@ -13,7 +13,6 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
     stop("The value of the argument \"threshold\" must be a non-negative real.")
   }
 
-
   if (!is.scalar(window_size)) {
     stop("The value of the argument \"window_size\" must be a scalar.")
   }

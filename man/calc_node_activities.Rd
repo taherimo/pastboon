@@ -13,7 +13,7 @@ calc_node_activities(net, method = c("BNp","SDDS","PEW"), params, steps,
 }
 
 \arguments{
-\item{net}{A network structure of the class \code{BooleanNetwork} from the \pkg{BoolNet} package.}
+\item{net}{A network structure of the class \code{BooleanNetwork} from the \code{BoolNet} package.}
 
 \item{method}{The parameterization method to be used. For "BNp", "SDDS", and
 "PEW" the methods \emph{Boolean network with perturbations}, \emph{stochastic discrete dynamical systems}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see the Details section.
@@ -66,6 +66,7 @@ data(lac_operon_net)
 
 # Define plot function
 plot_node_activities <- function(node_activities) {
+  old_par <- par(no.readonly = TRUE)
   layout(matrix(c(1,2),nrow = 1), width = c(4,1))
   par(mar=c(5,4,4,0))
   matplot(1:nrow(node_activities), node_act, type = "l", frame = TRUE, lwd = 2,
@@ -74,6 +75,8 @@ plot_node_activities <- function(node_activities) {
   plot(c(0,1),type = "n", axes = FALSE, xlab = "")
   legend("center", colnames(node_act),col = seq_len(ncol(node_activities)),
       cex = 0.5, fill = seq_len(ncol(node_activities)))
+  layout(1)
+  par(old_par)
 }
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: BNp  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
