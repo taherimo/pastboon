@@ -6,7 +6,7 @@
 Simulation of Parameterized Stochastic Boolean Networks
 }
 \description{
-A useful approach to represent the effect of different perturbing stimuli on Boolean networks is stochastic noise. Some methods to apply stochastic noise on Boolean networks have been presented, which are based on controlling the noise effect using a set of parameters integrated into the update rules. In this package, some useful functions are provided to examine three such parameterization methods: \emph{Boolean network with perturbations} (BNp), described by Trairatphisan et al., \emph{stochastic discrete dynamical systems} (SDDS), proposed by Murrugarra et al., and \emph{Boolean network with probabilistic edge weights} (PEW), presented by Deritei et al. This package includes modified portions of source code from the \code{BoolNet} package.
+Applying stochastic noise to Boolean networks is a useful approach for representing the effects of various perturbing stimuli on complex systems. A number of methods have been developed to control the noise effect on Boolean networks using a set of parameters integrated into the update rules. This package provides functions to examine three of these methods: \emph{Boolean network with perturbations} (BNp), described by Trairatphisan et al., \emph{stochastic discrete dynamical systems} (SDDS), proposed by Murrugarra et al., and \emph{Boolean network with probabilistic edge weights} (PEW), presented by Deritei et al. This package includes source code derived from the \code{BoolNet} package, which is licensed under the Artistic License 2.0.
 }
 \details{
 \tabular{ll}{
@@ -26,7 +26,9 @@ In \code{PARBONET}, three parameterization methods to control noise effect on Bo
 \item{PEW, \emph{Boolean network with probabilistic edge weights} (Deritei et al.)}
 }
 
-Given a Boolean network, its parameterization method, and the values of the parameters, one can achieve useful information resulting from simulation of the network via the functions provided in this package. Node activity trajectories (the probability that a node is active at each time step) can be calculated using \code{\link{calc_node_activities}}. By having node activity trajectories, the time step at which a steady-state distribution is reached can be detected using \code{\link{calc_convergence_time}}. Also, the reached states after starting a Boolean network from a given set of initial states for some time steps can be sampled using \code{\link{get_reached_states}}. Moreover, the number of pairwise transitions between a given set of states can be obtained using \code{\link{count_pairwise_trans}}. Finally, the edges of a Boolean network can be extracted utilizing \code{\link{extract_edges}}.
+Given a Boolean network, its parameterization method, and the values of the parameters, one can achieve useful information resulting from simulation of the network via the functions provided in this package. Node activity trajectories (the probability that a node is active at each time-step) can be calculated using \code{\link{calc_node_activities}}. By having node activity trajectories, the time-step at which a steady-state distribution is reached can be detected using \code{\link{calc_convergence_time}}. Also, the reached states after starting a Boolean network from a given set of initial states for some time-steps can be sampled using \code{\link{get_reached_states}}. Moreover, the number of pairwise transitions between a given set of states can be obtained using \code{\link{count_pairwise_trans}}. Finally, the edges of a Boolean network can be extracted utilizing \code{\link{extract_edges}}.
+
+This package includes source code derived from the \code{BoolNet} package, which is licensed under the Artistic License 2.0. More precisely, the C code to simulate Boolean networks and its R interface code were intially taken from the \code{BoolNet} package but they were substantially altered (specially the C codes) to meet our purposes.
 }
 
 \author{
