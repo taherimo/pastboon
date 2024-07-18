@@ -1,3 +1,6 @@
+# This function is taken from the BoolNet package.
+# Original file: BoolNet/R/helpers.R
+# Original function: bin2dec
 # Encode a vector of binary values <bin> with <len> bits
 # to a decimal number
 bin2dec <- function(bin, len) {
@@ -12,6 +15,9 @@ bin2dec <- function(bin, len) {
   dec <- .C("bin2decC", as.integer(dec), as.integer(bin), as.integer(len))[[1]]
 }
 
+# This function is taken from the BoolNet package.
+# Original file: BoolNet/R/helpers.R
+# Original function: dec2bin
 # Decode the <len> low-order bits of <dec> to a vector of binary values,
 # where the first entry is the least significant bit
 dec2bin <- function(dec, len) {
@@ -71,8 +77,6 @@ trim <- function(string) {
   string <- gsub("[ \t]+$", "", string)
   return(string)
 }
-
-
 
 is.BooleanNetwork <- function(net) {
 

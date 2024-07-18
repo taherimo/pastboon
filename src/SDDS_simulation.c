@@ -5,6 +5,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+/*
+ * This code is derived from the BoolNet package.
+ * Original files: BoolNet/src/statespace_search.h,
+ *                 BoolNet/src/statespace_search.c,
+ *                 BoolNet/src/attractor_search_interface.c
+ */
+
 static inline void
 apply_single_function_SDDS(unsigned int *currentState, unsigned int geneIdx,
                            StochasticDiscreteDynamicalSystem *net) {

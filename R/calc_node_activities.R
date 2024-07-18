@@ -72,12 +72,20 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
     }
   }
 
+  # This code is derived from the BoolNet package.
+  # Original file: BoolNet/R/getAttractors.R
+  # Original function: getAttractors
+  # Modifications: Changed the naming of the variables.
+
+  # The start of the derived code from BoolNet
+
   inputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$input)))
   input_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$input)))))
 
   outputs <- as.integer(unlist(lapply(net$interactions, function(interaction) interaction$func)))
   output_positions <- as.integer(cumsum(c(0, sapply(net$interactions, function(interaction) length(interaction$func)))))
 
+  # The end of the derived code from BoolNet
 
   switch(match.arg(method),
      BNp = {

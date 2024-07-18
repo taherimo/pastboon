@@ -1,6 +1,11 @@
 #ifndef BOOLEAN_NETWORK_H
 #define BOOLEAN_NETWORK_H
 
+/*
+ * This code is derived from the BoolNet package.
+ * Original file: BoolNet/src/boolean_network.h
+ */
+
 typedef struct
 {
   unsigned char type;

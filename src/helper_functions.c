@@ -2,6 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
+/*
+ * This block of code was taken from the BoolNet package.
+ * Original file: BoolNet/src/common.c
+ */
+
+// The start of the code taken from BoolNet
+
 AllocatedMemory *memoryMap = NULL;
 
 void freeAllMemory(void) {
@@ -45,6 +52,8 @@ void dec2binC(int *bin, int *dec, int *numBits) {
     else
       bin[i] = 0;
 }
+
+// The end of the code taken from BoolNet
 
 int areArraysEqual(unsigned int arr1[], unsigned int arr2[],
                    unsigned int size) {

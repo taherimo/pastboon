@@ -7,6 +7,13 @@
 #include <limits.h>
 #include <stdbool.h>
 
+/*
+ * This block of code was taken from the BoolNet package.
+ * Original file: BoolNet/src/common.h
+*/
+
+// The start of the code taken from BoolNet
+
 #define BITS_PER_BLOCK_32 (sizeof(unsigned int) * 8)
 
 #define GET_BIT(x, i) (((x) & ((unsigned long long)1 << (i))) != 0)
@@ -63,9 +70,6 @@ extern void bin2decC(int *dec, int *bin, int *numBits);
 
 extern void dec2binC(int *bin, int *dec, int *numBits);
 
-extern int areArraysEqual(unsigned int arr1[], unsigned int arr2[],
-                          unsigned int size);
-
 // Returns a random double in [0,1)
 static inline double doublerand_1(void) { return unif_rand(); }
 
@@ -73,6 +77,11 @@ static inline double doublerand_1(void) { return unif_rand(); }
 static inline unsigned int intrand(unsigned int maxVal) {
   return (unsigned int)(unif_rand() * maxVal);
 }
+
+// The end of the code taken from BoolNet
+
+extern int areArraysEqual(unsigned int arr1[], unsigned int arr2[],
+                          unsigned int size);
 
 // Returns a random integer value in [0,UINT_MAX]
 static inline unsigned int intrand_fullrange(void) {
