@@ -1,6 +1,6 @@
-\name{PARBONET-package}
-\alias{PARBONET-package}
-\alias{PARBONET}
+\name{pastboon-package}
+\alias{pastboon-package}
+\alias{pastboon}
 \docType{package}
 \title{
 Simulation of Parameterized Stochastic Boolean Networks
@@ -10,7 +10,7 @@ Applying stochastic noise to Boolean networks is a useful approach for represent
 }
 \details{
 \tabular{ll}{
-Package: \tab PARBONET\cr
+Package: \tab pastboon\cr
 Type: \tab Package\cr
 Version: \tab 1.0\cr
 Date: \tab 2024-10-01\cr
@@ -18,7 +18,7 @@ License: \tab Artistic-2.0\cr
 }
 Applying perturbations to a standard deterministic Boolean network is performed by altering its update rules. Manipulating the logical functions requires a proper understanding of the reasoning behind the Boolean equations. Moreover, it can lead to the loss of the main functional characteristics of the network, which usually need to be preserved. An alternative approach to perturb a Boolean network is to apply stochastic noise and control the noise effect through adjusting a set of parameters integrated into the logical functions. An important advantage of this approach is the possibility of implementing partial activation/inhibition of variables.
 
-In \code{PARBONET}, three parameterization methods to control noise effect on Boolean networks are implemented:
+In \code{pastboon}, three parameterization methods to control noise effect on Boolean networks are implemented:
 
 \itemize{
 \item{BNp, \emph{Boolean network with perturbations} (Trairatphisan et al.)}

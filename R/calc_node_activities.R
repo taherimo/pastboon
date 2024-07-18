@@ -106,7 +106,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                   initial_prob, update_prob,
                                   as.integer(steps), as.integer(repeats),
                                   as.integer(last_step),
-                                  PACKAGE = "PARBONET"
+                                  PACKAGE = "pastboon"
          )
        } else {
          node_activities <- .Call("get_node_activities_BNp_sync_R", inputs, input_positions,
@@ -114,7 +114,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                   as.integer(net$fixed), params,
                                   initial_prob, as.integer(steps), as.integer(repeats),
                                   as.integer(last_step),
-                                  PACKAGE = "PARBONET"
+                                  PACKAGE = "pastboon"
          )
        }
      },
@@ -150,7 +150,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           params$p00, params$p01, params$p10, params$p11,
           initial_prob, update_prob, as.integer(steps),
           as.integer(repeats), as.integer(last_step),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       } else {
         node_activities <- .Call("get_node_activities_SDDS_sync_R", inputs, input_positions,
@@ -161,7 +161,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           as.integer(steps),
           as.integer(repeats),
           as.integer(last_step),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       }
     },
@@ -195,7 +195,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           params$p_on, params$p_off, initial_prob, update_prob,
           as.integer(steps), as.integer(repeats),
           as.integer(last_step),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       } else {
         node_activities <- .Call("get_node_activities_PEW_sync_R", inputs, input_positions,
@@ -205,7 +205,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           as.integer(steps),
           as.integer(repeats),
           as.integer(last_step),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       }
     },

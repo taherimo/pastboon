@@ -136,7 +136,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                    params,
                                    update_prob, as.integer(initial_states_dec),
                                    as.integer(repeats), as.integer(steps),
-                                   PACKAGE = "PARBONET"
+                                   PACKAGE = "pastboon"
            )
          } else {
            reached_states <- .Call("get_reached_states_BNp_sync_single_R", inputs, input_positions,
@@ -145,7 +145,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                    params,
                                    as.integer(initial_states_dec),
                                    as.integer(repeats), as.integer(steps),
-                                   PACKAGE = "PARBONET"
+                                   PACKAGE = "pastboon"
            )
          }
        } else {
@@ -193,7 +193,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
             params$p00, params$p01, params$p10, params$p11,
             update_prob, as.integer(initial_states_dec),
             as.integer(repeats), as.integer(steps),
-            PACKAGE = "PARBONET"
+            PACKAGE = "pastboon"
           )
         } else {
           reached_states <- .Call("get_reached_states_SDDS_sync_single_R", inputs, input_positions,
@@ -202,7 +202,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
             params$p00, params$p01, params$p10, params$p11,
             as.integer(initial_states_dec),
             as.integer(repeats), as.integer(steps),
-            PACKAGE = "PARBONET"
+            PACKAGE = "pastboon"
           )
         }
       } else {
@@ -247,7 +247,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
             params$p_on, params$p_off, update_prob,
             as.integer(initial_states_dec),
             as.integer(repeats), as.integer(steps),
-            PACKAGE = "PARBONET"
+            PACKAGE = "pastboon"
           )
         } else {
           reached_states <- .Call("get_reached_states_PEW_sync_single_R", inputs, input_positions,
@@ -255,7 +255,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
             as.integer(net$fixed),
             params$p_on, params$p_off, as.integer(initial_states_dec),
             as.integer(repeats), as.integer(steps),
-            PACKAGE = "PARBONET"
+            PACKAGE = "pastboon"
           )
         }
       } else {

@@ -101,7 +101,7 @@ static const R_CallMethodDef callMethods[] = {
 
 
 
-void R_init_PARBONET(DllInfo *info) {
+void R_init_pastboon(DllInfo *info) {
   R_registerRoutines(info, cMethods, callMethods, NULL, NULL);
   R_useDynamicSymbols(info, FALSE);
 }

@@ -117,7 +117,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                        params,
                                        update_prob, states_dec, num_states,
                                        as.integer(steps), as.integer(repeats),
-                                       PACKAGE = "PARBONET"
+                                       PACKAGE = "pastboon"
          )
 
 
@@ -128,7 +128,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
                                        params,
                                        states_dec, num_states,
                                        as.integer(steps), as.integer(repeats),
-                                       PACKAGE = "PARBONET"
+                                       PACKAGE = "pastboon"
          )
        }
      },
@@ -163,7 +163,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           params$p00, params$p01, params$p10, params$p11,
           update_prob, states_dec, num_states,
           as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
 
       } else {
@@ -173,7 +173,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           params$p00, params$p01, params$p10, params$p11,
           states_dec, num_states,
           as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       }
     },
@@ -202,7 +202,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           as.integer(net$fixed),
           params$p_on, params$p_off, update_prob, states_dec, num_states,
           as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       } else {
         pairwise_transitions <- .Call("get_pairwise_transitions_PEW_sync_R", inputs, input_positions,
@@ -210,7 +210,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           as.integer(net$fixed),
           params$p_on, params$p_off, states_dec, num_states,
           as.integer(steps), as.integer(repeats),
-          PACKAGE = "PARBONET"
+          PACKAGE = "pastboon"
         )
       }
     },
