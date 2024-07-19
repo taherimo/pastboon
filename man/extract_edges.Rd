@@ -12,15 +12,15 @@ extract_edges(net, node_names = TRUE)
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \code{BoolNet} package.}
 
-\item{node_names}{If TRUE (default), the edges are returned by node names, otherwise the edges are retuend by node indices.}
+\item{node_names}{If TRUE (default), the edges are returned by node names; otherwise, the edges are returned by node indices.}
 }
 
 \details{
-Since the Boolean networks have a directed graph topology, this function extracts the list of directed edges from a given Boolean network.
+Since Boolean networks have a directed graph topology, this function extracts the list of directed edges from a given Boolean network.
 }
 
 \value{
-A data frame is returned where its rows correspond to the directed edges of the network and its two columns idicate source and destination of each edge.
+A data frame where each row corresponds to a directed edge of the network and the two columns indicate the source and destination of each edge.
 }
 
 \examples{

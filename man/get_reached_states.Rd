@@ -4,40 +4,59 @@
 Obtain the reached states
 }
 \description{
-Obtains the reached states after simulating a Boolean network for some time-steps.
+Obtains the reached states after simulating a Boolean network for a specified number of time-steps.
 }
 \usage{
-get_reached_states(net, method = c("BNp","SDDS","PEW"), params, steps,
+get_reached_states(net, method = c("BNp", "SDDS", "PEW"), params, steps,
                    repeats = NULL, initial_states = NULL, asynchronous = TRUE,
                    update_prob = NULL)
 }
 \arguments{
 \item{net}{A network structure of the class \code{BooleanNetwork} from the \code{BoolNet} package.}
 
-\item{method}{The parameterization method to be used. For "BNp", "SDDS", and
-"PEW" the methods \emph{Boolean network with perturbations}, \emph{stochastic discrete dynamical systems}, and \emph{Boolean network with probabilistic edge weights} will be employed, respectively. For each of these cases a different pattern for the \code{params} argument is expected. For more information, see the Details section.
+\item{method}{The parameterization method to be used. Options are:
+
+  \itemize{
+
+    \item \code{"BNp"}: Boolean network with perturbations.
+
+    \item \code{"SDDS"}: Stochastic discrete dynamical systems.
+
+    \item \code{"PEW"}: Boolean network with probabilistic edge weights.
+
+  }
+
+  Each method requires a different format for the \code{params} argument.
 }
 
-\item{params}{The parameter values depending on \code{method}. If \code{method = "BNp"}, it should be a single vector of probabilities with the length equal to the number of network nodes. If \code{method = "SDDS"}, it is expected to be a list of four equal-size vectors of probabilities \code{p00}, \code{p01}, \code{p10}, and \code{p11} where all the vector lengths should be equal to the number of network nodes. Finally, if \code{params = "PEW"}, it is required be a list of two equall-size vectors of probabilities \code{p_on} and \code{p_off} with the length equal to the number of network edges based on the order of the edges obtained from \code{\link{extract_edges}}.}
+\item{params}{The parameter values depending on \code{method}:
+\itemize{
+    \item For \code{method = "BNp"}, a single vector of probabilities, equal in length to the number of network nodes.
 
-\item{steps}{The number of time-steps, which should be a non-negatve integer.}
+    \item For \code{method = "SDDS"}, a list of four equal-length vectors of probabilities: \code{p00}, \code{p01}, \code{p10}, and \code{p11}, each equal in length to the number of network nodes.
 
-\item{repeats}{The number of repeats, which should be a positive integer. If two or more initial states are provided via \code{initial_states}, then this argument is ignored. If \code{NULL} (default), then \code{initial_states} should not be \code{NULL}.}
-
-\item{initial_states}{The set of initial states as a matrix  where each row corresponds to the binary form of a state (or single binary vector for a single initial state). The number of matrix columns (the length of the vector) should be equal to the number of network nodes. The order of the nodes in the columns is considerd same as \code{net$genes}. If \code{NULL} (default), the initial state(s) are chosen randomly for \code{repeats} number of times based on the uniform distribution, thus \code{repeats} should not be \code{NULL} ate the same time.
+    \item For \code{method = "PEW"}, a list of two equal-length vectors of probabilities: \code{p_on} and \code{p_off}, each as long as the number of network edges, ordered according to \code{\link{extract_edges}}.
+}
 }
 
-\item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used where a single node is updated at each time-step. In this case \code{update_prob} indicates update probabuilities. If \code{FALSE}, synchronous update is utilized.}
+\item{steps}{The number of time-steps (non-negative integer) to simulate the network.}
 
-\item{update_prob}{Probability of updating each variable (node) in each time-step in the case of \code{asynchronous = TRUE}. If \code{NULL} (default) then nodes are randomly updated based on uniform distribution. If \code{asynchronous = FALSE} this argument is ignored.}
+\item{repeats}{The number of repeats (positive integer). If two or more initial states are provided via \code{initial_states}, this argument is ignored. If \code{NULL} (default), then \code{initial_states} should not be \code{NULL}.}
+
+\item{initial_states}{The set of initial states as a matrix (where each row corresponds to the binary form of a state) or a vector (for the binary form of a single initial state). The number of matrix columns (or the length of the vector) should match the number of network nodes. The order of the nodes in the columns (or vector) is considered the same as \code{net$genes}. If \code{NULL} (default), initial states are chosen randomly for \code{repeats} number of times based on a uniform distribution, requiring \code{repeats} not to be \code{NULL}.
+}
+
+\item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
+
+\item{update_prob}{The probability of updating each variable (node) in each time-step when \code{asynchronous = TRUE}. If \code{NULL} (default), nodes are updated randomly based on a uniform distribution. If \code{asynchronous = FALSE}, this argument is ignored.}
 }
 
 \details{
-This function returns the reached states (the states in the last time-step) after simulating a network for \code{steps} time-steps and repeating it for \code{repeats} number of times. If \code{initial_states = NULL}, then the intial states are chosen randomly based on uniform distribution for \code{repeats} number of times and as a result, \code{repeats} number of reached states are returned. If two or more initial states are provided by user, then the \code{repeats} argument is ignored, and one reached state is returned for each initial state. If \code{repeats = NULL}, then the number of the returned reached states is equal to the number of inirial states. i.e. for each initial state a reached state is returned. Please note that \code{repeats} and \code{initial_states} should not be \code{NULL} at the same time.
+This function returns the reached states (the states in the last time-step) after simulating a network for \code{steps} time-steps and repeating it for \code{repeats} number of times. If \code{initial_states} is \code{NULL}, then the initial states are chosen randomly based on a uniform distribution for \code{repeats} number of times, resulting in \code{repeats} number of reached states. If two or more initial states are provided by the user, then the \code{repeats} argument is ignored, and one reached state is returned for each initial state. If \code{repeats} is \code{NULL}, the number of returned reached states equals the number of initial states (one reached state for each initial state). The arguments \code{repeats} and \code{initial_states} should not both be \code{NULL} simultaneously.
 }
 
 \value{
-A matrix where each row is the binary form of a reached state and each column corresponds to a network node. The order of the nodes in the columns is same as \code{net$genes}.
+A matrix where each row is the binary form of a reached state, and each column corresponds to a network node. The order of the nodes in the columns is the same as \code{net$genes}.
 }
 
 \references{
