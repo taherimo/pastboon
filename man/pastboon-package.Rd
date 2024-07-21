@@ -32,6 +32,8 @@ Kaveh Kavousi [ctb]
 Sayed-Amir Marashi [ctb]
 
 Authors of BoolNet [ctb]
+
+Troy D. Hanson [ctb]
 }
 
 \references{
