@@ -32,7 +32,7 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
   convergence_time <- find_consecutive_true(rows_below_threshold, window_size)
 
   if (is.na(convergence_time)) {
-    cat("No convergence was detected! Try a higher threshold and/or window_size.")
+    # No convergence was detected!
     return(NA)
   }
 
