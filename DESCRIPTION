@@ -7,7 +7,7 @@ Authors@R: c(person("Mohammad", "Taheri-Ledari", role = c("aut", "cre","cph"), e
     person("Kaveh", "Kavousi", role = "ctb", email = "kkavousi@ut.ac.ir", comment = c(ORCID = "0000-0002-1906-3912")),
     person("Sayed-Amir", "Marashi", role = "ctb", email = "marashi@ut.ac.ir", comment = c(ORCID = "0000-0001-9801-7449")),
     person(given = "Authors of BoolNet", role = "ctb", comment = "Original authors of the BoolNet package"),
-    person(c("Troy", "D."), "Hanson", role = "ctb", comment="contributed uthash macros"))
+    person(c("Troy", "D."), "Hanson", role = "ctb", comment="Contributed uthash macros"))
 Author: Mohammad Taheri-Ledari [aut, cre, cph] (<https://orcid.org/0009-0007-9132-077X>),
   Kaveh Kavousi [ctb] (<https://orcid.org/0000-0002-1906-3912>),
   Sayed-Amir Marashi [ctb] (<https://orcid.org/0000-0001-9801-7449>),
