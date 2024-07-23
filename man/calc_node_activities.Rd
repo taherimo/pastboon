@@ -43,13 +43,13 @@ calc_node_activities(net, method = c("BNp", "SDDS", "PEW"), params, steps,
 
 \item{repeats}{The number of repeats (positive integer).}
 
-\item{initial_prob}{The probability that each of the nodes is ON (1) in the initial state (time-step 0). If \code{NULL} (default), 0.5 is used as the probability for all nodes, meaning the initial state is randomly chosen based on a uniform distribution.}
+\item{initial_prob}{The probability that each of the nodes is ON (1) in the initial state (time-step 0). It should be a vector of probabilities for each of the nodes which doesn't necessarily sum up to one. If \code{NULL} (default), 0.5 is used as the probability for all nodes, meaning the initial state is randomly chosen based on a uniform distribution.}
 
 \item{last_step}{If \code{TRUE}, only the node activity rates for the last time-step are returned. Otherwise, the entire activity rate trajectory of the nodes is returned.}
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
 
-\item{update_prob}{The probability of updating each variable (node) in each time-step when \code{asynchronous = TRUE}. If \code{NULL} (default), nodes are updated randomly based on a uniform distribution. If \code{asynchronous = FALSE}, this argument is ignored.}
+\item{update_prob}{The probability of updating each variable (node) in each time-step when \code{asynchronous = TRUE}. It should be a vector of probabilities for each of the nodes which sums up to one. If \code{NULL} (default), nodes are updated randomly based on a uniform distribution. If \code{asynchronous = FALSE}, this argument is ignored.}
 }
 
 \details{
