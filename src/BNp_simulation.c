@@ -1,16 +1,16 @@
-#include "boolean_network.h"
-#include "helper_functions.h"
-#include <R.h>
-#include <Rinternals.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
 /*
  * This code is derived from the BoolNet package.
  * Original files: BoolNet/src/statespace_search.h,
  *                 BoolNet/src/statespace_search.c,
  *                 BoolNet/src/attractor_search_interface.c
  */
+
+#include "boolean_network.h"
+#include "helper_functions.h"
+#include <R.h>
+#include <Rinternals.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
 static inline void
 apply_single_function_BNp(unsigned int *currentState, unsigned int geneIdx,
