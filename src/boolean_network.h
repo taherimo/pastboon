@@ -13,7 +13,7 @@ typedef struct
   unsigned int num_nodes;
 
   int * fixed_nodes;
-  unsigned int * non_fixed_node_bits;
+  //unsigned int * non_fixed_node_bits;
 
   //int * node_types;
 
@@ -33,7 +33,7 @@ typedef struct
   unsigned int num_nodes;
 
   int * fixed_nodes;
-  unsigned int * non_fixed_node_bits;
+  //unsigned int * non_fixed_node_bits;
 
   //int * node_types;
 
@@ -57,7 +57,7 @@ typedef struct
   unsigned int num_nodes;
 
   int * fixed_nodes;
-  unsigned int * non_fixed_node_bits;
+  //unsigned int * non_fixed_node_bits;
 
   //int * node_types;
 

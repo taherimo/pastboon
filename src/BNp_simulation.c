@@ -142,10 +142,12 @@ void state_transition_BNp_synchronous(unsigned int *currentState,
           // bit
           {
             unsigned int gene = net->inputs[k] - 1;
-            unsigned int bit =
-                (GET_BIT(currentState[net->non_fixed_node_bits[gene] /
-                                      BITS_PER_BLOCK_32],
-                         net->non_fixed_node_bits[gene] % BITS_PER_BLOCK_32));
+            unsigned int bit = (GET_BIT(currentState[gene / BITS_PER_BLOCK_32],
+                                        gene % BITS_PER_BLOCK_32));
+
+            // unsigned int bit = (GET_BIT(currentState[net->non_fixed_node_bits[gene] /
+            //                     BITS_PER_BLOCK_32], net->non_fixed_node_bits[gene] %
+            //                       BITS_PER_BLOCK_32));
 
             inputdec |= bit << (net->input_positions[i] - k - 1);
           }
@@ -719,7 +721,7 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   double *_update_prob = NULL;
@@ -730,12 +732,12 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
   if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int _num_elements;
 
@@ -789,7 +791,7 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
 
   return result;
 }
@@ -807,19 +809,19 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   double *_initial_prob = NULL;
   if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int _num_elements;
 
@@ -868,7 +870,7 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
 
   return result;
 }
@@ -889,21 +891,21 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   double *_update_prob = NULL;
   if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
-  unsigned int j = 0;
+  unsigned int i, j = 0;
 
   unsigned int _num_elements;
 
@@ -950,7 +952,7 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(transition_matrix);
   FREE(_states_2d);
 
@@ -970,17 +972,17 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
-  unsigned int j = 0;
+  unsigned int i, j = 0;
 
   unsigned int _num_elements;
 
@@ -1027,7 +1029,7 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(transition_matrix);
   FREE(_states_2d);
 
@@ -1049,7 +1051,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
@@ -1069,12 +1071,12 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
   if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   int _num_steps = *INTEGER(steps);
 
@@ -1098,7 +1100,7 @@ SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1118,7 +1120,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   unsigned int _num_initial_states = INTEGER(num_initial_states)[0];
@@ -1134,12 +1136,12 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   int _num_steps = *INTEGER(steps);
 
@@ -1162,7 +1164,7 @@ SEXP get_reached_states_BNp_sync_batch_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1181,19 +1183,19 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
   double *_update_prob = NULL;
   if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int *_initial_state = NULL;
   if ((!isNull(initial_state)) && (length(initial_state) > 0))
@@ -1228,7 +1230,7 @@ SEXP get_reached_states_BNp_async_single_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1247,15 +1249,15 @@ SEXP get_reached_states_BNp_sync_single_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int *_initial_state = NULL;
   if ((!isNull(initial_state)) && (length(initial_state) > 0))
@@ -1289,7 +1291,7 @@ SEXP get_reached_states_BNp_sync_single_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;

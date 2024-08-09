@@ -35,6 +35,8 @@ apply_single_function_SDDS(unsigned int *currentState, unsigned int geneIdx,
 
         bit = (GET_BIT(currentState[gene / BITS_PER_BLOCK_32],
                        gene % BITS_PER_BLOCK_32));
+
+
         // GET_BIT(currentState[geneIdx / BITS_PER_BLOCK_32], geneIdx %
         // BITS_PER_BLOCK_32);
 
@@ -77,10 +79,16 @@ apply_single_function_SDDS(unsigned int *currentState, unsigned int geneIdx,
     // int transition = previous_node_state;
     int transition = net->fixed_nodes[geneIdx];
 
-    if (transition == 0) {
+    if ((previous_node_state == 0) && (transition == 0)) {
       if (doublerand_1() > net->p00[geneIdx])
         transition = 1;
-    } else if (transition == 1) {
+    } else if ((previous_node_state == 0) && (transition == 1)) {
+      if (doublerand_1() > net->p01[geneIdx])
+        transition = 0;
+    } else if ((previous_node_state == 1) && (transition == 0)) {
+      if (doublerand_1() > net->p10[geneIdx])
+        transition = 1;
+    } else if ((previous_node_state == 1) && (transition == 1)) {
       if (doublerand_1() > net->p11[geneIdx])
         transition = 0;
     }
@@ -151,14 +159,19 @@ void state_transition_SDDS_synchronous(unsigned int *currentState,
           unsigned int gene = net->inputs[k] - 1;
           unsigned int bit;
 
-          bit = (GET_BIT(
-              currentState[net->non_fixed_node_bits[gene] / BITS_PER_BLOCK_32],
-              net->non_fixed_node_bits[gene] % BITS_PER_BLOCK_32));
+          // bit = (GET_BIT(currentState[net->non_fixed_node_bits[gene] / BITS_PER_BLOCK_32],
+          //                net->non_fixed_node_bits[gene] % BITS_PER_BLOCK_32));
+
+          bit = (GET_BIT(currentState[gene / BITS_PER_BLOCK_32],
+                         gene % BITS_PER_BLOCK_32));
+
 
           inputdec |= bit << (net->input_positions[i] - k - 1);
+
         }
       }
       // determine transition function
+
       int transition = net->outputs[net->output_positions[i - 1] + inputdec];
 
       if (transition != -1) {
@@ -193,10 +206,16 @@ void state_transition_SDDS_synchronous(unsigned int *currentState,
       // int transition = previous_node_state;
       int transition = net->fixed_nodes[i - 1];
 
-      if (transition == 0) {
+      if ((previous_node_state == 0) && (transition == 0)) {
         if (doublerand_1() > net->p00[i - 1])
           transition = 1;
-      } else if (transition == 1) {
+      } else if ((previous_node_state == 0) && (transition == 1)) {
+        if (doublerand_1() > net->p01[i - 1])
+          transition = 0;
+      } else if ((previous_node_state == 1) && (transition == 0)) {
+        if (doublerand_1() > net->p10[i - 1])
+          transition = 1;
+      } else if ((previous_node_state == 1) && (transition == 1)) {
         if (doublerand_1() > net->p11[i - 1])
           transition = 0;
       }
@@ -281,6 +300,7 @@ get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
 double **get_node_activities_SDDS_sync_traj(
     StochasticDiscreteDynamicalSystem *net, double *initial_prob,
     unsigned int num_repeats, int num_steps, unsigned int num_elements) {
+
   double *traj_vals = CALLOC(net->num_nodes * (num_steps + 1), sizeof(double));
   double **traj = CALLOC(net->num_nodes, sizeof(double *));
 
@@ -730,7 +750,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -744,12 +764,12 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
   if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int _num_elements;
 
@@ -803,7 +823,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
 
   return result;
 }
@@ -821,7 +841,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -831,12 +851,12 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   if ((!isNull(initial_prob)) && (length(initial_prob) > 0))
     _initial_prob = REAL(initial_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int _num_elements;
 
@@ -888,7 +908,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
 
   return result;
 }
@@ -908,7 +928,7 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -918,14 +938,14 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
   if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
-  unsigned int j = 0;
+  unsigned int i, j = 0;
 
   unsigned int _num_elements;
 
@@ -972,7 +992,7 @@ SEXP get_pairwise_transitions_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(transition_matrix);
   FREE(_states_2d);
 
@@ -993,20 +1013,20 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
-  unsigned int j = 0;
+  unsigned int i, j = 0;
 
   unsigned int _num_elements;
 
@@ -1053,7 +1073,7 @@ SEXP get_pairwise_transitions_SDDS_sync_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(transition_matrix);
   FREE(_states_2d);
 
@@ -1076,7 +1096,7 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -1099,12 +1119,12 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   int _num_steps = *INTEGER(steps);
 
@@ -1128,7 +1148,7 @@ SEXP get_reached_states_SDDS_async_batch_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1148,7 +1168,7 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -1167,12 +1187,12 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
   else
     _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   int _num_steps = *INTEGER(steps);
 
@@ -1195,7 +1215,7 @@ SEXP get_reached_states_SDDS_sync_batch_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1213,7 +1233,7 @@ SEXP get_reached_states_SDDS_async_single_R(
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
@@ -1223,12 +1243,12 @@ SEXP get_reached_states_SDDS_async_single_R(
   if ((!isNull(update_prob)) && (length(update_prob) > 0))
     _update_prob = REAL(update_prob);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int *_initial_state = NULL;
   if ((!isNull(initial_state)) && (length(initial_state) > 0))
@@ -1263,7 +1283,7 @@ SEXP get_reached_states_SDDS_async_single_R(
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
@@ -1283,18 +1303,18 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
   network.outputs = INTEGER(outputs);
   network.output_positions = INTEGER(output_positions);
   network.fixed_nodes = INTEGER(fixed_nodes);
-  network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p00 = REAL(p00);
   network.p01 = REAL(p01);
   network.p10 = REAL(p10);
   network.p11 = REAL(p11);
 
-  unsigned int num_non_fixed = 0, i;
-  for (i = 0; i < network.num_nodes; i++) {
-    if (network.fixed_nodes[i] == -1) {
-      network.non_fixed_node_bits[i] = num_non_fixed++;
-    }
-  }
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
 
   unsigned int *_initial_state = NULL;
   if ((!isNull(initial_state)) && (length(initial_state) > 0))
@@ -1326,7 +1346,7 @@ SEXP get_reached_states_SDDS_sync_single_R(SEXP inputs, SEXP input_positions,
 
   UNPROTECT(1);
 
-  FREE(network.non_fixed_node_bits);
+  //FREE(network.non_fixed_node_bits);
   FREE(reached_states);
 
   return result;
