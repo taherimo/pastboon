@@ -14,7 +14,7 @@ The \emph{lactose} operon (\emph{lac} operon) Boolean network as proposed by Vel
 
 \usage{data(lac_operon_net)}
 \details{
-The data consists of an object \code{lac_operon_net} of the \code{BooleanNetwork} class from the \code{BoolNet} package, describing the \emph{lac} operon gene regulatory network with 10 genes and 3 inputs. The three inputs collectively indicate the concentration of glucose and lactose. Based on the synchronous update scheme, when extracellular glucose is available, the \emph{lac} operon is OFF (having one steady-state attractor where all genes are OFF). Otherwise, depending on the extracellular lactose concentration, the operon will be OFF, bistable (having two attractors), or ON (all genes are ON).
+The data consists of an object \code{lac_operon_net} of the class \code{BooleanNetwork} (from the \code{BoolNet} package), describing the \emph{lac} operon gene regulatory network with 10 genes and 3 inputs. The three inputs collectively indicate the concentration of glucose and lactose. Based on the synchronous update scheme, when extracellular glucose is available, the \emph{lac} operon is OFF (having one steady-state attractor where all genes are OFF). Otherwise, depending on the extracellular lactose concentration, the operon will be OFF, bistable (having two attractors), or ON (all genes are ON).
 }
 
 \references{

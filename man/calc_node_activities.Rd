@@ -45,7 +45,7 @@ calc_node_activities(net, method = c("BNp", "SDDS", "PEW"), params, steps,
 
 \item{initial_prob}{The probability that each of the nodes is ON (1) in the initial state (time-step 0). It should be a vector of probabilities for each of the nodes which doesn't necessarily sum up to one. If \code{NULL} (default), 0.5 is used as the probability for all nodes, meaning the initial state is randomly chosen based on a uniform distribution.}
 
-\item{last_step}{If \code{TRUE}, only the node activity rates for the last time-step are returned. Otherwise, the entire activity rate trajectory of the nodes is returned.}
+\item{last_step}{If \code{TRUE}, only the node activity rates for the last time-step are returned. Otherwise, the node activity rates for all time-steps in the form of a time-series are returned.}
 
 \item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
 
@@ -53,7 +53,7 @@ calc_node_activities(net, method = c("BNp", "SDDS", "PEW"), params, steps,
 }
 
 \details{
-By incorporating stochasticity into the update rule of a Boolean network and repeating the simulation several times, the average value of each node across repeats can be considered as a continuous variable. This approach transforms discrete binary variables into continuous ones, enabling continuous analysis methods applicable for studying the dynamic behavior of the Boolean network. This function calculates the average value (i.e., node activity) of each network node at each time-step.}
+By incorporating stochasticity into the update rule of a Boolean network and repeating the simulation several times, the average value of each node across the repeats can be considered as a continuous variable. This approach transforms discrete binary variables into continuous ones, enabling continuous analysis methods applicable for studying the dynamic behavior of the Boolean network. This function calculates the average value (i.e., node activity rate) of each network node at each time-step.}
 
 \value{
 If \code{last_step = TRUE}, a vector with a length equal to the number of network nodes, representing the activity rate of each node at the last time-step, is returned. If \code{last_step = FALSE}, a matrix with \code{steps + 1} rows (where the first row corresponds to time-step 0) and \code{length(net$genes)} columns (representing node activities at each time-step) is returned. The order of the nodes in the vector or columns (depending on \code{last_step}) is the same as \code{net$genes}.

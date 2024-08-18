@@ -4,14 +4,14 @@
 Calculate convergence time-step for node activities
 }
 \description{
-Given node activity trajectories for a set of variables \code{node_act}, this function calculates the time-step from which the changes in all the curves are below \code{threshold} for \code{window_size} consecutive time-steps.
+Given a node activity time-series for a set of variables \code{node_act}, this function calculates the time-step from which the changes in all the curves are below \code{threshold} for \code{window_size} consecutive time-steps.
 }
 \usage{
 calc_convergence_time(node_act, threshold, window_size = 1)
 }
 
 \arguments{
-\item{node_act}{A matrix describing node activities over consecutive time-steps, where rows represent time-steps and columns represent nodes. It is the output of \code{\link{calc_node_activities}}.}
+\item{node_act}{A matrix describing node activities over consecutive time-steps (i.e., time-series), where rows represent time-steps and columns represent nodes. It is the output of \code{\link{calc_node_activities}}.}
 
 \item{threshold}{A value determining the maximum allowable change in node activities to decide if they have converged.}
 
