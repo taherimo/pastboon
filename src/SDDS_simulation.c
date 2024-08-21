@@ -231,7 +231,7 @@ void state_transition_SDDS_synchronous(unsigned int *currentState,
 
 
 double **
-get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
+get_node_activities_SDDS_async(StochasticDiscreteDynamicalSystem *net,
                                     double *update_prob, double *initial_prob,
                                     unsigned int num_repeats, int num_steps,
                                     unsigned int num_elements)
@@ -297,7 +297,7 @@ get_node_activities_SDDS_async_traj(StochasticDiscreteDynamicalSystem *net,
   return traj;
 }
 
-double **get_node_activities_SDDS_sync_traj(
+double **get_node_activities_SDDS_sync(
     StochasticDiscreteDynamicalSystem *net, double *initial_prob,
     unsigned int num_repeats, int num_steps, unsigned int num_elements) {
 
@@ -803,7 +803,7 @@ SEXP get_node_activities_SDDS_async_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_SDDS_async_traj(
+    double **traj = get_node_activities_SDDS_async(
       &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
       _num_elements);
 
@@ -888,7 +888,7 @@ SEXP get_node_activities_SDDS_sync_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_SDDS_sync_traj(
+    double **traj = get_node_activities_SDDS_sync(
       &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
 
     result =

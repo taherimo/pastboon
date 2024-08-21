@@ -190,7 +190,7 @@ void state_transition_BNp_synchronous(unsigned int *currentState,
 
 
 double **
-  get_node_activities_BNp_async_traj(BooleanNetworkWithPerturbations *net,
+  get_node_activities_BNp_async(BooleanNetworkWithPerturbations *net,
                                      double *update_prob, double *initial_prob,
                                      unsigned int num_repeats, int num_steps,
                                      unsigned int num_elements)
@@ -261,7 +261,7 @@ double **
   }
 
 
-double **get_node_activities_BNp_sync_traj(BooleanNetworkWithPerturbations *net,
+double **get_node_activities_BNp_sync(BooleanNetworkWithPerturbations *net,
                                            double *initial_prob,
                                            unsigned int num_repeats,
                                            int num_steps,
@@ -771,7 +771,7 @@ SEXP get_node_activities_BNp_async_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_BNp_async_traj(
+    double **traj = get_node_activities_BNp_async(
         &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
         _num_elements);
 
@@ -852,7 +852,7 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_BNp_sync_traj(
+    double **traj = get_node_activities_BNp_sync(
       &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
 
     result =

@@ -181,7 +181,7 @@ void state_transition_PEW_synchronous(unsigned int *currentState,
 }
 
 
-double **get_node_activities_PEW_async_traj(
+double **get_node_activities_PEW_async(
     ProbabilisticEdgeWeight *net, double *update_prob, double *initial_prob,
     unsigned int num_repeats, int num_steps, unsigned int num_elements)
 
@@ -249,7 +249,7 @@ double **get_node_activities_PEW_async_traj(
   return traj;
 }
 
-double **get_node_activities_PEW_sync_traj(ProbabilisticEdgeWeight *net,
+double **get_node_activities_PEW_sync(ProbabilisticEdgeWeight *net,
                                            double *initial_prob,
                                            unsigned int num_repeats,
                                            int num_steps,
@@ -769,7 +769,7 @@ SEXP get_node_activities_PEW_async_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_PEW_async_traj(
+    double **traj = get_node_activities_PEW_async(
       &network, _update_prob, _initial_prob, _num_repeats, _num_steps,
       _num_elements);
 
@@ -851,7 +851,7 @@ SEXP get_node_activities_PEW_sync_R(SEXP inputs, SEXP input_positions,
 
   } else {
 
-    double **traj = get_node_activities_PEW_sync_traj(
+    double **traj = get_node_activities_PEW_sync(
       &network, _initial_prob, _num_repeats, _num_steps, _num_elements);
 
     result =
