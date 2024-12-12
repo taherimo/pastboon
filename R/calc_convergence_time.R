@@ -25,7 +25,7 @@ calc_convergence_time <- function(node_act, threshold, window_size = 1) {
     stop("The rows in \"node_act\" (time-steps) must be equal to or greater than \"window_size\".")
   }
 
-  differences <- diff(node_act, 1, along = 1)
+  differences <- abs(diff(node_act, 1, along = 1))
 
   rows_below_threshold <- apply(differences, 1, function(row) all(row < threshold))
 
