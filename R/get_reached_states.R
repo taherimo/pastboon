@@ -133,8 +133,8 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
            reached_states <- .Call("get_reached_states_BNp_async_single_R", inputs, input_positions,
                                    outputs, output_positions,
                                    as.integer(net$fixed),
-                                   params,
-                                   update_prob, as.integer(initial_states_dec),
+                                   params, update_prob,
+                                   as.integer(initial_states_dec),
                                    as.integer(repeats), as.integer(steps),
                                    PACKAGE = "pastboon"
            )
@@ -142,8 +142,7 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
            reached_states <- .Call("get_reached_states_BNp_sync_single_R", inputs, input_positions,
                                    outputs, output_positions,
                                    as.integer(net$fixed),
-                                   params,
-                                   as.integer(initial_states_dec),
+                                   params, as.integer(initial_states_dec),
                                    as.integer(repeats), as.integer(steps),
                                    PACKAGE = "pastboon"
            )
@@ -278,8 +277,16 @@ get_reached_states <- function(net, method = c("BNp", "SDDS", "PEW"), params,
   )
 
   if (num_initial_states == 1) {
-    reached_states_bin <- dec2bin(reached_states, len = length(net$genes))
-    names(reached_states_bin) <- net$genes
+    if (repeats == 1) {
+      reached_states_bin <- dec2bin(reached_states, len = length(net$genes))
+      names(reached_states_bin) <- net$genes
+    } else {
+      reached_states <- matrix(reached_states, nrow = repeats, byrow = TRUE)
+      reached_states_bin <- apply(reached_states, 1, dec2bin, len = length(net$genes))
+      reached_states_bin <- t(reached_states_bin)
+      colnames(reached_states_bin) <- net$genes
+    }
+
   } else {
     reached_states <- matrix(reached_states, nrow = num_initial_states, byrow = TRUE)
 
