@@ -36,10 +36,10 @@ static inline void apply_single_function_PEW(unsigned int *currentState,
                        gene % BITS_PER_BLOCK_32));
 
         if (bit == 0) {
-          if (doublerand_1() > net->p_off[gene])
+          if (doublerand_1() > net->p_off[k])
             bit = 1;
         } else {
-          if (doublerand_1() > net->p_on[gene])
+          if (doublerand_1() > net->p_on[k])
             bit = 0;
         }
 
@@ -141,10 +141,10 @@ void state_transition_PEW_synchronous(unsigned int *currentState,
 
 
           if (bit == 0) {
-            if (doublerand_1() > net->p_off[gene]) // net->p_off[gene]
+            if (doublerand_1() > net->p_off[k]) // net->p_off[gene]
               bit = 1;
           } else {
-            if (doublerand_1() > net->p_on[gene])
+            if (doublerand_1() > net->p_on[k])
               bit = 0;
           }
 
