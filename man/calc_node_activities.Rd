@@ -117,7 +117,7 @@ node_act <- calc_node_activities(lac_operon_net, method = "BNp", params = params
     steps = 100, repeats = 10000)
 
 # Plot node activities
-plot_node_activities(node_act)
+plot_node_activities(node_act, "Time-step", "Node activity")
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -130,7 +130,7 @@ node_act <- calc_node_activities(lac_operon_net, method = "SDDS", params = param
     steps = 100, repeats = 10000)
 
 # Plot node activities
-plot_node_activities(node_act)
+plot_node_activities(node_act, "Time-step", "Node activity")
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -147,6 +147,6 @@ node_act <- calc_node_activities(lac_operon_net, method = "PEW", params = params
     steps = 100, repeats = 10000)
 
 # Plot node activities
-plot_node_activities(node_act)
+plot_node_activities(node_act, "Time-step", "Node activity")
 }
 
