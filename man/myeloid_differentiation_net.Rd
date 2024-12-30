@@ -9,6 +9,7 @@ The myeloid differentiation Boolean network
 }
 
 \description{
+The myeloid differentiation Boolean network proposed by Krumsiek et al.
 }
 
 \usage{data(myeloid_differentiation_net)}

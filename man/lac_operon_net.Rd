@@ -9,7 +9,7 @@ The lactose operon Boolean network
 }
 
 \description{
-The \emph{lactose} operon (\emph{lac} operon) Boolean network as proposed by Veliz-Cuba and Stigler.
+The \emph{lactose} operon (\emph{lac} operon) Boolean network proposed by Veliz-Cuba and Stigler.
 }
 
 \usage{data(lac_operon_net)}
