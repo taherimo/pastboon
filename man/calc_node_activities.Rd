@@ -79,18 +79,31 @@ Deritei, D., Kunšič, N., & Csermely, P. (2022). Probabilistic edge weights fin
 # Load the example network
 data(lac_operon_net)
 
+# Function to generate distinct colors for plot
+generate_colors <- function(n) {
+  hues <- seq(0, 1, length.out = n + 1)[-1]
+  s <- 0.8
+  v <- 0.6
+  colors <- hsv(h = hues, s = s, v = v)
+  return(colors)
+}
+
+# Generate distinct colors
+col_vec <- generate_colors(length(lac_operon_net$genes))
+col_vec <- col_vec[sample(1:length(col_vec))]
+
 # Define plot function
-plot_node_activities <- function(node_activities) {
+plot_node_activities <- function(node_activities, xlab, ylab) {
   old_par <- par(no.readonly = TRUE)
   layout(matrix(c(1, 2), nrow = 1), width = c(4, 1))
   par(mar = c(5, 4, 4, 0))
   matplot(1:nrow(node_activities), node_activities, type = "l", frame = TRUE, lwd = 2,
-      lty = 1, xlab = "Time-step", ylab = "Node activity")
+          lty = 1, xlab = xlab, ylab = ylab, col = col_vec)
   par(mar = c(5, 0, 4, 2))
   plot(c(0, 1), type = "n", axes = FALSE, xlab = "")
-  legend("center", colnames(node_activities), col = seq_len(ncol(node_activities)),
-      cex = 0.5, fill = seq_len(ncol(node_activities)))
-  layout(1)
+  legend("center", colnames(node_activities), col = col_vec,
+         cex = 0.5, fill = col_vec)
+  layout(matrix(1))
   par(old_par)
 }
 
