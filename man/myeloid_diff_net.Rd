@@ -1,6 +1,6 @@
-\name{myeloid_differentiation_net}
+\name{myeloid_diff_net}
 
-\alias{myeloid_differentiation_net}
+\alias{myeloid_diff_net}
 
 \docType{data}
 
