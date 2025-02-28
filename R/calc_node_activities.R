@@ -139,7 +139,7 @@ calc_node_activities <- function(net, method = c("BNp", "SDDS", "PEW"), params,
 
 
       if (!is.all_in_range_0_1(params$p00) | !is.all_in_range_0_1(params$p01) | !is.all_in_range_0_1(params$p10) | !is.all_in_range_0_1(params$p11)) {
-        stop("The vectors\"p00\", \"p01\", \"p10\", and \"p11\" must consist of values in the range [0,1].")
+        stop("The vectors \"p00\", \"p01\", \"p10\", and \"p11\" must consist of values in the range [0,1].")
       }
 
 
