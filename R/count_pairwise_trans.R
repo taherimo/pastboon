@@ -110,7 +110,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
 
 
        if (asynchronous) {
-         pairwise_transitions <- .Call("get_pairwise_transitions_BNp_async_R", inputs, input_positions,
+         pairwise_transitions <- .Call("count_pairwise_transitions_BNp_async_R", inputs, input_positions,
                                        outputs, output_positions,
                                        as.integer(net$fixed),
                                        params,
@@ -121,7 +121,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
 
 
        } else {
-         pairwise_transitions <- .Call("get_pairwise_transitions_BNp_sync_R", inputs, input_positions,
+         pairwise_transitions <- .Call("count_pairwise_transitions_BNp_sync_R", inputs, input_positions,
                                        outputs, output_positions,
                                        as.integer(net$fixed),
                                        params,
@@ -156,7 +156,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
 
 
       if (asynchronous) {
-        pairwise_transitions <- .Call("get_pairwise_transitions_SDDS_async_R", inputs, input_positions,
+        pairwise_transitions <- .Call("count_pairwise_transitions_SDDS_async_R", inputs, input_positions,
           outputs, output_positions,
           as.integer(net$fixed),
           params$p00, params$p01, params$p10, params$p11,
@@ -166,7 +166,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
         )
 
       } else {
-        pairwise_transitions <- .Call("get_pairwise_transitions_SDDS_sync_R", inputs, input_positions,
+        pairwise_transitions <- .Call("count_pairwise_transitions_SDDS_sync_R", inputs, input_positions,
           outputs, output_positions,
           as.integer(net$fixed),
           params$p00, params$p01, params$p10, params$p11,
@@ -196,7 +196,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
       }
 
       if (asynchronous) {
-        pairwise_transitions <- .Call("get_pairwise_transitions_PEW_async_R", inputs, input_positions,
+        pairwise_transitions <- .Call("count_pairwise_transitions_PEW_async_R", inputs, input_positions,
           outputs, output_positions,
           as.integer(net$fixed),
           params$p_on, params$p_off, update_prob, states_dec, num_states,
@@ -204,7 +204,7 @@ count_pairwise_trans <- function(net, method = c("BNp", "SDDS", "PEW"), params,
           PACKAGE = "pastboon"
         )
       } else {
-        pairwise_transitions <- .Call("get_pairwise_transitions_PEW_sync_R", inputs, input_positions,
+        pairwise_transitions <- .Call("count_pairwise_transitions_PEW_sync_R", inputs, input_positions,
           outputs, output_positions,
           as.integer(net$fixed),
           params$p_on, params$p_off, states_dec, num_states,

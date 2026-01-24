@@ -46,7 +46,7 @@ get_reached_states(net, method = c("BNp", "SDDS", "PEW"), params, steps,
 \item{initial_states}{The set of initial states as a matrix (where each row corresponds to the binary form of a state) or a vector (for the binary form of a single initial state). The number of matrix columns (or the length of the vector) should match the number of network nodes. The order of the nodes in the columns (or vector) is considered the same as \code{net$genes}. If \code{NULL} (default), initial states are chosen randomly for \code{repeats} number of times based on a uniform distribution, requiring \code{repeats} not to be \code{NULL}.
 }
 
-\item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
+\item{asynchronous}{If \code{TRUE} (default), the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
 
 \item{update_prob}{The probability of updating each variable (node) in each time-step when \code{asynchronous = TRUE}. It should be a vector of probabilities for each of the nodes which sums up to one. If \code{NULL} (default), nodes are updated randomly based on a uniform distribution. If \code{asynchronous = FALSE}, this argument is ignored.}
 }

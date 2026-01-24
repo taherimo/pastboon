@@ -1,14 +1,14 @@
-\name{count_pairwise_trans}
-\alias{count_pairwise_trans}
+\name{calc_pairwise_reach}
+\alias{calc_pairwise_reach}
 \title{
-Count pairwise transitions between a given set of states
+Calculate pairwise reachability between a given set of states
 }
 \description{
-Counts the frequencies of transitions between each pair of states from a given set of states.
+Estimates reachability between each pair of states from a given set of states.
 }
 \usage{
-count_pairwise_trans(net, method = c("BNp", "SDDS", "PEW"), params, states,
-                     steps = 1, repeats = 1000, asynchronous = TRUE,
+calc_pairwise_reach(net, method = c("BNp", "SDDS", "PEW"), params, states,
+                     steps, repeats = 1000, asynchronous = TRUE,
                      update_prob = NULL)
 }
 \arguments{
@@ -51,7 +51,7 @@ count_pairwise_trans(net, method = c("BNp", "SDDS", "PEW"), params, states,
 }
 
 \details{
-Counting the number of transitions between each pair of states reveals the reachability of one state from another. This function performs simulations by starting from each state in \code{states} for \code{steps} time-steps and \code{repeats} iterations, and counts the number of transitions to other states in \code{states}.
+Here, reachability means how much one can easily go from a source state \code{S1} to a destination state \code{S2} within a determined number of time-steps. This function reveals the reachability of one state from another by estimating exponential of the adjacency matrix of the state transition graph. This function performs simulations by starting from each state in \code{states} for \code{steps} time-steps and \code{repeats} iterations, and counts the number of transitions to other states in \code{states}.
 }
 
 \value{
@@ -87,8 +87,8 @@ states <- matrix(sample(c(0, 1), 10 * length(lac_operon_net$genes),
 params <- rep(0.05, length(lac_operon_net$genes))
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
-    method = "BNp", params = params, steps = 100, repeats = 10)
+pairwise_reach <- calc_pairwise_reach(lac_operon_net, states = states,
+    method = "BNp", params = params, steps = 100, repeats = 100)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: SDDS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -97,7 +97,7 @@ props <- rep(0.95, length(lac_operon_net$genes))
 params <- list(p00 = props, p01 = props, p10 = props, p11 = props)
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+pairwise_reach <- calc_pairwise_reach(lac_operon_net, states = states,
     method = "SDDS", params = params, steps = 100, repeats = 10)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Method: PEW  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -111,6 +111,6 @@ p_off <- runif(nrow(edges))
 params <- list(p_on = p_on, p_off = p_off)
 
 # Obtain frequency of pairwise transitions
-pairwise_trans <- count_pairwise_trans(lac_operon_net, states = states,
+pairwise_reach <- calc_pairwise_reach(lac_operon_net, states = states,
     method = "PEW", params = params, steps = 100, repeats = 10)
 }

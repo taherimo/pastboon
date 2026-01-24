@@ -435,7 +435,7 @@ double *get_node_activities_BNp_sync_last_step(
 }
 
 
-double **get_pairwise_transitions_BNp_async(
+double **count_pairwise_transitions_BNp_async(
     BooleanNetworkWithPerturbations *net, double *update_prob,
     unsigned int **states, unsigned int num_states, unsigned int num_repeats,
     int num_steps, unsigned int num_elements) {
@@ -479,7 +479,7 @@ double **get_pairwise_transitions_BNp_async(
   return (trans_mat);
 }
 
-double **get_pairwise_transitions_BNp_sync(BooleanNetworkWithPerturbations *net,
+double **count_pairwise_transitions_BNp_sync(BooleanNetworkWithPerturbations *net,
                                            unsigned int **states,
                                            unsigned int num_states,
                                            unsigned int num_repeats,
@@ -523,6 +523,123 @@ double **get_pairwise_transitions_BNp_sync(BooleanNetworkWithPerturbations *net,
   }
 
   return (trans_mat);
+}
+
+double **calc_pairwise_reachability_BNp_async(
+    BooleanNetworkWithPerturbations *net, double *update_prob,
+    unsigned int **states, unsigned int num_states, unsigned int num_repeats,
+    int num_steps, unsigned int num_elements) {
+
+  double *reach_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double **reach_mat = CALLOC(num_states, sizeof(double *));
+
+  unsigned int i, j, k, l = 0;
+
+  // double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  double inv_fact = 1.0;
+
+  for (i = 0; i < num_states; i++) {
+    reach_mat[i] = reach_mat_vals + i * num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i = 0; i < num_states; i++) {
+
+    reach_mat[i][i] = c;
+
+    for (j = 0; j < num_repeats; j++) {
+
+      for (k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+      }
+
+      inv_fact = 1.0;
+
+      for (k = 1; k <= num_steps; k++) {
+
+        state_transition_BNp_asynchronous(current_state, update_prob, net);
+
+        inv_fact /= k;
+
+        for (l = 0; l < num_states; l++) {
+
+          if (areArraysEqual(current_state, states[l], num_elements)) {
+
+            reach_mat[i][l] += c * inv_fact;
+
+            break;
+
+          }
+        }
+      }
+    }
+  }
+
+  // for (i = 0; i < num_states; i++) {
+  //   for (l = 0; l < num_states; l++) {
+  //     printf("%d %d %f\n", i, l, trans_mat[i][l]);
+  //   }
+  // }
+
+  return (reach_mat);
+}
+
+double **calc_pairwise_reachability_BNp_sync(
+    BooleanNetworkWithPerturbations *net, unsigned int **states,
+    unsigned int num_states, unsigned int num_repeats,
+    int num_steps, unsigned int num_elements) {
+
+  double *reach_mat_vals = CALLOC(num_states * num_states, sizeof(double));
+  double **reach_mat = CALLOC(num_states, sizeof(double *));
+
+  unsigned int i, j, k, l = 0;
+
+  // double c = 1.0 / num_repeats;
+  double c = 1.0;
+
+  double inv_fact = 1.0;
+
+  for (i = 0; i < num_states; i++) {
+    reach_mat[i] = reach_mat_vals + i * num_states;
+  }
+
+  unsigned int current_state[num_elements];
+
+  for (i = 0; i < num_states; i++) {
+
+    reach_mat[i][i] = c;
+
+    for (j = 0; j < num_repeats; j++) {
+
+      for (k = 0; k < num_elements; k++) {
+        current_state[k] = states[i][k];
+      }
+
+      inv_fact = 1.0;
+
+      for (k = 1; k <= num_steps; k++) {
+
+        state_transition_BNp_synchronous(current_state, net, num_elements);
+
+        inv_fact /= k;
+
+        for (l = 0; l < num_states; l++) {
+
+          if (areArraysEqual(current_state, states[l], num_elements)) {
+
+            reach_mat[i][l] += c * inv_fact;
+            break;
+
+          }
+        }
+      }
+    }
+  }
+
+  return (reach_mat);
 }
 
 unsigned int **get_reached_states_BNp_async_batch(
@@ -877,7 +994,7 @@ SEXP get_node_activities_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
 
 
-SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
+SEXP count_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
                                           SEXP outputs, SEXP output_positions,
                                           SEXP fixed_nodes, SEXP p,
                                           SEXP update_prob, SEXP states,
@@ -937,7 +1054,7 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
 
   GetRNGstate();
 
-  double **transition_matrix = get_pairwise_transitions_BNp_async(
+  double **transition_matrix = count_pairwise_transitions_BNp_async(
       &network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps,
       _num_elements);
 
@@ -959,7 +1076,7 @@ SEXP get_pairwise_transitions_BNp_async_R(SEXP inputs, SEXP input_positions,
   return result;
 }
 
-SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
+SEXP count_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
                                          SEXP outputs, SEXP output_positions,
                                          SEXP fixed_nodes, SEXP p, SEXP states,
                                          SEXP num_states, SEXP steps,
@@ -1014,7 +1131,7 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
   GetRNGstate();
 
-  double **transition_matrix = get_pairwise_transitions_BNp_sync(
+  double **transition_matrix = count_pairwise_transitions_BNp_sync(
       &network, _states_2d, _num_states, _num_repeats, _num_steps,
       _num_elements);
 
@@ -1035,6 +1152,167 @@ SEXP get_pairwise_transitions_BNp_sync_R(SEXP inputs, SEXP input_positions,
 
   return result;
 }
+
+
+SEXP calc_pairwise_reachability_BNp_async_R(SEXP inputs, SEXP input_positions,
+                                             SEXP outputs, SEXP output_positions,
+                                             SEXP fixed_nodes, SEXP p,
+                                             SEXP update_prob, SEXP states,
+                                             SEXP num_states, SEXP steps,
+                                             SEXP repeats) {
+
+  BooleanNetworkWithPerturbations network;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p = REAL(p);
+
+  double *_update_prob = NULL;
+  if ((!isNull(update_prob)) && (length(update_prob) > 0))
+    _update_prob = REAL(update_prob);
+
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
+
+  unsigned int i, j = 0;
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+  unsigned int *_states = (unsigned int *)INTEGER(states);
+
+  unsigned int _num_states = (unsigned int)*INTEGER(num_states);
+
+  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
+
+  unsigned int *_states_2d_vals =
+    CALLOC(_num_states * _num_elements, sizeof(double));
+  unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
+
+  for (i = 0; i < _num_states; i++) {
+    _states_2d[i] = _states_2d_vals + i * _num_elements;
+  }
+
+  for (i = 0; i < _num_states; i++) {
+    for (j = 0; j < _num_elements; j++) {
+      _states_2d[i][j] = _states[i * _num_elements + j];
+    }
+  }
+
+  GetRNGstate();
+
+  double **reachability_matrix = calc_pairwise_reachability_BNp_async(
+    &network, _update_prob, _states_2d, _num_states, _num_repeats, _num_steps,
+    _num_elements);
+
+  SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
+
+  for (unsigned int i = 0; i < _num_states; ++i) {
+    memcpy(&REAL(result)[i * _num_states], reachability_matrix[i],
+           _num_states * sizeof(double));
+  }
+
+  PutRNGstate();
+
+  UNPROTECT(1);
+
+  //FREE(network.non_fixed_node_bits);
+  FREE(reachability_matrix);
+  FREE(_states_2d);
+
+  return result;
+}
+
+SEXP calc_pairwise_reachability_BNp_sync_R(SEXP inputs, SEXP input_positions,
+                                            SEXP outputs, SEXP output_positions,
+                                            SEXP fixed_nodes, SEXP p, SEXP states,
+                                            SEXP num_states, SEXP steps,
+                                            SEXP repeats) {
+
+  BooleanNetworkWithPerturbations network;
+  network.num_nodes = length(fixed_nodes);
+  network.inputs = INTEGER(inputs);
+  network.input_positions = INTEGER(input_positions);
+  network.outputs = INTEGER(outputs);
+  network.output_positions = INTEGER(output_positions);
+  network.fixed_nodes = INTEGER(fixed_nodes);
+  //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
+  network.p = REAL(p);
+
+  // unsigned int num_non_fixed = 0, i;
+  // for (i = 0; i < network.num_nodes; i++) {
+  //   if (network.fixed_nodes[i] == -1) {
+  //     network.non_fixed_node_bits[i] = num_non_fixed++;
+  //   }
+  // }
+
+  unsigned int i, j = 0;
+
+  unsigned int _num_elements;
+
+  if (network.num_nodes % BITS_PER_BLOCK_32 == 0)
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32;
+  else
+    _num_elements = network.num_nodes / BITS_PER_BLOCK_32 + 1;
+
+  unsigned int *_states = (unsigned int *)INTEGER(states);
+
+  unsigned int _num_states = (unsigned int)*INTEGER(num_states);
+
+  unsigned int _num_steps = (unsigned int)*INTEGER(steps);
+  unsigned int _num_repeats = (unsigned int)*INTEGER(repeats);
+
+  unsigned int *_states_2d_vals =
+    CALLOC(_num_states * _num_elements, sizeof(double));
+  unsigned int **_states_2d = CALLOC(_num_states, sizeof(unsigned int *));
+
+  for (i = 0; i < _num_states; i++) {
+    _states_2d[i] = _states_2d_vals + i * _num_elements;
+  }
+
+  for (i = 0; i < _num_states; i++) {
+    for (j = 0; j < _num_elements; j++) {
+      _states_2d[i][j] = _states[i * _num_elements + j];
+    }
+  }
+
+  GetRNGstate();
+
+  double **reachability_matrix = calc_pairwise_reachability_BNp_sync(
+    &network, _states_2d, _num_states, _num_repeats, _num_steps,
+    _num_elements);
+
+  SEXP result = PROTECT(allocVector(REALSXP, _num_states * _num_states));
+
+  for (unsigned int i = 0; i < _num_states; ++i) {
+    memcpy(&REAL(result)[i * _num_states], reachability_matrix[i],
+           _num_states * sizeof(double));
+  }
+
+  PutRNGstate();
+
+  UNPROTECT(1);
+
+  //FREE(network.non_fixed_node_bits);
+  FREE(reachability_matrix);
+  FREE(_states_2d);
+
+  return result;
+}
+
 
 
 SEXP get_reached_states_BNp_async_batch_R(SEXP inputs, SEXP input_positions,
