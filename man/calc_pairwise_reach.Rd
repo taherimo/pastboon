@@ -51,7 +51,9 @@ calc_pairwise_reach(net, method = c("BNp", "SDDS", "PEW"), params, states,
 }
 
 \details{
-Here, reachability means how much one can easily go from a source state \code{S1} to a destination state \code{S2} within a determined number of time-steps. This function reveals the reachability of one state from another by estimating exponential of the adjacency matrix of the state transition graph. This function performs simulations by starting from each state in \code{states} for \code{steps} time-steps and \code{repeats} iterations, and counts the number of transitions to other states in \code{states}.
+Here, reachability means how much one can easily go from a source state \code{S1} to a destination state \code{S2} within a determined number of time-steps. This function reveals the reachability of one state from another by estimating exponential of the adjacency matrix of the state transition graph, i.e. \[
+e^{A} = \sum_{p=0}^{\infty} \frac{1}{p!} A^{p},
+\]. This function performs simulations by starting from each state in \code{states} for \code{steps} time-steps and \code{repeats} iterations, and counts the number of transitions to other states in \code{states}.
 }
 
 \value{
