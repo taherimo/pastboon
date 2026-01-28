@@ -7,3 +7,5 @@ src/*.so
 .Rd2pdf*
 *.pdf
 *.Rcheck
+*.dll
+

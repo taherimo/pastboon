@@ -99,7 +99,7 @@ static const R_CallMethodDef callMethods[] = {
   {"count_pairwise_transitions_BNp_async_R", (DL_FUNC) &count_pairwise_transitions_BNp_async_R, 11},
   {"count_pairwise_transitions_BNp_sync_R", (DL_FUNC) &count_pairwise_transitions_BNp_sync_R, 10},
   {"calc_pairwise_reachability_BNp_async_R", (DL_FUNC) &calc_pairwise_reachability_BNp_async_R, 11},
-  {"calc_pairwise_reachability_BNp_sync_R", (DL_FUNC) &calc_pairwise_reachability_BNp_async_R, 10},
+  {"calc_pairwise_reachability_BNp_sync_R", (DL_FUNC) &calc_pairwise_reachability_BNp_sync_R, 10},
   {"get_reached_states_BNp_async_single_R", (DL_FUNC) &get_reached_states_BNp_async_single_R, 10},
   {"get_reached_states_BNp_async_batch_R", (DL_FUNC) &get_reached_states_BNp_async_batch_R, 10},
   {"get_reached_states_BNp_sync_single_R", (DL_FUNC) &get_reached_states_BNp_sync_single_R, 9},

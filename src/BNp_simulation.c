@@ -1251,7 +1251,6 @@ SEXP calc_pairwise_reachability_BNp_sync_R(SEXP inputs, SEXP input_positions,
   network.fixed_nodes = INTEGER(fixed_nodes);
   //network.non_fixed_node_bits = CALLOC(network.num_nodes, sizeof(unsigned int));
   network.p = REAL(p);
-
   // unsigned int num_non_fixed = 0, i;
   // for (i = 0; i < network.num_nodes; i++) {
   //   if (network.fixed_nodes[i] == -1) {
