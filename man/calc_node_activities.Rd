@@ -47,7 +47,7 @@ calc_node_activities(net, method = c("BNp", "SDDS", "PEW"), params, steps,
 
 \item{last_step}{If \code{TRUE}, only the node activity rates for the last time-step are returned. Otherwise, the node activity rates for all time-steps in the form of a time-series are returned.}
 
-\item{asynchronous}{If \code{TRUE}, the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
+\item{asynchronous}{If \code{TRUE} (default), the asynchronous update scheme is used, where a single node is updated at each time-step. In this case, \code{update_prob} indicates update probabilities. If \code{FALSE}, the synchronous update scheme is utilized.}
 
 \item{update_prob}{The probability of updating each variable (node) in each time-step when \code{asynchronous = TRUE}. It should be a vector of probabilities for each of the nodes which sums up to one. If \code{NULL} (default), nodes are updated randomly based on a uniform distribution. If \code{asynchronous = FALSE}, this argument is ignored.}
 }
